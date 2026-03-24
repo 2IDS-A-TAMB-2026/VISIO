@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <title>Login Administrador — VISIO</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <img src="images/LogoDark.png" class="logo" alt="Logo VISIO">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                <li><a href="sobre.html"><i class="fa-solid fa-info-circle"></i> Sobre Nós</a></li>
+                <li><a href="contato.html"><i class="fa-solid fa-address-book"></i> Contato</a></li>
+                <li><a href="questoes.html"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
+                <li><a href="sensores.html"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
+                <li><a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="login-page">
+        <div class="login-container">
+            <div class="login-form">
+                <h1>Painel Administrativo</h1>
+                <p>Entre com suas credenciais de administrador.</p>
+                <form action="#" method="post" id="formAdm">
+                    <input type="email" name="email" id="email" placeholder="Email">
+                    <span class="erro" id="erroEmail"></span>
+                    <input type="password" name="senha" id="senha" placeholder="Senha">
+                    <span class="erro" id="erroSenha"></span>
+                    <br>
+                    <button type="submit" style="color:#fff">
+                        <i> <a href="inicio_adm.html" style="color:#fff"></i>&nbsp;Entrar como ADM
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <p><a href="login.html">Voltar para login de usuário</a></p>
+                </div>
+            </div>
+            <div class="login-image">
+                <img src="images/SquareDark.png"
+                    alt="Ilustração representando login administrativo na plataforma VISIO">
+            </div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2026 VISIO – Visão Inteligente para Sensores IoT.
+    </footer>
+    <script src="JS/validacaoAdm.js"></script>
+</body>
+</html>

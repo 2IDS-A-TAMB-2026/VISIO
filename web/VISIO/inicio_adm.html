@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <title>VISIO</title>
+  <script src="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/js/swiffy-slider.min.js" crossorigin="anonymous"
+    defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/css/swiffy-slider.min.css" rel="stylesheet"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <img src="images/LogoDark.png" class="logo" alt="Logo VISIO">
+      <ul class="nav-links">
+        <li><a href="inicio_adm.html"><i class="fa-solid fa-house"></i> Início</a></li>
+        <li><a href="perfil_adm.html"><i class="fa-solid fa-user"></i> Perfil</a></li>
+      </ul>
+    </nav>
+  </header>
+    <div class="app-container">
+    <aside class="sidebar">
+        <nav class="menu">
+            <ul>
+                <li><a href="index.html" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="usuarios.html"><i class="fa-solid fa-users"></i> Usuários</a></li>
+                <li><a href="cadastrar_questoes_adm.html"><i class="fa-solid fa-clipboard-list"></i> Questões</a></li>
+                <li><a href="cadastrar_sensor_ADM.html"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
+            </ul>
+        </nav>
+    </aside>
+     <!-- <header class="top-bar">
+            <h2>Dashboard - Visão Geral do Sistema</h2>
+            <div class="status-indicator">
+              <br>
+                <span class="dot"></span> Servidor Online
+                <br>
+            </div>
+        </header> -->
+
+        <div class="status-card">
+
+    <h3>Status do Sistema</h3>
+        <div class="status-list">
+            <div class="status-item">
+                <span class="dot online"></span>
+                Servidor
+            </div>
+            <div class="status-item">
+                <span class="dot online"></span>
+                Banco de dados
+            </div>
+            <div class="status-item">
+                <span class="dot online"></span>
+                Sensores conectados
+            </div>
+            <div class="status-item">
+                <span class="dot warning"></span>
+                Rede escolar
+            </div>
+            <div class="status-item">
+                <span class="dot offline"></span>
+                Sensor sala 3
+            </div>
+        </div>
+</div>
+
+    <main class="main-content">
+       <div class="data-card">
+            <i class="fa-solid fa-microchip icon"></i>
+            <span class="card-title">Sensores Ativos</span>
+            <div class="card-body">
+                <span class="number">128</span>
+                <span class="trend up">+5%</span>
+            </div>
+        </div>
+
+            <div class="data-card">
+                <span class="card-title">Alertas Críticos</span>
+                <div class="card-body">
+                    <span class="number">02</span>
+                    <span class="trend down">!</span>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <span class="card-title">Uso da Rede</span>
+                <div class="card-body">
+                    <span class="number">84%</span>
+                </div>
+            </div>
+        </div>
+        <section class="content-section">
+            
+        </section>
+    </main>
+    </div>
+        <footer>
+            &copy;2026 VISIO – Plataforma Inteligente para Identificação e Gestão de Sensores IoT em Ambientes Educacionais.
+        </footer>
+    </body>
+</html>

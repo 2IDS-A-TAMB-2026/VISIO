@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISIO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+
+<body class="body_identificador">
+    <header>
+        <nav>
+            <img src="images/LogoDark.png" class="logo" alt="Logo VISIO">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                <li><a href="sobre.html"><i class="fa-solid fa-info-circle"></i> Sobre Nós</a></li>
+                <li><a href="contato.html"><i class="fa-solid fa-address-book"></i> Contato</a></li>
+                <li><a href="questoes.html"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
+                <li><a href="sensores.html"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
+                <li><a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="home">
+        <h1>Identificação de Dispositivos via Câmera</h1>
+        <section id="camera-container">
+            <video id="video" autoplay muted playsinline></video>
+            <div class="camera-overlay">
+                <i class="fa-solid fa-camera"></i>
+                <p>Posicione o dispositivo na área da câmera</p>
+            </div>
+        </section>
+        <section id="result" aria-live="polite">
+            Aguardando identificação...
+        </section>
+    </main>
+    <footer class="footer_identificador">&copy; 2026 VISIO – Visão Inteligente para Sensores IoT.</footer>
+    <script>
+        async function startCamera() {
+            const video = document.getElementById('video');
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Seu navegador não suporta acesso à câmera.");
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "environment" // usa câmera traseira no celular
+                    }
+                });
+                video.srcObject = stream;
+            } catch (error) {
+                alert('Erro ao acessar a câmera: ' + error.message);
+            }
+        }
+        startCamera();
+        // Exemplo de identificação simulada
+        // setTimeout(() => {
+        //     document.getElementById('result').textContent =
+        //         'Dispositivo identificado: Sensor IoT XYZ';
+        // }, 5000);
+    </script>
+</body>
+
+</html>

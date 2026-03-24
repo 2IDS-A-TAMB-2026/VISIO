@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTATO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <img src="images/LogoDark.png" class="logo" alt="Logo VISIO">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                <li><a href="sobre.html"><i class="fa-solid fa-info-circle"></i> Sobre Nós</a></li>
+                <li><a href="contato.html"><i class="fa-solid fa-address-book"></i> Contato</a></li>
+                <li><a href="questoes.html"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
+                <li><a href="sensores.html"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
+                <li><a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="contact">
+        <div class="contact-container">
+            <div class="contact-info">
+                <h1>Entre em Contato</h1>
+                <p>Tem dúvidas sobre a plataforma VISIO? Quer aplicar em sua instituição ou empresa? Fale conosco.</p>
+                <div class="info-item">
+                    <strong>Email:</strong>
+                    <span><a href="mailto:contato@visio.com"
+                            style="color: rgb(182, 182, 184);">visio.suporte@gmail.com</a></span>
+                </div>
+                <div class="info-item">
+                    <strong>Telefone:</strong>
+                    <span>
+                        <a href="tel:+550000000000" style="color: rgb(182, 182, 184);">(00) 00000-0000</a>
+                    </span>
+                </div>
+                <div class="info-item">
+                    <strong>Localização:</strong>
+                    <address>Brasil</address>
+                </div>
+            </div>
+            <form id="form" class="contact-form" action="#" method="post">
+                <h2>Envie uma mensagem</h2>
+
+                <label for="nome">Seu nome</label>
+                <input id="nome" name="nome" type="text" required>
+                <span id="erroNome" class="erro"></span>
+
+                <label for="email">Seu email</label>
+                <input id="email" name="email" type="email" required>
+                <span id="erroEmail" class="erro"></span>
+
+                <label for="mensagem">Sua mensagem</label>
+                <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+                <span id="erroMensagem" class="erro"></span>
+
+                <button type="submit" style="color:#fff">
+                    <i class="fa-solid fa-paper-plane" style="color:#fff"></i>
+                    Enviar Mensagem
+                </button>
+
+                 <!-- Mensagem de sucesso -->
+                <div id="msgSucesso" style="color: rgb(89, 240, 89); display: none;">
+                    Mensagem enviada com sucesso!
+                </div>
+
+            </form>
+        </div>
+    </main>
+    <footer>&copy; 2026 VISIO – Visão Inteligente para Sensores IoT.</footer>
+    <script src="JS/validacaoContato.js"></script>
+</body>
+
+</html>

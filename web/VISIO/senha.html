@@ -1,0 +1,53 @@
+//Botão "Voltar" Ausente. Existe apenas um link "Entrar", mas o RF exige um botão "Voltar" que redireciona para a tela de login.
+//Envio real de e-mail não implementado. Form com action="#" sem integração com servidor de e-mail.
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha — VISIO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <img src="images/LogoDark.png" class="logo" alt="Logo VISIO">
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                <li><a href="sobre.html"><i class="fa-solid fa-info-circle"></i> Sobre Nós</a></li>
+                <li><a href="contato.html"><i class="fa-solid fa-address-book"></i> Contato</a></li>
+                <li><a href="questoes.html"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
+                <li><a href="sensores.html"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
+                <li><a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="forgot-page">
+        <div class="forgot-container">
+            <section class="forgot-form">
+                <h1>Recuperar Senha</h1>
+                <p>Digite seu e-mail para receber o link de redefinição.</p>
+                <form action="#" method="post" id="form">
+                    <input type="email" name="email" id="email" placeholder="Seu e-mail">
+                    <span class="erro" id="erroEmail"></span>
+                    <button type="submit"><i class="fa-solid fa-envelope"></i>Enviar Nova Senha</button>
+                </form>
+                <div class="forgot-footer">
+                    <p>Lembrou a senha? <a href="login.html">Entrar</a></p>
+                    <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+                </div>
+            </section>
+            <section class="forgot-image">
+                <img src="images/SquareDark.png" alt="Ilustração de recuperação de senha">
+            </section>
+        </div>
+    </main>
+    <footer>&copy; 2026 VISIO – Visão Inteligente para Sensores IoT.</footer>
+    <script src="JS/validacaorecuperar.js"></script>
+</body>
+
+</html>

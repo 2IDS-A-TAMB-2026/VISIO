@@ -1,0 +1,10 @@
+[
+    {
+        "id": 1,
+        "cpf": "123.456.789-10",
+        "email": "teste@gmail.com",
+        "data_nascimento": "12\/34\/5678",
+        "telefone": "(12) 34567-8910",
+        "senha": "$2y$10$IHeWT7mHdmFa9.q7Yge3Z.RX228ooavKCHRTwGE2aA14btuqpg\/hy"
+    }
+]
