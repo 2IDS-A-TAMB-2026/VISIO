@@ -1,6 +1,5 @@
 # VISIO
-# VISIO
-<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/imagem_logo.png" width="170">
+<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/imagens/logo_visio.png" width="500">
 Plataforma para identificação de sensores IOT
 
 ## Problema
@@ -80,25 +79,25 @@ Plataforma para identificação de sensores IOT
 
 
   ## MER
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/mer.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/der.png" width="700">
 
   ## DER
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/der.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/derr.png" width="700">
 
   ## DICIONARIO DE DADOS
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/dicionario.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/dicionario.png" width="700">
 
   ## BANCO DE DADOS FÍSICO
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fisico.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/bd.png" width="700">
 
   ## DIAGRAMA DE CASOS DE USO
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/uso.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagrama_casos_uso.png" width="700">
 
   ## DIAGRAMA DE FLUXO
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fluxo.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagrama_fluxo.png" width="500">
 
   ## DIAGRAMA DE CLASSES
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/classes.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagraam_classes.png" width="700">
   
 
 
@@ -138,7 +137,7 @@ Plataforma para identificação de sensores IOT
 
 
 # VISIO
-<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/imagem_logo.png" width="170">
+<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/imagens/logo_visio.png" width="500">
 Platform for identification of IOT sensors
 
 ## PROBLEM
@@ -216,25 +215,25 @@ Platform for identification of IOT sensors
 
 
   ## MER
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/mer.png" width="170">
+ <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/der.png" width="700">
 
   ## DER
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/der.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/derr.png" width="700">
 
   ## DATA DICTIONARY
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/dicionario.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/dicionario.png" width="700">
 
   ## PHYSICAL DATABASE
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fisico.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/bd.png" width="700">
 
   ## USE CASE DIAGRAM
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/uso.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagrama_casos_uso.png" width="700">
 
   ## FLOW DIAGRAM
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fluxo.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagrama_fluxo.png" width="500">
 
   ## CLASS DIAGRAM
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/classes.png" width="170">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/diagraam_classes.png" width="700">
   
 
 
