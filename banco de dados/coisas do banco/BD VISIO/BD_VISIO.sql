@@ -1,0 +1,409 @@
+CREATE DATABASE IF NOT EXISTS BD_VISIO;
+USE BD_VISIO;
+
+CREATE TABLE ADMIN (
+    CNPJ VARCHAR(18) PRIMARY KEY,
+    EMAIL VARCHAR(150) NOT NULL,
+    TELEFONE VARCHAR(20) NOT NULL,
+    SENHA VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE SENSOR (
+    ID_SENSOR INT AUTO_INCREMENT PRIMARY KEY,
+    FOTO VARCHAR(255) NOT NULL,
+    DESCRICAO VARCHAR(255) NOT NULL,
+    CIRCUITO VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE PERGUNTA (
+    ID_PERGUNTA INT AUTO_INCREMENT PRIMARY KEY,
+    DESCRICAO VARCHAR(255) NOT NULL,
+    NIVEL_DIFICULDADE VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE ALTERNATIVA (
+    ID_ALTERNATIVA INT AUTO_INCREMENT PRIMARY KEY,
+    DESCRICAO VARCHAR(255) NOT NULL,
+    CORRETA_ERRADA VARCHAR(2) NOT NULL,
+    FK_ID_PERGUNTA INT NOT NULL,
+    FOREIGN KEY (FK_ID_PERGUNTA) REFERENCES PERGUNTA (ID_PERGUNTA) ON DELETE CASCADE
+);
+
+CREATE TABLE USUARIO (
+    CPF VARCHAR(14) PRIMARY KEY,
+    EMAIL VARCHAR(150) NOT NULL,
+    SENHA VARCHAR(100) NOT NULL,
+    CARTAO VARCHAR(25) NOT NULL,
+    DATA_NASCIMENTO DATE NOT NULL,
+    TELEFONE VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE RESPONDE (
+    ID_RESPONDE INT AUTO_INCREMENT PRIMARY KEY,
+    FK_CPF_USUARIO VARCHAR(14) NOT NULL,
+    FK_ID_ALTERNATIVA INT NOT NULL,
+    FOREIGN KEY (FK_CPF_USUARIO) REFERENCES USUARIO (CPF) ON DELETE CASCADE,
+    FOREIGN KEY (FK_ID_ALTERNATIVA) REFERENCES ALTERNATIVA (ID_ALTERNATIVA) ON DELETE CASCADE
+);
+
+/*ADMIN*/
+INSERT INTO ADMIN (CNPJ, EMAIL, TELEFONE, SENHA) VALUES
+('12.345.678/0001-01','admin1@iotlab.com','11987654321','Admin@101'),
+('23.456.789/0001-02','admin2@iotlab.com','11987654322','Admin@102'),
+('34.567.890/0001-03','admin3@iotlab.com','11987654323','Admin@103'),
+('45.678.901/0001-04','admin4@iotlab.com','11987654324','Admin@104'),
+('56.789.012/0001-05','admin5@iotlab.com','11987654325','Admin@105'),
+('67.890.123/0001-06','admin6@iotlab.com','11987654326','Admin@106'),
+('78.901.234/0001-07','admin7@iotlab.com','11987654327','Admin@107'),
+('89.012.345/0001-08','admin8@iotlab.com','11987654328','Admin@108'),
+('90.123.456/0001-09','admin9@iotlab.com','11987654329','Admin@109'),
+('11.234.567/0001-10','admin10@iotlab.com','11987654330','Admin@110'),
+('12.345.678/0001-90','admin11@iotlab.com','11912345678','Admin@111'),
+('98.765.432/0001-10','admin12@iotlab.com','21923456789','Admin@112'),
+('45.678.123/0001-55','admin13@iotlab.com','31934567890','Admin@113'),
+('67.890.234/0001-21','admin14@iotlab.com','41945678901','Admin@114'),
+('23.456.789/0001-87','admin15@iotlab.com','51956789012','Admin@115'),
+('34.567.890/0001-66','admin16@iotlab.com','61967890123','Admin@116'),
+('56.789.012/0001-44','admin17@iotlab.com','71978901234','Admin@117'),
+('78.901.234/0001-32','admin18@iotlab.com','81989012345','Admin@118'),
+('89.012.345/0001-11','admin19@iotlab.com','91991233456','Admin@119'),
+('90.123.456/0001-99','admin20@iotlab.com','19902344567','Admin@120'),
+('11.222.333/0001-45','admin21@iotlab.com','27913455678','Admin@121'),
+('22.333.444/0001-78','admin22@iotlab.com','48924566789','Admin@122'),
+('33.444.555/0001-12','admin23@iotlab.com','85935677890','Admin@123'),
+('44.555.666/0001-34','admin24@iotlab.com','92946788901','Admin@124'),
+('55.666.777/0001-56','admin25@iotlab.com','98957899012','Admin@125'),
+('66.777.888/0001-67','admin26@iotlab.com','62968900123','Admin@126'),
+('77.888.999/0001-23','admin27@iotlab.com','64979011234','Admin@127'),
+('88.999.000/0001-88','admin28@iotlab.com','65980122345','Admin@128'),
+('99.000.111/0001-77','admin29@iotlab.com','67991234567','Admin@129'),
+('10.101.202/0001-33','admin30@iotlab.com','68902345678','Admin@130');
+SELECT * FROM ADMIN;
+SELECT EMAIL FROM ADMIN;
+SELECT * FROM ADMIN WHERE CNPJ = '12.345.678/0001-01';
+SELECT * FROM ADMIN ORDER BY CNPJ;
+SELECT * FROM ADMIN WHERE CNPJ > '50.000.000/0001-00';
+SELECT TELEFONE FROM ADMIN;
+SELECT * FROM ADMIN WHERE TELEFONE<51956789012;
+SELECT * FROM ADMIN WHERE TELEFONE > '20000000000';
+SELECT * FROM ADMIN WHERE SENHA = 'Admin@101';
+
+/*SENSOR*/
+INSERT INTO SENSOR (FOTO, DESCRICAO, CIRCUITO) VALUES
+('temp.jpg','Sensor de temperatura','Arduino + LM35 + resistor 10k'),
+('umidade.jpg','Sensor de umidade do solo','Arduino + sensor higrômetro + módulo comparador'),
+('presenca.jpg','Sensor de presença PIR','Arduino + sensor PIR HC-SR501'),
+('gas.jpg','Sensor de gás MQ-2','Arduino + sensor MQ-2 + resistor'),
+('luz.jpg','Sensor LDR','Arduino + LDR + resistor 10k (divisor de tensão)'),
+('chuva.jpg','Sensor de chuva','Arduino + módulo sensor de chuva'),
+('ultrassonico.jpg','Sensor ultrassônico','Arduino + HC-SR04 (Trig/Echo)'),
+('pressao.jpg','Sensor de pressão','Arduino + BMP280 via I2C'),
+('nivel.jpg','Sensor de nível de água','Arduino + sensor de nível analógico'),
+('batimento.jpg','Sensor de batimentos cardíacos','Arduino + sensor Pulse Sensor'),
+('bateria.jpg','Sensor de nível de bateria','Arduino + divisor de tensão'),
+('corrente.jpg','Sensor de corrente (ACS712)','Arduino + sensor ACS712'),
+('tensao.jpg','Sensor de tensão','Arduino + divisor de tensão'),
+('chama.jpg','Sensor de chama','Arduino + sensor de chama IR'),
+('inclinacao.jpg','Sensor de inclinação','Arduino + tilt switch'),
+('vibracao.jpg','Sensor de vibração','Arduino + sensor SW-420'),
+('toque.jpg','Sensor de toque capacitivo','Arduino + TTP223'),
+('som.jpg','Sensor de som','Arduino + módulo microfone'),
+('uv.jpg','Sensor de luz UV','Arduino + sensor UV'),
+('hall.jpg','Sensor de efeito Hall','Arduino + sensor A3144'),
+('cor.jpg','Sensor de cor','Arduino + TCS3200'),
+('giroscopio.jpg','Sensor giroscópio/acelerômetro','Arduino + MPU6050 (I2C)'),
+('gps.jpg','Sensor de localização GPS','Arduino + módulo GPS (NEO-6M)'),
+('rf.jpg','Módulo receptor RF','Arduino + receptor RF 433MHz'),
+('bluetooth.jpg','Módulo Bluetooth','Arduino + HC-05'),
+('wifi.jpg','Módulo WiFi','Arduino + ESP8266'),
+('teclado.jpg','Teclado matricial','Arduino + keypad 4x4'),
+('display.jpg','Display LCD','Arduino + LCD 16x2 (I2C)'),
+('rele.jpg','Módulo relé','Arduino + módulo relé 5V'),
+('servo.jpg','Motor servo','Arduino + servo motor SG90');
+SELECT * FROM SENSOR;
+SELECT DESCRICAO FROM SENSOR;
+SELECT * FROM SENSOR WHERE ID_SENSOR = 1;
+SELECT * FROM SENSOR WHERE ID_SENSOR > 10;
+SELECT * FROM SENSOR WHERE ID_SENSOR < 5;
+SELECT * FROM SENSOR ORDER BY ID_SENSOR;
+SELECT * FROM SENSOR WHERE ID_SENSOR = 20;
+SELECT * FROM SENSOR WHERE ID_SENSOR >= 25;
+SELECT * FROM SENSOR WHERE ID_SENSOR <= 3;
+SELECT CIRCUITO FROM SENSOR;
+
+/*PERGUNTA*/
+INSERT INTO PERGUNTA (DESCRICAO, NIVEL_DIFICULDADE) VALUES
+('O que mede um sensor LDR?','Fácil'),
+('Para que serve o sensor PIR?','Fácil'),
+('O que é IoT?','Médio'),
+('Como funciona um sensor ultrassônico?','Médio'),
+('O que significa GPIO?','Médio'),
+('Qual a função do sensor MQ-2?','Médio'),
+('O que é PWM?','Difícil'),
+('Como funciona um ESP32?','Difícil'),
+('O que é protocolo MQTT?','Difícil'),
+('Diferença entre Arduino e Raspberry Pi?','Difícil'),
+('O que é um sensor DHT11?','Fácil'),
+('O que mede um sensor de temperatura?','Fácil'),
+('O que é um atuador?','Fácil'),
+('Para que serve um relé?','Fácil'),
+('O que é corrente elétrica?','Fácil'),
+('O que é um microcontrolador?','Médio'),
+('O que é um circuito integrado?','Médio'),
+('Como funciona um sensor de gás?','Médio'),
+('O que é comunicação serial?','Médio'),
+('O que é I2C?','Médio'),
+('O que é SPI?','Médio'),
+('O que é tensão elétrica?','Médio'),
+('O que é ADC (Conversor Analógico-Digital)?','Difícil'),
+('O que é DAC (Conversor Digital-Analógico)?','Difícil'),
+('O que é interrupção em microcontroladores?','Difícil'),
+('O que é debounce em botões?','Difícil'),
+('O que é consumo de corrente em stand-by?','Difícil'),
+('O que é watchdog timer?','Difícil'),
+('O que é overclock?','Difícil'),
+('O que é firmware?','Difícil');
+SELECT * FROM PERGUNTA;
+SELECT DESCRICAO FROM PERGUNTA;
+SELECT * FROM PERGUNTA WHERE ID_PERGUNTA = 1;
+SELECT * FROM PERGUNTA WHERE ID_PERGUNTA > 10;
+SELECT * FROM PERGUNTA WHERE ID_PERGUNTA < 5;
+SELECT * FROM PERGUNTA WHERE NIVEL_DIFICULDADE = 'Fácil';
+SELECT * FROM PERGUNTA WHERE NIVEL_DIFICULDADE = 'Médio';
+SELECT * FROM PERGUNTA WHERE NIVEL_DIFICULDADE = 'Difícil';
+SELECT * FROM PERGUNTA ORDER BY ID_PERGUNTA;
+SELECT NIVEL_DIFICULDADE FROM PERGUNTA;
+
+/*ALTERNATIVA*/
+INSERT INTO ALTERNATIVA (DESCRICAO, CORRETA_ERRADA, FK_ID_PERGUNTA) VALUES
+('Mede intensidade de luz',1,1),
+('Detecta movimento',1,2),
+('Internet das Coisas',1,3),
+('Mede distância por eco',1,4),
+('Pinos digitais programáveis',1,5),
+('Detecta gases inflamáveis',1,6),
+('Modulação por largura de pulso',1,7),
+('Microcontrolador com Wi-Fi',1,8),
+('Protocolo leve de mensagens',1,9),
+('Microcontrolador vs microcomputador',1,10),
+('Sensor de temperatura e umidade',1,11),
+('Mede calor/temperatura ambiente',1,12),
+('Dispositivo que executa ações físicas',1,13),
+('Chave elétrica controlada automaticamente',1,14),
+('Fluxo de elétrons em um circuito',1,15),
+('Circuito programável para controle',1,16),
+('Chip com múltiplos componentes eletrônicos',1,17),
+('Detecta presença de gases no ambiente',1,18),
+('Comunicação entre dispositivos por dados sequenciais',1,19),
+('Protocolo de comunicação com dois fios',1,20),
+('Protocolo de comunicação síncrona rápida',1,21),
+('Diferença de potencial elétrico',1,22),
+('Converte sinal analógico em digital',1,23),
+('Converte sinal digital em analógico',1,24),
+('Mecanismo que interrompe o fluxo normal para executar tarefa',1,25),
+('Técnica para evitar ruído em botões',1,26),
+('Consumo mínimo de energia em repouso',1,27),
+('Timer que reinicia o sistema em falhas',1,28),
+('Aumento da frequência de operação do hardware',1,29),
+('Software embarcado em hardware',1,30);
+SELECT * FROM ALTERNATIVA;
+SELECT DESCRICAO FROM ALTERNATIVA;
+SELECT * FROM ALTERNATIVA WHERE ID_ALTERNATIVA = 1;
+SELECT * FROM ALTERNATIVA WHERE ID_ALTERNATIVA > 10;
+SELECT * FROM ALTERNATIVA WHERE FK_ID_PERGUNTA = 1;
+SELECT * FROM ALTERNATIVA WHERE CORRETA_ERRADA = 1;
+SELECT * FROM ALTERNATIVA ORDER BY ID_ALTERNATIVA;
+SELECT * FROM ALTERNATIVA WHERE ID_ALTERNATIVA < 10;
+SELECT * FROM ALTERNATIVA WHERE FK_ID_PERGUNTA > 10;
+SELECT CORRETA_ERRADA FROM ALTERNATIVA;
+
+/*USUARIO*/
+INSERT INTO USUARIO (CPF, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE) VALUES
+('123.456.789-01','user1@email.com','User@123','4532118799123345','1998-03-12','11987651231'),
+('123.456.789-02','user2@email.com','User@124','4532118799123346','1995-07-25','11987651232'),
+('123.456.789-03','user3@email.com','User@125','4532118799123347','2000-11-09','11987651233'),
+('123.456.789-04','user4@email.com','User@126','4532118799123348','1997-01-17','11987651234'),
+('123.456.789-05','user5@email.com','User@127','4532118799123349','1999-06-30','11987651235'),
+('123.456.789-06','user6@email.com','User@128','4532118799123350','1996-09-14','11987651236'),
+('123.456.789-07','user7@email.com','User@129','4532118799123351','2001-12-22','11987651237'),
+('123.456.789-08','user8@email.com','User@130','4532118799123352','1994-05-05','11987651238'),
+('123.456.789-09','user9@email.com','User@131','4532118799123353','1998-08-18','11987651239'),
+('123.456.789-10','user10@email.com','User@132','4532118799123354','2002-02-27','11987651240'),
+('123.456.789-00','user11@email.com','User@133','7821445690321187','1990-03-12','11998765432'),
+('987.654.321-00','user12@email.com','User@134','6677889900112233','1990-03-12','12987654321'),
+('111.222.333-44','user13@email.com','User@135','1298334577665521','1992-11-08','13976543210'),
+('222.333.444-55','user14@email.com','User@136','4455667788991100','1978-01-30','14965432109'),
+('333.444.555-66','user15@email.com','User@137','9988776655443322','2000-09-14','15954321098'),
+('444.555.666-77','user16@email.com','User@138','1029384756129087','1995-05-22','16943210987'),
+('555.666.777-88','user17@email.com','User@139','5643210987654321','1988-12-03','17932109876'),
+('666.777.888-99','user18@email.com','User@140','7788990011223344','1993-06-17','18921098765'),
+('777.888.999-00','user19@email.com','User@141','3210654788997766','1980-04-09','19910987654'),
+('888.999.000-11','user20@email.com','User@142','8877665544332211','2002-08-28','21999112233'),
+('101.202.303-44','user21@email.com','User@143','2468135797538642','1998-02-11','22988223344'),
+('202.303.404-55','user22@email.com','User@144','1597357925804681','1983-10-05','24977334455'),
+('303.404.505-66','user23@email.com','User@145','7410852996381742','1991-07-19','37989212233'),
+('404.505.606-77','user24@email.com','User@146','9632147852036941','1975-03-23','35900101122'),
+('505.606.707-88','user25@email.com','User@147','8520741396312584','2001-11-07','33922889900'),
+('606.707.808-99','user26@email.com','User@148','3691258414708523','1987-01-16','31944667788'),
+('707.808.909-00','user27@email.com','User@149','9513753186426420','1996-09-29','28955556677'),
+('808.909.010-11','user28@email.com','User@150','4862975132046587','1982-06-04','27966445566'),
+('909.010.121-22','user29@email.com','User@151','7531159385261478','1999-12-21','34911990011'),
+('010.121.232-33','user30@email.com','User@151','6402873152961847','1994-08-10','32933778899');
+SELECT * FROM USUARIO;
+SELECT EMAIL FROM USUARIO;
+SELECT * FROM USUARIO WHERE CPF = '123.456.789-01';
+SELECT * FROM USUARIO WHERE CPF > '200.000.000-00';
+SELECT * FROM USUARIO WHERE CPF < '200.000.000-00';
+SELECT * FROM USUARIO ORDER BY CPF;
+SELECT * FROM USUARIO WHERE DATA_NASCIMENTO > '2000-01-01';
+SELECT * FROM USUARIO WHERE DATA_NASCIMENTO < '2000-01-01';
+SELECT * FROM USUARIO WHERE TELEFONE = '11987651231';
+
+/*RESPONDE*/
+INSERT INTO RESPONDE (FK_CPF_USUARIO, FK_ID_ALTERNATIVA) VALUES
+('123.456.789-01',1),
+('123.456.789-02',2),
+('123.456.789-03',3),
+('123.456.789-04',4),
+('123.456.789-05',5),
+('123.456.789-06',6),
+('123.456.789-07',7),
+('123.456.789-08',8),
+('123.456.789-09',9),
+('123.456.789-10',10),
+('123.456.789-00',11),
+('987.654.321-00',12),
+('111.222.333-44',13),
+('222.333.444-55',14),
+('333.444.555-66',15),
+('444.555.666-77',16),
+('555.666.777-88',17),
+('666.777.888-99',18),
+('777.888.999-00',19),
+('888.999.000-11',20),
+('101.202.303-44',21),
+('202.303.404-55',22),
+('303.404.505-66',23),
+('404.505.606-77',24),
+('505.606.707-88',25),
+('606.707.808-99',26),
+('707.808.909-00',27),
+('808.909.010-11',28),
+('909.010.121-22',29),
+('010.121.232-33',30);
+SELECT * FROM RESPONDE;
+SELECT FK_CPF_USUARIO FROM RESPONDE;
+SELECT * FROM RESPONDE WHERE ID_RESPONDE = 1;
+SELECT * FROM SENSOR WHERE ID_RESPONDE <= 3;
+SELECT * FROM RESPONDE WHERE ID_RESPONDE > 10;
+SELECT * FROM RESPONDE WHERE FK_ID_ALTERNATIVA = 1;
+SELECT * FROM RESPONDE ORDER BY ID_RESPONDE;
+SELECT * FROM RESPONDE WHERE FK_CPF_USUARIO = '123.456.789-01';
+SELECT * FROM RESPONDE WHERE ID_RESPONDE < 10;
+SELECT * FROM RESPONDE WHERE FK_ID_ALTERNATIVA > 20;
+
+/*SELECTS ENTRE TABELAS*/
+
+SELECT P.DESCRICAO, A.DESCRICAO
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA;
+
+SELECT U.EMAIL, R.ID_RESPONDE
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO;
+
+SELECT U.EMAIL, A.DESCRICAO
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA;
+
+SELECT P.DESCRICAO, A.DESCRICAO
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA
+WHERE A.CORRETA_ERRADA = 1;
+
+SELECT U.CPF, R.FK_ID_ALTERNATIVA
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO;
+
+SELECT P.DESCRICAO, U.EMAIL
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA
+JOIN RESPONDE R ON A.ID_ALTERNATIVA = R.FK_ID_ALTERNATIVA
+JOIN USUARIO U ON R.FK_CPF_USUARIO = U.CPF;
+
+SELECT U.EMAIL, P.NIVEL_DIFICULDADE
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA;
+
+SELECT P.ID_PERGUNTA, A.ID_ALTERNATIVA
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA;
+
+SELECT U.EMAIL, P.DESCRICAO
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA;
+
+SELECT U.EMAIL, A.CORRETA_ERRADA
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA;
+
+SELECT P.DESCRICAO, R.ID_ALTERNATIVA
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA
+JOIN RESPONDE R ON A.ID_ALTERNATIVA = R.FK_ID_ALTERNATIVA;
+
+SELECT U.EMAIL, P.ID_PERGUNTA
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA;
+
+SELECT P.NIVEL_DIFICULDADE, A.DESCRICAO
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA;
+
+SELECT U.EMAIL, R.ID_RESPONDE, A.ID_ALTERNATIVA
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA;
+
+SELECT P.ID_PERGUNTA, U.CPF
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA
+JOIN RESPONDE R ON A.ID = R.FK_ID_ALTERNATIVA
+JOIN USUARIO U ON R.FK_CPF_USUARIO = U.CPF;
+
+SELECT U.EMAIL, P.DESCRICAO, A.DESCRICAO
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA;
+
+SELECT P.DESCRICAO, A.CORRETA_ERRADA
+FROM PERGUNTA P
+JOIN ALTERNATIVA A ON P.ID_PERGUNTA = A.FK_ID_PERGUNTA;
+
+SELECT U.EMAIL, P.NIVEL_DIFICULDADE
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA
+WHERE P.NIVEL_DIFICULDADE = 'Fácil';
+
+SELECT U.EMAIL, P.NIVEL_DIFICULDADE
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA
+JOIN PERGUNTA P ON A.FK_ID_PERGUNTA = P.ID_PERGUNTA
+WHERE P.NIVEL_DIFICULDADE = 'Difícil';
+
+SELECT U.EMAIL, A.ID_ALTERNATIVA
+FROM USUARIO U
+JOIN RESPONDE R ON U.CPF = R.FK_CPF_USUARIO
+JOIN ALTERNATIVA A ON R.FK_ID_ALTERNATIVA = A.ID_ALTERNATIVA;

@@ -1,0 +1,56 @@
+name: visio
+description: "VISIO — Plataforma de Identificação e Gestão de Sensores IoT"
+publish_to: 'none'
+version: 0.2.0+2
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  mask_text_input_formatter: ^2.7.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/acelerometro.jpg.jpeg
+    - assets/images/aplicacao.educacional.png
+    - assets/images/aprender.png
+    - assets/images/educacao.png
+    - assets/images/emily.png
+    - assets/images/fernanda.png
+    - assets/images/foto_adm_perfil.jpeg
+    - assets/images/fun_video.mp4
+    - assets/images/gestaoeorganizacao.png
+    - assets/images/guilherme.png
+    - assets/images/identificacao.automatica.png
+    - assets/images/identifique.png
+    - assets/images/interfaceegerenciamento.png
+    - assets/images/isabela.png
+    - assets/images/LogoDark.png
+    - assets/images/LogoLight.png
+    - assets/images/logo-VISIO.ico
+    - assets/images/lorrana.png
+    - assets/images/matheus.png
+    - assets/images/registroerastreamento.png
+    - assets/images/segurancaeautenticacao.png
+    - assets/images/sensor_gas.jpg.jpeg
+    - assets/images/sensor_luz.jpg.jpeg
+    - assets/images/sensor_movimento.jpg.jpeg
+    - assets/images/sensor_pressao.jpg.jpeg
+    - assets/images/sensor_pressao.jpg.jpeg
+    - assets/images/sensor_proximidade.jpg
+    - assets/images/sensor_temperatura.jpg
+    - assets/images/sensor_toque.jpg.jpeg
+    - assets/images/sensor_ultrassonico.jpg
+    - assets/images/sensor_umidade.jpg
+    - assets/images/sophia.png
+    - assets/images/SquareDark.png
+    - assets/images/SquareLight.png
