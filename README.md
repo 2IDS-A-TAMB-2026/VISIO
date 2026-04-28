@@ -108,7 +108,7 @@ Plataforma para identificação de sensores IOT
 | Isabela Tessarin     | PO - Desenvolvedora Full Stack <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/isabela.png" width="50">     
 | Matheus Neri  | Desenvolvedor Full Stack              
 | Emily Maiara   | 	Scrum Master -  Programador Back-End <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/emily.png" width="50">      
-| Fernanda Amaral     | Programador Front-End <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fernanda.png" width="50">              |
+| Fernanda Amaral     | Programador Back-End <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fernanda.png" width="50">              |
 | Sophia Peron      | Analista de sistemas e designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/sophia.png" width="50">                    |
 | Lorrana Generoso   | Analista de sistemas e designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/lorrana.png" width="50">                  |
 | Guilherme Staconi   | Analista de sistemas e designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/guilherme.png" width="50">                  |
@@ -244,7 +244,7 @@ Platform for identification of IOT sensors
 | Isabela Tessarin     | PO -  Full Stack Developer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/isabela.png" width="50">     
 | Matheus Neri  |  Full Stack   Developer           
 | Emily Maiara   | 	Scrum Master -  Back-End Developer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/emily.png" width="50">      
-| Fernanda Amaral     |  Front-End Developer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fernanda.png" width="50">              |
+| Fernanda Amaral     |  Back-End Developer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/fernanda.png" width="50">              |
 | Sophia Peron      | Systems Analyst and Designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/sophia.png" width="50">                    |
 | Lorrana Generoso   | Systems Analyst and Designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/lorrana.png" width="50">                  |
 | Guilherme Staconi   | Systems Analyst and Designer <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/web/VISIO/images/guilherme.png" width="50">                  |
