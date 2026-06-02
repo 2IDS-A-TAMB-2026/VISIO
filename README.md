@@ -1,5 +1,5 @@
 # VISIO
-<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/imagens/imagem_logoimagem_logo.png.png" width="500">
+<img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/imagens/logo_escuro.png" width="500">
 Plataforma para identificação de sensores IOT
 
 ## Problema
