@@ -12,7 +12,7 @@ use App\Models\RespondeModel;
  *   GET /resposta/historico       → histórico completo do usuário logado
  *   GET /resposta/excluir/(:id)   → remove um registro específico (próprio)
  */
-class Resposta extends BaseController
+class RespostaController extends BaseController
 {
     // Verifica sessão de usuário
     public function initController(

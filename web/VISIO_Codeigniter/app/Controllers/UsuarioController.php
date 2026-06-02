@@ -5,37 +5,20 @@ namespace App\Controllers;
 use App\Models\UsuarioModel;
 
 /**
- * Usuario
- * Gerencia o cadastro e perfil dos usuários comuns.
- * Rotas esperadas:
- *   GET  /usuario/cadastro       → formulário de cadastro
- *   POST /usuario/cadastro       → processa cadastro
- *   GET  /usuario/perfil         → exibe perfil do usuário logado
- *   POST /usuario/perfil         → atualiza perfil
- *   GET  /usuario/historico      → histórico de respostas do usuário
- *
- * Acesso admin:
- *   GET  /admin/usuarios         → lista todos (via AdminController)
- *   GET  /admin/usuario/(:cpf)   → detalhe (via AdminController)
- *   GET  /admin/usuario/excluir/(:cpf) → remoção (via AdminController)
+ * UsuarioController
+ * Gerencia o cadastro e perfil dos usuários comuns integrado ao MySQL.
  */
-class Usuario extends BaseController
+class UsuarioController extends BaseController
 {
     // ---------------------------------------------------------------
     // CADASTRO PÚBLICO
     // ---------------------------------------------------------------
 
-    /**
-     * Exibe o formulário de cadastro de novo usuário.
-     */
     public function cadastroForm(): string
     {
-        return view('usuario/cadastro');
+        return view('sistema/usuario/cadastro/index');
     }
 
-    /**
-     * Processa o cadastro do usuário.
-     */
     public function cadastrar()
     {
         $cpf = $this->request->getPost('cpf');
@@ -52,64 +35,84 @@ class Usuario extends BaseController
 
         $model = new UsuarioModel();
 
-        // Verifica duplicidade
-        if ($model->buscarPorCpf($cpf)) {
+        // 1. Verifica se CPF já existe
+        if ($model->where('CPF', $cpf)->first()) {
             return redirect()->to('/usuario/cadastro')
                 ->with('erro', 'CPF já cadastrado.');
         }
 
-        $model->inserir([
+        // 2. Verifica se o E-mail já existe (Regra UNIQUE do Banco)
+        if ($model->where('EMAIL', $email)->first()) {
+            return redirect()->to('/usuario/cadastro')
+                ->with('erro', 'Este e-mail já está em uso.');
+        }
+
+        // Inserção de dados usando o método nativo 'insert' do CI4
+        $model->insert([
             'CPF' => $cpf,
             'EMAIL' => $email,
-            'SENHA' => password_hash($senha, PASSWORD_DEFAULT),
+            'SENHA' => password_hash($senha, PASSWORD_BCRYPT),
             'CARTAO' => $cartao,
             'DATA_NASCIMENTO' => $data,
             'TELEFONE' => $tel,
         ]);
 
+        // Redireciona para o LOGIN, pois a área de início agora é protegida
         return redirect()->to('/login')
-            ->with('sucesso', 'Cadastro realizado com sucesso!');
+            ->with('sucesso', 'Cadastro realizado com sucesso! Faça login para continuar.');
+    }
+
+    // ---------------------------------------------------------------
+    // INÍCIO DO USUÁRIO LOGADO
+    // ---------------------------------------------------------------
+
+    public function inicio(): string
+    {
+        return view('sistema/usuario_logado/inicio/index');
     }
 
     // ---------------------------------------------------------------
     // PERFIL DO USUÁRIO LOGADO
     // ---------------------------------------------------------------
 
-    /**
-     * Exibe o perfil do usuário logado.
-     */
     public function perfil(): string
     {
         $cpf = session()->get('usuario_cpf');
         $model = new UsuarioModel();
 
-        $dados['usuario'] = $model->buscarPorCpf($cpf);
-
-        return view('usuario/perfil', $dados);
+        return view('sistema/usuario/perfil_usuario/index', [
+            'usuario' => $model->where('CPF', $cpf)->first(),
+        ]);
     }
 
-    /**
-     * Processa a atualização de perfil.
-     */
     public function atualizarPerfil()
     {
         $cpf = session()->get('usuario_cpf');
+        $model = new UsuarioModel();
+        $email = $this->request->getPost('email');
+
+        // Verifica se o NOVO e-mail escolhido já não está a ser usado por outra pessoa
+        $emailExistente = $model->where('EMAIL', $email)->where('CPF !=', $cpf)->first();
+        if ($emailExistente) {
+            return redirect()->to('/usuario/perfil')
+                ->with('erro', 'Este e-mail já está em uso por outra conta.');
+        }
 
         $dados = [
-            'EMAIL' => $this->request->getPost('email'),
+            'EMAIL' => $email,
             'CARTAO' => $this->request->getPost('cartao') ?? '',
             'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
             'TELEFONE' => $this->request->getPost('telefone'),
         ];
 
-        // Atualização de senha (opcional)
         $novaSenha = $this->request->getPost('senha');
         if (!empty($novaSenha)) {
-            $dados['SENHA'] = password_hash($novaSenha, PASSWORD_DEFAULT);
+            $dados['SENHA'] = password_hash($novaSenha, PASSWORD_BCRYPT);
         }
 
-        $model = new UsuarioModel();
-        $model->atualizar($cpf, $dados);
+        // Método nativo do CI4 para atualizar a linha cujo ID é o $cpf
+        $model->update($cpf, $dados);
+
 
         return redirect()->to('/usuario/perfil')
             ->with('sucesso', 'Perfil atualizado com sucesso!');
@@ -119,16 +122,14 @@ class Usuario extends BaseController
     // HISTÓRICO DE RESPOSTAS DO USUÁRIO LOGADO
     // ---------------------------------------------------------------
 
-    /**
-     * Exibe o histórico de quiz do usuário logado.
-     */
     public function historico(): string
     {
         $cpf = session()->get('usuario_cpf');
         $model = new UsuarioModel();
 
-        $dados['historico'] = $model->historicoPorCpf($cpf);
-
-        return view('usuario/historico', $dados);
+        // Assumindo que você criará esse método no UsuarioModel depois (usaremos JOIN para buscar do BD)
+        return view('sistema/usuario/questoes/historico', [
+            'historico' => $model->historicoPorCpf($cpf),
+        ]);
     }
 }

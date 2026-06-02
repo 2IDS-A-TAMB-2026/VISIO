@@ -4,88 +4,88 @@ use CodeIgniter\Router\RouteCollection;
 
 /**
  * =====================================================================
- * VISIO — Rotas CodeIgniter 4
+ * VISIO — Rotas CodeIgniter 4 (Integradas com Banco de Dados)
  * =====================================================================
  *
  * @var RouteCollection $routes
  */
 
-// -----------------------------------------------------------------
-// HOME / PÁGINA INICIAL
-// -----------------------------------------------------------------
-$routes->get('/', 'InicioController::index');   // catálogo de sensores como página inicial
+// ----------------------------------------------------
+// PÁGINAS PÚBLICAS / INSTITUCIONAIS
+// ----------------------------------------------------
+$routes->get('/', 'InicioController::index');       // Catálogo de sensores (Página Inicial)
+$routes->get('/sobre', 'SobreController::index');   // Quem somos, informações do projeto
+$routes->get('/identificador', 'IdentificadorController::index');
 
-// -----------------------------------------------------------------
-// AUTENTICAÇÃO
-// -----------------------------------------------------------------
-$routes->get('/login', 'Auth::index');           // form login usuário
-$routes->post('/login', 'Auth::loginUsuario');    // processa login usuário
+// Catálogo de Sensores (Aberto ao público ler)
+$routes->get('/sensor', 'SensorController::index');
+$routes->get('/sensor/(:num)', 'SensorController::detalhe/$1');
 
-$routes->get('/login/admin', 'Auth::loginAdminForm');  // form login admin
-$routes->post('/login/admin', 'Auth::loginAdmin');      // processa login admin
+// ----------------------------------------------------
+// AUTENTICAÇÃO (LOGIN / LOGOUT / CADASTRO)
+// ----------------------------------------------------
+$routes->get('/login', 'AuthController::index');           // Form de login do usuário comum
+$routes->post('/login', 'AuthController::loginUsuario');    // Processa login do usuário comum
+$routes->get('/login/admin', 'AuthController::loginAdminForm'); // Form de login do Admin
+$routes->post('/login/admin', 'AuthController::loginAdmin');    // Processa login do Admin
+$routes->get('/logout', 'AuthController::logout');          // Encerra qualquer sessão ativa
 
-$routes->get('/logout', 'Auth::logout');          // encerra sessão
+$routes->get('/usuario/cadastro', 'UsuarioController::cadastroForm'); // Form de cadastro público
+$routes->post('/usuario/cadastro', 'UsuarioController::cadastrar');    // Processa o cadastro (Salva no BD)
 
-// -----------------------------------------------------------------
-// CADASTRO DE USUÁRIO (público)
-// -----------------------------------------------------------------
-$routes->get('/usuario/cadastro', 'Usuario::cadastroForm');  // formulário
-$routes->post('/usuario/cadastro', 'Usuario::cadastrar');     // processa
+// ----------------------------------------------------
+// ÁREA RESTRITA: USUÁRIO LOGADO
+// Aplica o filtro 'auth' para impedir acessos de deslogados
+// ----------------------------------------------------
+$routes->group('usuario', ['filter' => 'auth'], function ($routes) {
+    $routes->get('inicio', 'UsuarioController::inicio');
+    $routes->get('perfil', 'UsuarioController::perfil');
+    $routes->post('perfil', 'UsuarioController::atualizarPerfil');
+    $routes->get('historico', 'UsuarioController::historico');
+});
 
-// -----------------------------------------------------------------
-// ÁREA DO USUÁRIO LOGADO
-// -----------------------------------------------------------------
-$routes->get('/usuario/perfil', 'Usuario::perfil');         // exibe perfil
-$routes->post('/usuario/perfil', 'Usuario::atualizarPerfil'); // salva perfil
+// Quiz e Respostas (Apenas usuários logados)
+$routes->group('quiz', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'QuizController::index');
+    $routes->get('pergunta', 'QuizController::pergunta');
+    $routes->post('responder', 'QuizController::responder'); // Insere na tabela 'RESPONDE'
+    $routes->get('resultado', 'QuizController::resultado');
+});
 
-$routes->get('/usuario/historico', 'Usuario::historico');    // histórico de respostas
+$routes->group('resposta', ['filter' => 'auth'], function ($routes) {
+    $routes->get('historico', 'RespostaController::historico');
+    $routes->get('excluir/(:num)', 'RespostaController::excluir/$1');
+});
 
-// -----------------------------------------------------------------
-// CATÁLOGO DE SENSORES (público)
-// -----------------------------------------------------------------
-$routes->get('/sensor', 'SensorController::index');        // listagem
-$routes->get('/sensor/(:num)', 'SensorController::detalhe/$1');   // detalhe por ID
+// ----------------------------------------------------
+// ÁREA RESTRITA: PAINEL ADMINISTRATIVO (ADMIN)
+// Aplica o filtro 'adminAuth' para que apenas administradores entrem
+// ----------------------------------------------------
+$routes->group('admin', ['filter' => 'adminAuth'], function ($routes) {
 
-// -----------------------------------------------------------------
-// QUIZ (usuário logado)
-// -----------------------------------------------------------------
-$routes->get('/quiz', 'Quiz::index');          // inicia quiz
-$routes->get('/quiz/pergunta', 'Quiz::pergunta');       // exibe pergunta atual
-$routes->post('/quiz/responder', 'Quiz::responder');      // registra resposta
-$routes->get('/quiz/resultado', 'Quiz::resultado');      // exibe resultado final
+    // Dashboard Geral
+    $routes->get('dashboard', 'AdminController::dashboard');
 
-// -----------------------------------------------------------------
-// HISTÓRICO DE RESPOSTAS (usuário logado)
-// -----------------------------------------------------------------
-$routes->get('/resposta/historico', 'Resposta::historico');     // histórico
-$routes->get('/resposta/excluir/(:num)', 'Resposta::excluir/$1');    // remove registro
+    // Gestão de Usuários (Chave primária é o CPF, por isso (:any))
+    $routes->get('usuarios', 'AdminController::usuarios');
+    $routes->get('usuario/excluir/(:any)', 'AdminController::excluirUsuario/$1');
 
-// -----------------------------------------------------------------
-// PAINEL ADMINISTRATIVO
-// -----------------------------------------------------------------
+    // Gestão de Sensores (Inserção/Alteração no BD)
+    $routes->get('sensores', 'AdminController::sensores');
+    $routes->get('sensor/novo', 'AdminController::novoSensorForm');
+    $routes->post('sensor/inserir', 'AdminController::inserirSensor');
+    $routes->get('sensor/editar/(:num)', 'AdminController::editarSensorForm/$1');
+    $routes->post('sensor/atualizar/(:num)', 'AdminController::atualizarSensor/$1');
+    $routes->get('sensor/excluir/(:num)', 'AdminController::excluirSensor/$1');
 
-// Dashboard
-$routes->get('/admin/dashboard', 'Admin::dashboard');
+    // Gestão de Perguntas e Alternativas do Quiz
+    $routes->get('perguntas', 'AdminController::perguntas');
+    $routes->get('pergunta/nova', 'AdminController::novaPerguntaForm');
+    $routes->post('pergunta/inserir', 'AdminController::inserirPergunta');
+    $routes->get('pergunta/editar/(:num)', 'AdminController::editarPerguntaForm/$1');
+    $routes->post('pergunta/atualizar/(:num)', 'AdminController::atualizarPergunta/$1');
+    $routes->get('pergunta/excluir/(:num)', 'AdminController::excluirPergunta/$1');
 
-// Gestão de usuários
-$routes->get('/admin/usuarios', 'Admin::usuarios');
-$routes->get('/admin/usuario/excluir/(:any)', 'Admin::excluirUsuario/$1');
-
-// Gestão de sensores
-$routes->get('/admin/sensores', 'Admin::sensores');
-$routes->get('/admin/sensor/novo', 'Admin::novoSensorForm');
-$routes->post('/admin/sensor/inserir', 'Admin::inserirSensor');
-$routes->get('/admin/sensor/editar/(:num)', 'Admin::editarSensorForm/$1');
-$routes->post('/admin/sensor/atualizar/(:num)', 'Admin::atualizarSensor/$1');
-$routes->get('/admin/sensor/excluir/(:num)', 'Admin::excluirSensor/$1');
-
-// Gestão de perguntas e alternativas
-$routes->get('/admin/perguntas', 'Admin::perguntas');
-$routes->get('/admin/pergunta/nova', 'Admin::novaPerguntaForm');
-$routes->post('/admin/pergunta/inserir', 'Admin::inserirPergunta');
-$routes->get('/admin/pergunta/editar/(:num)', 'Admin::editarPerguntaForm/$1');
-$routes->post('/admin/pergunta/atualizar/(:num)', 'Admin::atualizarPergunta/$1');
-$routes->get('/admin/pergunta/excluir/(:num)', 'Admin::excluirPergunta/$1');
-
-// Histórico geral de respostas
-$routes->get('/admin/respostas', 'Admin::respostas');
+    // Relatórios / Histórico Geral de Respostas de todos os Alunos
+    $routes->get('respostas', 'AdminController::respostas');
+});

@@ -1,30 +1,37 @@
 <?php
+
 namespace App\Models;
 
 use CodeIgniter\Model;
 
 /**
  * AdminModel
- * Responsável por todas as operações da tabela ADMIN.
- * Chave primária: CNPJ (string, sem auto-increment).
+ * Responsável por todas as operações da tabela ADMIN no MySQL.
+ * Chave primária: CNPJ (string, sem auto-incremento).
  */
 class AdminModel extends Model
 {
-    protected $table = 'ADMIN'; // nome da tabela
-    protected $primaryKey = 'CNPJ'; // chave primária
+    protected $table = 'ADMIN';
+    protected $primaryKey = 'CNPJ';
     protected $useAutoIncrement = false;
+    protected $returnType = 'array'; // Garante o retorno em formato de array para o AuthController
 
     /**
      * Campos permitidos para INSERT/UPDATE
-     * Segurança contra inserção indevida
      */
     protected $allowedFields = [
-        // colunas na tabela ALUNOS do banco
         'CNPJ',
-        'NOME',
+        'NOME', // O admin continua com nome
         'EMAIL',
         'TELEFONE',
         'SENHA',
     ];
-}
 
+    /**
+     * Busca um administrador pelo e-mail para o sistema de login.
+     */
+    public function buscarPorEmail(string $email)
+    {
+        return $this->where('EMAIL', $email)->first();
+    }
+}

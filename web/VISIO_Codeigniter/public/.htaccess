@@ -1,49 +1,27 @@
-# Disable directory browsing
-Options -Indexes
+# ============================================================
+# VISIO — public/.htaccess
+# Redireciona todas as requisições para o index.php do CI4,
+# exceto arquivos e pastas que realmente existem (assets, imagens, etc.)
+# ============================================================
 
-# ----------------------------------------------------------------------
-# Rewrite engine
-# ----------------------------------------------------------------------
-
-# Turning on the rewrite engine is necessary for the following rules and features.
-# FollowSymLinks must be enabled for this to work.
 <IfModule mod_rewrite.c>
-	Options +FollowSymlinks
-	RewriteEngine On
+    RewriteEngine On
 
-	# If you installed CodeIgniter in a subfolder, you will need to
-	# change the following line to match the subfolder you need.
-	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
-	# RewriteBase /
+    # Garante que o caminho base está correto quando o projeto está em subpasta
+    # Exemplo: se acessar em localhost/visio/public/, descomentar a linha abaixo
+    # e ajustar o caminho:
+    # RewriteBase /visio/public/
 
-	# Redirect Trailing Slashes...
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_URI} (.+)/$
-	RewriteRule ^ %1 [L,R=301]
+    # Se o arquivo ou pasta realmente existe, serve diretamente (CSS, JS, imagens)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
 
-	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
-	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
-
-	# Checks to see if the user is attempting to access a valid file,
-	# such as an image or css document, if this isn't true it sends the
-	# request to the front controller, index.php
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
-
-	# Ensure Authorization header is passed along
-	RewriteCond %{HTTP:Authorization} .
-	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    # Caso contrário, envia para o index.php (roteador CI4)
+    RewriteRule ^(.*)$ index.php/$1 [L]
 </IfModule>
 
 <IfModule !mod_rewrite.c>
-	# If we don't have mod_rewrite installed, all 404's
-	# can be sent to index.php, and everything works as normal.
-	ErrorDocument 404 index.php
+    # Se mod_rewrite não estiver ativo, mostra mensagem de erro
+    # Ative no Apache: a2enmod rewrite  (ou no XAMPP: habilitar no httpd.conf)
+    ErrorDocument 404 "O módulo mod_rewrite do Apache não está ativo. Ative-o para usar o CI4."
 </IfModule>
-
-# Disable server signature start
-ServerSignature Off
-# Disable server signature end

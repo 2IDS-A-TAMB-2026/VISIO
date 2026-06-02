@@ -70,10 +70,10 @@ body.light {
     --color-bg-base: #f5f7fb;
     --color-bg-dark: #e4e7ec;
     --color-bg-card: #ffffff;
-    --color-bg-card-dark: #f0f2f5;
+    --color-bg-card-dark: #020321;
     --color-bg-card-alt: #fafafa;
     --color-bg-input: #ffffff;
-    --color-bg-sidebar: #ffffff;
+    --color-bg-sidebar: #11141d !important;
     --color-bg-status-item: #f1f3f6;
 
     /* === SUPERFÍCIES === */
@@ -84,10 +84,11 @@ body.light {
     --color-surface-btn-hover: #c7d2fe;
 
     /* === AZUL === */
-    --color-primary: #0077ff;
+    --color-primary: #ffffff;
     --color-primary-hover: #1d4ed8;
     --color-primary-dark: #1e40af;
     --color-primary-accent: #3b82f6;
+    --color-accent-adm: #3a86ff;
 
     /* === BOTÃO === */
     --color-btn-grad-a: #e0e7ff;
@@ -145,11 +146,16 @@ body {
 
 header {
     height: 70px;
-    background-color: var(--color-surface-dark);
     border-bottom: 1px solid var(--color-text-primary);
     display: flex;
     align-items: center;
     padding: 0 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #0f172a;
 }
 
 nav {
@@ -320,12 +326,14 @@ body.light .services::after {
 }
 
 .services .emp-card {
-    background: rgb(255, 255, 255);
+    background: rgb(17, 12, 12);
     border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: rgb(22, 22, 24);
 }
 
 .secao-video {
     min-height: 600px;
+    
 }
 
 .video-bg {
@@ -336,6 +344,7 @@ body.light .services::after {
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    
 }
 
 .container {
@@ -405,7 +414,7 @@ body.light .services::after {
     overflow: hidden;
     position: relative;
     aspect-ratio: 1 / 1;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 25px rgba(58, 60, 98, 0.744);
 }
 
 .card1:hover {
@@ -476,111 +485,6 @@ body.light .services::after {
     color: var(--color-text-primary);
 }
 
-.animated-button {
-    position: relative;
-    padding: 20px 40px;
-    margin: 12px;
-    display: inline-block;
-    overflow: hidden;
-    font-size: 20px;
-    letter-spacing: 2.5px;
-    text-align: center;
-    text-transform: uppercase;
-    text-decoration: none;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-}
-
-.animated-button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: 0.2s;
-}
-
-.animated-button:hover::before {
-    opacity: 0.2;
-}
-
-.animated-button span {
-    position: absolute;
-}
-
-.animated-button span:nth-child(1) {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    animation: animateTop 2s linear infinite;
-}
-
-.animated-button span:nth-child(2) {
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 2px;
-    animation: animateRight 2s linear -1s infinite;
-}
-
-.animated-button span:nth-child(3) {
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    animation: animateBottom 2s linear infinite;
-}
-
-.animated-button span:nth-child(4) {
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 2px;
-    animation: animateLeft 2s linear -1s infinite;
-}
-
-@keyframes animateTop {
-    0% {
-        transform: translateX(100%);
-    }
-
-    100% {
-        transform: translateX(-100%);
-    }
-}
-
-@keyframes animateRight {
-    0% {
-        transform: translateY(100%);
-    }
-
-    100% {
-        transform: translateY(-100%);
-    }
-}
-
-@keyframes animateBottom {
-    0% {
-        transform: translateX(-100%);
-    }
-
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-@keyframes animateLeft {
-    0% {
-        transform: translateY(-100%);
-    }
-
-    100% {
-        transform: translateY(100%);
-    }
-}
-
 .azul {
     background: linear-gradient(-30deg, var(--color-btn-grad-a) 50%, var(--color-btn-grad-b) 50%);
     color: var(--color-btn-grad-text);
@@ -611,95 +515,6 @@ body.light .services::after {
     background: var(--color-bg-base);
 }
 
-/*
-   CONTATO
-*/
-.contact {
-    padding: 100px 8%;
-    min-height: calc(100vh - 70px);
-}
-
-.contact-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 80px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.contact-info {
-    max-width: 500px;
-}
-
-.contact-info h1 {
-    font-size: 42px;
-    margin-bottom: 20px;
-}
-
-.contact-info p {
-    color: var(--color-text-soft);
-    margin-bottom: 40px;
-    line-height: 1.6;
-}
-
-.info-item {
-    margin-bottom: 20px;
-    font-size: 16px;
-}
-
-.info-item strong {
-    color: var(--color-text-primary);
-    display: block;
-    margin-bottom: 5px;
-}
-
-.contact-form {
-    background: var(--color-bg-card-alt);
-    padding: 40px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
-}
-
-.contact-form h2 {
-    margin-bottom: 25px;
-}
-
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    background: var(--color-bg-input);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-    border-radius: 5px;
-    outline: none;
-    transition: 0.3s;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-    border-color: var(--color-primary);
-}
-
-.contact-form button {
-    width: 100%;
-    padding: 14px;
-    background: var(--color-primary);
-    border: none;
-    color: var(--color-text-primary);
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: 0.3s;
-}
-
-.contact-form button:hover {
-    background: var(--color-primary-hover);
-    color: var(--color-text-primary);
-}
-
 /* 
    LOGIN
 */
@@ -724,6 +539,7 @@ body.light .services::after {
     border-radius: 12px;
     max-width: 450px;
     width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .login-form h1 {
@@ -816,6 +632,7 @@ body.light .services::after {
     border-radius: 8px;
     max-width: 450px;
     width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .signup-form h1 {
@@ -991,6 +808,7 @@ body.light .services::after {
 
 .titulo_sobre {
     text-align: center;
+    color: var(--color-primary);
 }
 
 .about-cards {
@@ -1148,7 +966,7 @@ video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: blur(2px);
+    /* filter: blur(2px); */
 }
 
 #result {
@@ -1502,11 +1320,12 @@ table select {
     background-color: #c0392b;
 }
 
-/*CARROSSEL*/
+/*carrossel*/
 .container-geral {
     max-width: 800px;
     margin: 0 auto;
     position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .carrossel {
@@ -1619,10 +1438,8 @@ table select {
         transform: scale(1);
     }
 
-    /* Apagada */
+    
 }
-
-/*FIM DO CARROSSEL*/
 
 .video-bg-sobre {
     position: fixed;
@@ -1751,7 +1568,7 @@ tbody tr:last-child td {
     flex: none;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 48px 5% 60px;
+    padding: 48px 10% 60px;
     width: 100%;
 }
 
@@ -2503,7 +2320,7 @@ body.light .direitos_reservados {
 /*TESTES DE FOOTER*/
 /* BASE */
 .footer {
-    background: #0f172a;
+    background: var(--color-bg-card-dark);
     color: #e2e8f0;
     padding: 50px 8%;
 }
@@ -2537,7 +2354,7 @@ body.light .direitos_reservados {
 
 /* TEXTO */
 .brand-text h2 {
-    color: white;
+    color: white !important;
     margin-bottom: 5px;
 }
 
@@ -2555,7 +2372,7 @@ body.light .direitos_reservados {
 /* LINKS */
 .footer-links h3,
 .footer-contact h3 {
-    color: white;
+    color: white !important;
     margin-bottom: 10px;
 }
 
@@ -2587,6 +2404,7 @@ body.light .direitos_reservados {
 /* REDES */
 .social {
     margin-top: 10px;
+
 }
 
 .social i {
@@ -2597,6 +2415,10 @@ body.light .direitos_reservados {
 
 .social i:hover {
     color: #3a86ff;
+}
+
+.social a {
+    text-decoration: none;
 }
 
 /* FINAL */
@@ -2618,7 +2440,7 @@ body.light .direitos_reservados {
 
 /* O Footer em si */
 .rodape {
-    background-color: #000000;
+    background-color: var(--color-bg-card);
     padding: 60px 0 30px 0;
     border-top: 1px solid #eee;
     font-family: 'Inter', sans-serif;
@@ -2778,3 +2600,707 @@ input[type="file"] {
     z-index: 2;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
+
+body.light .data-card,
+body.light .emp-card,
+body.light .card,
+body.light .card1,
+body.light .about-card,
+body.light .contact-form,
+body.light .login-form,
+body.light .signup-form,
+body.light .forgot-form,
+body.light .adm-form-card,
+body.light .table-wrapper {
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border-color: var(--color-border);
+}
+
+/* === CORREÇÃO DE CORES FIXAS PARA O TEMA CLARO === */
+
+/* HEADER - Estava fixo em um azul escuro, agora adapta */
+header {
+    background-color: var(--color-bg-sidebar);
+    /* Usa a variável correta */
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Services - O texto_forçado branco não funcionava no modo claro */
+.services .title,
+.services .emp-card h3,
+.services .emp-card p {
+    color: var(--color-text-primary);
+    /* Usa a variável (Preto no claro, Branco no escuro) */
+}
+
+.services::after {
+    /* O overlay escuro precisa ser mais forte no tema claro para garantir legibilidade */
+    background: rgba(0, 0, 0, 0.6);
+}
+
+body.light .services::after {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+body.light .intro h1 {
+    color: var(--color-text-primary);
+}
+
+body.light .intro p {
+    color: var(--color-text-muted);
+}
+
+body.light .title2 {
+    color: var(--color-text-primary);
+}
+
+/* BOTÃO DA PÁGINA EMPREENDEDOR */
+body.light .emp-btn {
+    background: linear-gradient(45deg, #3b82f6, #60a5fa);
+    /* Azul claro mais suave */
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+/* FOOTER (RODAPÉ) */
+body.light .rodape {
+    background-color: var(--color-bg-card-dark);
+    border-top: 1px solid var(--color-border);
+}
+
+body.light .footer-left,
+body.light .footer-right {
+    color: var(--color-text-primary);
+}
+
+body.light .brand-text p {
+    color: var(--color-text-muted);
+}
+
+/* VIDEO BACKGROUND FIXO */
+body.light .video-container {
+    background: #000;
+    /* Fundo preto atrás do vídeo para contraste */
+}
+
+/* CARDS DA HOME (Coração do problema) */
+body.light .card1,
+body.light .card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    /* Sombra mais suave para modo claro */
+}
+
+
+body.light .card:hover {
+    background: var(--color-surface-card-hover);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Ícones e Texto nos Cards */
+body.light .emp-icon {
+    background: var(--color-accent-adm);
+    /* Azul padrão */
+    color: #fff;
+}
+
+body.light .emp-card h3 {
+    color: var(--color-text-primary);
+}
+
+body.light .emp-card p {
+    color: var(--color-text-muted);
+}
+
+/* ── Hamburger menu ── */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+    z-index: 1100;
+    flex-shrink: 0;
+}
+
+.hamburger:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.light .hamburger:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background-color: var(--color-text-primary);
+    border-radius: 4px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Animação hambúrguer → X */
+.hamburger.aberto span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+
+.hamburger.aberto span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger.aberto span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ── Skip link ── */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 0 0 8px 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    z-index: 9999;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ── Foco visível (acessibilidade teclado) ── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ── Alto contraste ── */
+body.high-contrast,
+body.high-contrast * {
+    background: black !important;
+    color: yellow !important;
+    border-color: yellow !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast img {
+    filter: grayscale(100%) contrast(120%);
+}
+
+body.high-contrast #theme-toggle {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ================================================================
+   MOBILE — ≤ 768px
+   ================================================================ */
+@media (max-width: 768px) {
+
+    /* Mostra o hambúrguer */
+    .hamburger {
+        display: flex;
+    }
+
+    /* Nav links somem por padrão; aparecem quando .aberta é adicionada via JS */
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--color-bg-sidebar);
+        border-bottom: 1px solid var(--color-border);
+        padding: 12px 16px 20px;
+        z-index: 1050;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-links.aberta {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 4px 0;
+        margin-left: 0;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 12px 16px;
+    }
+
+    /* Login / Cadastro: oculta a imagem lateral */
+    .login-image,
+    .signup-image,
+    .forgot-image {
+        display: none;
+    }
+
+    .login-container,
+    .signup-container,
+    .forgot-container {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Footer empilhado */
+    .footer-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 28px;
+    }
+
+    .footer-right {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Painel de acessibilidade */
+    #accessibility-panel {
+        right: 8px;
+        left: 8px;
+        width: auto;
+        top: 74px;
+    }
+}
+
+/* ================================================================
+   MOBILE PEQUENO — ≤ 480px
+   ================================================================ */
+@media (max-width: 480px) {
+
+    .sensores-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .login-form,
+    .signup-form {
+        padding: 28px 20px;
+    }
+
+    .linha-vertical {
+        display: none;
+    }
+}
+
+
+/* ================================================================
+   CORREÇÕES DE FONTE E MODO CLARO — VISIO
+   ================================================================
+
+   PROBLEMA 1 — Escalamento de fonte:
+     O JS do painel de acessibilidade faz  document.body.style.fontSize = '18px'.
+     Elementos com font-size em px ABSOLUTO ignoram isso.
+     Aqui convertemos os principais para em (relativo ao body),
+     então quando o body muda, eles escalam junto.
+
+   PROBLEMA 2 — Modo claro com texto branco:
+     No tema claro, --color-primary: #ffffff (branco).
+     Vários elementos usam essa variável como background, gerando
+     botões brancos com texto branco — invisíveis.
+     Também há cores hardcoded (#fff, white) no footer e nav.
+   ================================================================ */
+
+
+/* ---------------------------------------------------------------
+   1. ESCALAMENTO DE FONTE — converte px fixo para em
+      1em = tamanho atual do body (padrão 16px, sobe/desce via JS)
+   --------------------------------------------------------------- */
+
+h1 {
+    font-size: 2.8em;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+h3 {
+    font-size: 1.4em;
+}
+
+h4 {
+    font-size: 1.15em;
+}
+
+p,
+li,
+td,
+th,
+label,
+.nav-links a,
+button,
+input,
+select,
+textarea {
+    font-size: 1em;
+}
+
+/* Ajustes específicos para não distorcer proporções */
+.number {
+    font-size: 2.2em;
+}
+
+.pergunta {
+    font-size: 1.35em;
+}
+
+.opcao {
+    font-size: 1.1em;
+}
+
+.title {
+    font-size: 2.4em;
+}
+
+.title2 {
+    font-size: 2.6em;
+}
+
+.textinhocar {
+    font-size: 1.8em;
+}
+
+.adm-page-title {
+    font-size: 1.6em;
+}
+
+.sensores-page-title {
+    font-size: 1.9em;
+}
+
+.questoes-titulo {
+    font-size: 1.6em;
+}
+
+.intro h1 {
+    font-size: 2.8em;
+}
+
+.intro p {
+    font-size: 1.05em;
+}
+
+.about-card h2 {
+    font-size: 1.5em;
+}
+
+.about-card p,
+.about-card ul {
+    font-size: 0.95em;
+}
+
+.login-form h1,
+.signup-form h1,
+.forgot-form h1 {
+    font-size: 2em;
+}
+
+.card h3,
+.card1 h3 {
+    font-size: 1.15em;
+}
+
+.card p,
+.card1 p {
+    font-size: 0.9em;
+}
+
+.overlay h3 {
+    font-size: 1.25em;
+}
+
+.overlay p {
+    font-size: 0.9em;
+}
+
+.brand-text h2 {
+    font-size: 1.2em;
+}
+
+.footer-links a {
+    font-size: 0.9em;
+}
+
+.footer-bottom {
+    font-size: 0.85em;
+}
+
+.card-title {
+    font-size: 0.85em;
+}
+
+.trend {
+    font-size: 0.8em;
+}
+
+.lista-sub {
+    font-size: 0.85em;
+}
+
+.quiz-meta {
+    font-size: 0.8em;
+}
+
+.ident-circuito {
+    font-size: 0.85em;
+}
+
+.contato-feedback {
+    font-size: 0.9em;
+}
+
+.erro {
+    font-size: 0.82em;
+}
+
+.lista h1 {
+    font-size: 1.8em;
+}
+
+.menu a {
+    font-size: 0.88em;
+}
+
+
+/* ---------------------------------------------------------------
+   2. MODO CLARO — correções de contraste
+
+   Raiz do problema:
+     --color-primary: #ffffff em body.light
+     Isso torna botões/links invisíveis (branco sobre branco).
+     Solução: sobrescreve os elementos que usam a var como background.
+   --------------------------------------------------------------- */
+
+/* ── Navegação ── */
+/* Nav link: --color-primary é branco no claro → azul real */
+body.light .nav-links a {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+body.light .nav-links a:hover {
+    background-color: #1d4ed8;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+/* ── Footer — títulos hardcoded em branco ── */
+body.light .brand-text h2 {
+    color: var(--color-text-primary);
+}
+
+body.light .footer-links h3,
+body.light .footer-contact h3,
+body.light .dados_contato h3 {
+    color: var(--color-text-primary);
+}
+
+body.light .footer-contact p,
+body.light .footer-bottom,
+body.light .slogan_footer {
+    color: var(--color-text-muted);
+}
+
+body.light .footer-links a {
+    color: var(--color-text-muted);
+}
+
+body.light .footer-links a:hover {
+    color: #2563eb;
+}
+
+body.light .social i,
+body.light .footer-contact i,
+body.light .linha-vertical {
+    color: #2563eb;
+    background: #2563eb;
+    /* para a linha-vertical que usa background */
+}
+
+/* ── Tabelas ── */
+body.light th {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+body.light td {
+    color: var(--color-text-primary);
+}
+
+body.light tr:hover td {
+    color: var(--color-text-primary);
+}
+
+/* ── Botões de ação: usam --color-primary (branco no claro) ── */
+body.light .btn-salvar,
+body.light .btn-login-adm,
+body.light .lista-btn-novo,
+body.light .identificador-btn,
+body.light .btn_confirmar,
+body.light .animated-button,
+body.light .emp-btn {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+body.light .btn-salvar:hover,
+body.light .btn-login-adm:hover,
+body.light .lista-btn-novo:hover,
+body.light .identificador-btn:hover,
+body.light .btn_confirmar:hover {
+    background-color: #1d4ed8;
+    color: #ffffff;
+}
+
+/* ── Formulários de login/cadastro — inputs e textos ── */
+body.light .login-form h1,
+body.light .signup-form h1,
+body.light .forgot-form h1,
+body.light .contact-info h1 {
+    color: var(--color-text-primary);
+}
+
+body.light .login-form button,
+body.light .signup-form button,
+body.light .forgot-form button,
+body.light .contact-form button {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+body.light .login-form button:hover,
+body.light .signup-form button:hover,
+body.light .forgot-form button:hover,
+body.light .contact-form button:hover {
+    background-color: #1d4ed8;
+    color: #ffffff;
+}
+
+/* ── Sensores ── */
+body.light .cardi h3 {
+    color: var(--color-text-primary);
+}
+
+body.light .cardi p {
+    color: var(--color-text-muted);
+}
+
+/* ── Painel admin ── */
+body.light .adm-page-title {
+    color: var(--color-text-primary);
+}
+
+body.light .card-title,
+body.light .lista-sub,
+body.light .adm-form-card label,
+body.light .form-section-label {
+    color: var(--color-text-muted);
+}
+
+body.light .number {
+    color: var(--color-text-primary);
+}
+
+body.light .menu a {
+    color: var(--color-text-muted);
+}
+
+body.light .menu a:hover,
+body.light .menu a.active {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+}
+
+/* ── Feedback ── */
+body.light .contato-feedback--ok {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #15803d;
+}
+
+body.light .contato-feedback--erro {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #dc2626;
+}
+
+body.light .lista-feedback.ok {
+    background: #dcfce7;
+    border-color: #16a34a;
+    color: #15803d;
+}
+
+/* ── Quiz ── */
+body.light .quiz-card {
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+}
+
+body.light .pergunta {
+    color: var(--color-text-primary);
+}
+
+body.light .custom-radio {
+    background-color: var(--color-text-muted);
+}
+
+body.light .opcao input:checked+.custom-radio {
+    background-color: var(--color-bg-card);
+    border-color: #2563eb;
+}
+
+/* ── Overlay de cards: usa --color-bg-base (que no claro é quase branco) ── */
+body.light .overlay {
+    background: linear-gradient(transparent, var(--color-bg-card));
+}
+
+body.light .overlay h3,
+body.light .overlay p {
+    color: var(--color-text-primary);
+}
+
+/* ── Identificador ── */
+body.light .identificador-resultado {
+    background: var(--color-bg-card);
+    color: var(--color-text-soft);
+    border-color: var(--color-border);
+}
+
+/* ── Navbar links no header fixo ── */
+body.light header {
+    background-color: var(--color-bg-sidebar);
+    border-bottom-color: var(--color-border);
+}
+
+
+
+
+
+
+/*HR*/
+

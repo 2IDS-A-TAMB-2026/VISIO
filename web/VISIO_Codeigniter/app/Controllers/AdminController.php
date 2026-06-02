@@ -10,56 +10,23 @@ use App\Models\AlternativaModel;
 use App\Models\RespondeModel;
 
 /**
- * Admin
- * Painel administrativo. Todas as rotas exigem sessão de admin ativa.
- * A verificação de sessão é feita no construtor via initController.
- *
- * Rotas esperadas:
- *   GET  /admin/dashboard
- *   GET  /admin/usuarios
- *   GET  /admin/usuario/excluir/(:cpf)
- *   GET  /admin/sensores          → lista
- *   GET  /admin/sensor/novo       → form
- *   POST /admin/sensor/inserir    → salva
- *   GET  /admin/sensor/editar/(:id)
- *   POST /admin/sensor/atualizar/(:id)
- *   GET  /admin/sensor/excluir/(:id)
- *   GET  /admin/perguntas         → lista
- *   GET  /admin/pergunta/nova
- *   POST /admin/pergunta/inserir
- *   GET  /admin/pergunta/editar/(:id)
- *   POST /admin/pergunta/atualizar/(:id)
- *   GET  /admin/pergunta/excluir/(:id)
- *   GET  /admin/respostas         → histórico geral
+ * AdminController
+ * Painel administrativo. Todas as rotas são protegidas pelo filtro 'adminAuth'.
  */
-class Admin extends BaseController
+class AdminController extends BaseController
 {
-    // Verificação de sessão admin em toda requisição
-    public function initController(
-        \CodeIgniter\HTTP\RequestInterface $request,
-        \CodeIgniter\HTTP\ResponseInterface $response,
-        \Psr\Log\LoggerInterface $logger
-    ) {
-        parent::initController($request, $response, $logger);
-
-        if (!session()->get('admin_logado')) {
-            header('Location: ' . base_url('/login/admin'));
-            exit;
-        }
-    }
-
     // ---------------------------------------------------------------
     // DASHBOARD
     // ---------------------------------------------------------------
 
     public function dashboard(): string
     {
-        $dados['total_usuarios'] = (new UsuarioModel())->countAll();
-        $dados['total_sensores'] = (new SensorModel())->countAll();
-        $dados['total_perguntas'] = (new PerguntaModel())->countAll();
-        $dados['total_respostas'] = (new RespondeModel())->countAll();
-
-        return view('admin/dashboard', $dados);
+        return view('sistema/admin/login_adm', [
+            'total_usuarios' => (new UsuarioModel())->countAllResults(), // countAllResults é nativo do CI4
+            'total_sensores' => (new SensorModel())->countAllResults(),
+            'total_perguntas' => (new PerguntaModel())->countAllResults(),
+            'total_respostas' => (new RespondeModel())->countAllResults(),
+        ]);
     }
 
     // ---------------------------------------------------------------
@@ -68,15 +35,16 @@ class Admin extends BaseController
 
     public function usuarios(): string
     {
-        $dados['usuarios'] = (new UsuarioModel())->listar();
-        return view('admin/usuarios/index', $dados);
+        return view('sistema/admin/usuarios/index', [
+            'usuarios' => (new UsuarioModel())->findAll(), // findAll() é nativo do CI4
+        ]);
     }
 
     public function excluirUsuario(string $cpf)
     {
-        (new UsuarioModel())->excluir($cpf);
+        (new UsuarioModel())->delete($cpf); // delete() é nativo do CI4
         return redirect()->to('/admin/usuarios')
-            ->with('sucesso', 'Usuário removido.');
+            ->with('sucesso', 'Usuário removido com sucesso.');
     }
 
     // ---------------------------------------------------------------
@@ -85,13 +53,14 @@ class Admin extends BaseController
 
     public function sensores(): string
     {
-        $dados['sensores'] = (new SensorModel())->listar();
-        return view('admin/sensores/index', $dados);
+        return view('sistema/admin/c_sensor/index', [
+            'sensores' => (new SensorModel())->findAll(),
+        ]);
     }
 
     public function novoSensorForm(): string
     {
-        return view('admin/sensores/novo');
+        return view('sistema/admin/c_sensor/novo_sensor');
     }
 
     public function inserirSensor()
@@ -105,27 +74,28 @@ class Admin extends BaseController
             $foto = 'uploads/sensores/' . $novoNome;
         }
 
-        (new SensorModel())->inserir([
+        // CORREÇÃO: Removido 'CIRCUITO' e adicionado 'NOME' (alinhado com o Banco de Dados)
+        (new SensorModel())->insert([
+            'NOME' => $this->request->getPost('nome'),
             'DESCRICAO' => $this->request->getPost('descricao'),
-            'CIRCUITO' => $this->request->getPost('circuito'),
             'FOTO' => $foto,
         ]);
 
         return redirect()->to('/admin/sensores')
-            ->with('sucesso', 'Sensor cadastrado.');
+            ->with('sucesso', 'Sensor cadastrado com sucesso.');
     }
 
     public function editarSensorForm(int $id): string
     {
-        $dados['sensor'] = (new SensorModel())->buscarPorId($id);
-        return view('admin/sensores/editar', $dados);
+        return view('sistema/admin/c_sensor/editar_sensor', [
+            'sensor' => (new SensorModel())->find($id),
+        ]);
     }
 
     public function atualizarSensor(int $id)
     {
         $model = new SensorModel();
-        $sensor = $model->buscarPorId($id);
-
+        $sensor = $model->find($id);
         $foto = $sensor['FOTO'] ?? '';
 
         $arquivo = $this->request->getFile('foto');
@@ -135,36 +105,38 @@ class Admin extends BaseController
             $foto = 'uploads/sensores/' . $novoNome;
         }
 
-        $model->atualizar($id, [
+        // CORREÇÃO: Removido 'CIRCUITO' e adicionado 'NOME'
+        $model->update($id, [
+            'NOME' => $this->request->getPost('nome'),
             'DESCRICAO' => $this->request->getPost('descricao'),
-            'CIRCUITO' => $this->request->getPost('circuito'),
             'FOTO' => $foto,
         ]);
 
         return redirect()->to('/admin/sensores')
-            ->with('sucesso', 'Sensor atualizado.');
+            ->with('sucesso', 'Sensor atualizado com sucesso.');
     }
 
     public function excluirSensor(int $id)
     {
-        (new SensorModel())->excluir($id);
+        (new SensorModel())->delete($id);
         return redirect()->to('/admin/sensores')
             ->with('sucesso', 'Sensor removido.');
     }
 
     // ---------------------------------------------------------------
-    // GESTÃO DE PERGUNTAS
+    // GESTÃO DE PERGUNTAS E ALTERNATIVAS
     // ---------------------------------------------------------------
 
     public function perguntas(): string
     {
-        $dados['perguntas'] = (new PerguntaModel())->listarComAlternativas();
-        return view('admin/perguntas/index', $dados);
+        return view('sistema/admin/c_questoes/index', [
+            'perguntas' => (new PerguntaModel())->listarComAlternativas(), // Necessita método no Model
+        ]);
     }
 
     public function novaPerguntaForm(): string
     {
-        return view('admin/perguntas/nova');
+        return view('sistema/admin/c_questoes/nova_questao');
     }
 
     public function inserirPergunta()
@@ -172,13 +144,14 @@ class Admin extends BaseController
         $perguntaModel = new PerguntaModel();
         $alternativaModel = new AlternativaModel();
 
-        $idPergunta = $perguntaModel->inserir([
+        // CI4 retorna o ID inserido automaticamente se a chave primária for AUTO_INCREMENT
+        $idPergunta = $perguntaModel->insert([
             'DESCRICAO' => $this->request->getPost('descricao'),
             'NIVEL_DIFICULDADE' => $this->request->getPost('nivel_dificuldade'),
         ]);
 
         if ($idPergunta) {
-            $correta = $this->request->getPost('correta'); // 'a', 'b', 'c' ou 'd'
+            $correta = $this->request->getPost('correta');
             $alternativas = [
                 ['letra' => 'a', 'texto' => $this->request->getPost('alt_a')],
                 ['letra' => 'b', 'texto' => $this->request->getPost('alt_b')],
@@ -190,22 +163,24 @@ class Admin extends BaseController
             foreach ($alternativas as $alt) {
                 $lote[] = [
                     'DESCRICAO' => $alt['texto'],
-                    'CORRETA_ERRADA' => ($alt['letra'] === $correta) ? 1 : 0,
+                    'IS_CORRETA' => ($alt['letra'] === $correta) ? 1 : 0, // CORREÇÃO DO NOME DA COLUNA
                     'FK_ID_PERGUNTA' => $idPergunta,
                 ];
             }
 
-            $alternativaModel->inserirLote($lote);
+            // Usando o método nativo do CI4 para inserir múltiplos registros de uma vez
+            $alternativaModel->insertBatch($lote);
         }
 
         return redirect()->to('/admin/perguntas')
-            ->with('sucesso', 'Pergunta cadastrada com suas alternativas.');
+            ->with('sucesso', 'Pergunta e alternativas cadastradas com sucesso.');
     }
 
     public function editarPerguntaForm(int $id): string
     {
-        $dados['pergunta'] = (new PerguntaModel())->buscarComAlternativas($id);
-        return view('admin/perguntas/editar', $dados);
+        return view('sistema/admin/c_questoes/editar_questao', [
+            'pergunta' => (new PerguntaModel())->buscarComAlternativas($id),
+        ]);
     }
 
     public function atualizarPergunta(int $id)
@@ -213,37 +188,35 @@ class Admin extends BaseController
         $perguntaModel = new PerguntaModel();
         $alternativaModel = new AlternativaModel();
 
-        $perguntaModel->atualizar($id, [
+        $perguntaModel->update($id, [
             'DESCRICAO' => $this->request->getPost('descricao'),
             'NIVEL_DIFICULDADE' => $this->request->getPost('nivel_dificuldade'),
         ]);
 
-        // Atualiza cada alternativa individualmente via ID
-        $idsAlternativas = $this->request->getPost('id_alternativa');  // array
-        $textos = $this->request->getPost('alternativa');      // array
-        $correta = $this->request->getPost('correta');          // ID da alternativa correta
+        $idsAlternativas = $this->request->getPost('id_alternativa');
+        $textos = $this->request->getPost('alternativa');
+        $correta = $this->request->getPost('correta');
 
         if (is_array($idsAlternativas)) {
             foreach ($idsAlternativas as $i => $idAlt) {
-                $alternativaModel->atualizar((int) $idAlt, [
+                $alternativaModel->update((int) $idAlt, [
                     'DESCRICAO' => $textos[$i],
-                    'CORRETA_ERRADA' => ($idAlt == $correta) ? 1 : 0,
+                    'IS_CORRETA' => ($idAlt == $correta) ? 1 : 0, // CORREÇÃO DO NOME DA COLUNA
                 ]);
             }
         }
 
         return redirect()->to('/admin/perguntas')
-            ->with('sucesso', 'Pergunta atualizada.');
+            ->with('sucesso', 'Pergunta atualizada com sucesso.');
     }
 
     public function excluirPergunta(int $id)
     {
-        // Remove alternativas vinculadas primeiro
-        (new AlternativaModel())->excluirPorPergunta($id);
-        (new PerguntaModel())->excluir($id);
+        // OTIMIZAÇÃO: O MySQL cuidará de apagar as alternativas por causa do ON DELETE CASCADE
+        (new PerguntaModel())->delete($id);
 
         return redirect()->to('/admin/perguntas')
-            ->with('sucesso', 'Pergunta e alternativas removidas.');
+            ->with('sucesso', 'Pergunta e alternativas removidas com sucesso.');
     }
 
     // ---------------------------------------------------------------
@@ -252,7 +225,8 @@ class Admin extends BaseController
 
     public function respostas(): string
     {
-        $dados['respostas'] = (new RespondeModel())->listarComDetalhes();
-        return view('admin/respostas/index', $dados);
+        return view('sistema/admin/c_questoes_2/index', [
+            'respostas' => (new RespondeModel())->listarComDetalhes(), // Necessita método no Model com JOIN
+        ]);
     }
 }

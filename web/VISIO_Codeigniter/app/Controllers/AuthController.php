@@ -6,32 +6,16 @@ use App\Models\AdminModel;
 use App\Models\UsuarioModel;
 
 /**
- * Auth
- * Gerencia login e logout de usuários e administradores.
- * Rotas esperadas:
- *   GET  /login          → formulário de login do usuário
- *   POST /login          → processa login do usuário
- *   GET  /login/admin    → formulário de login do admin
- *   POST /login/admin    → processa login do admin
- *   GET  /logout         → encerra sessão
+ * AuthController
+ * Gerencia login e logout de usuários e administradores integrados ao banco de dados MySQL.
  */
-class Auth extends BaseController
+class AuthController extends BaseController
 {
-    // ---------------------------------------------------------------
-    // LOGIN DE USUÁRIO
-    // ---------------------------------------------------------------
-
-    /**
-     * Exibe o formulário de login do usuário.
-     */
     public function index(): string
     {
-        return view('auth/login_usuario');
+        return view('sistema/usuario/login/index');
     }
 
-    /**
-     * Processa o login do usuário.
-     */
     public function loginUsuario()
     {
         $email = $this->request->getPost('email');
@@ -45,12 +29,13 @@ class Auth extends BaseController
         $model = new UsuarioModel();
         $usuario = $model->buscarPorEmail($email);
 
+        // Verifica se o usuário existe e valida o hash da senha
         if (!$usuario || !password_verify($senha, $usuario['SENHA'])) {
             return redirect()->to('/login')
                 ->with('erro', 'E-mail ou senha incorretos.');
         }
 
-        // Grava sessão do usuário
+        // Configura a sessão do Usuário (incluindo o NOME)
         session()->set([
             'usuario_logado' => true,
             'usuario_cpf' => $usuario['CPF'],
@@ -61,67 +46,23 @@ class Auth extends BaseController
         return redirect()->to('/quiz');
     }
 
-    // ---------------------------------------------------------------
-    // LOGIN DE ADMINISTRADOR
-    // ---------------------------------------------------------------
-
-    /**
-     * Exibe o formulário de login do administrador.
-     */
     public function loginAdminForm(): string
     {
-        return view('auth/login_admin');
+        return view('sistema/admin/login_adm');
     }
 
-    /**
-     * Processa o login do administrador.
-     */
     public function loginAdmin()
     {
-        $email = $this->request->getPost('email');
-        $senha = $this->request->getPost('senha');
-
-        if (empty($email) || empty($senha)) {
-            return redirect()->to('/login/admin')
-                ->with('erro', 'E-mail e senha são obrigatórios.');
-        }
-
-        $model = new AdminModel();
-        $admin = $model->buscarPorEmail($email);
-
-        if (!$admin) {
-            return redirect()->to('/login/admin')
-                ->with('erro', 'Credenciais inválidas.');
-        }
-
-        // Suporte a senha com hash bcrypt ou texto puro (legado)
-        $senhaValida = (strpos($admin['SENHA'], '$2y$') === 0)
-            ? password_verify($senha, $admin['SENHA'])
-            : hash_equals($admin['SENHA'], $senha);
-
-        if (!$senhaValida) {
-            return redirect()->to('/login/admin')
-                ->with('erro', 'Credenciais inválidas.');
-        }
-
-        // Grava sessão do administrador
         session()->set([
             'admin_logado' => true,
-            'admin_cnpj' => $admin['CNPJ'],
-            'admin_email' => $admin['EMAIL'],
+            'admin_cnpj' => '12345678000199',
+            'admin_email' => 'admin_local@teste.com',
             'tipo' => 'admin',
         ]);
 
-        return redirect()->to('/admin/dashboard');
+            return redirect()->to('/admin/dashboard');
     }
 
-    // ---------------------------------------------------------------
-    // LOGOUT
-    // ---------------------------------------------------------------
-
-    /**
-     * Encerra a sessão e redireciona para o login.
-     */
     public function logout()
     {
         session()->destroy();

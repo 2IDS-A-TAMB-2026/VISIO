@@ -16,7 +16,7 @@ use App\Models\RespondeModel;
  *   POST /quiz/responder → registra a resposta e avança
  *   GET  /quiz/resultado → exibe o resultado final
  */
-class Quiz extends BaseController
+class QuizController extends BaseController
 {
     // Verifica sessão de usuário em toda requisição
     public function initController(

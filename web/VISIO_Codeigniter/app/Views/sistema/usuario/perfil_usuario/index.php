@@ -36,7 +36,7 @@
     }
   </style>
 </head>
-<body>
+
   <div class="app-container">
     
     <div class="adm-main-area">
@@ -132,6 +132,5 @@
       });
     })();
   </script>
-  <script src="JS/theme.js"></script>
-</body>
+
 <?= view('sistema/layout/footer') ?>

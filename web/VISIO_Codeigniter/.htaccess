@@ -1,0 +1,11 @@
+# ============================================================
+# VISIO — .htaccess (raiz do projeto)
+#
+# Redireciona tudo para a pasta public/ onde fica o index.php do CI4.
+# Coloque este arquivo NA RAIZ do projeto (mesmo nível que app/ e public/).
+# ============================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

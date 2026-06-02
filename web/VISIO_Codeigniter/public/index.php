@@ -1,59 +1,28 @@
 <?php
 
+/**
+ * CodeIgniter 4.5+ — Front Controller
+ *
+ * CORREÇÃO: a versão 4.5 do CI4 removeu o arquivo system/bootstrap.php.
+ * O novo formato usa CodeIgniter\Boot::bootWeb() em vez do bootstrap antigo.
+ *
+ * Se você estava usando o index.php antigo, este é o erro que aparecia:
+ *   "This system/bootstrap.php is no longer used..."
+ */
+
 use CodeIgniter\Boot;
-use Config\Paths;
 
-/*
- *---------------------------------------------------------------
- * CHECK PHP VERSION
- *---------------------------------------------------------------
- */
-
-$minPhpVersion = '8.2'; // If you update this, don't forget to update `spark`.
-if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
-    $message = sprintf(
-        'Your PHP version must be %s or higher to run CodeIgniter. Current version: %s',
-        $minPhpVersion,
-        PHP_VERSION,
-    );
-
-    header('HTTP/1.1 503 Service Unavailable.', true, 503);
-    echo $message;
-
-    exit(1);
-}
-
-/*
- *---------------------------------------------------------------
- * SET THE CURRENT DIRECTORY
- *---------------------------------------------------------------
- */
-
-// Path to the front controller (this file)
+// Caminho absoluto desta pasta (public/)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
-// Ensure the current directory is pointing to the front controller's directory
-if (getcwd() . DIRECTORY_SEPARATOR !== FCPATH) {
-    chdir(FCPATH);
-}
+// Carrega o autoloader do Composer (vendor/autoload.php)
+// O vendor/ fica um nível acima de public/ (na raiz do projeto)
+require FCPATH . '../vendor/autoload.php';
 
-/*
- *---------------------------------------------------------------
- * BOOTSTRAP THE APPLICATION
- *---------------------------------------------------------------
- * This process sets up the path constants, loads and registers
- * our autoloader, along with Composer's, loads our constants
- * and fires up an environment-specific bootstrapping.
- */
-
-// LOAD OUR PATHS CONFIG FILE
-// This is the line that might need to be changed, depending on your folder structure.
+// Carrega o arquivo de paths da aplicação
 require FCPATH . '../app/Config/Paths.php';
-// ^^^ Change this line if you move your application folder
 
-$paths = new Paths();
+$paths = new Config\Paths();
 
-// LOAD THE FRAMEWORK BOOTSTRAP FILE
-require $paths->systemDirectory . '/Boot.php';
-
-exit(Boot::bootWeb($paths));
+// CI4 4.5+: inicializa a aplicação web
+Boot::bootWeb($paths);
