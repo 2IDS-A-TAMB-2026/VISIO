@@ -79,7 +79,7 @@ Plataforma para identificação de sensores IOT
 
 
   ## MER
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/der.png" width="700">
+  <img src="[https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/der.png](https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/MER_VISIO.jpg?raw=true)" width="700">
 
   ## DER
   <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/banco/DER_VISIO.jpg" width="700">
