@@ -88,7 +88,7 @@ Plataforma para identificação de sensores IOT
   <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/diagrama_casos_uso.png" width="700">
 
   ## DIAGRAMA DE FLUXO
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Captura de tela 2026-06-08 101518.png" width="500">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Captura de tela 2026-06-08 101518.png" width="700">
 
   ## DIAGRAMA DE CLASSES
   <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Diagrama_de_Classes_VISIO.png" width="700">
@@ -218,7 +218,7 @@ Platform for identification of IOT sensors
   <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/diagrama_casos_uso.png" width="700">
 
   ## FLOW DIAGRAM
-  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Captura de tela 2026-06-08 101518.png" width="500">
+  <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Captura de tela 2026-06-08 101518.png" width="700">
 
   ## CLASS DIAGRAM
   <img src="https://github.com/2IDS-A-TAMB-2026/VISIO/blob/main/banco%20de%20dados/Diagrama_de_Classes_VISIO.png" width="700">
