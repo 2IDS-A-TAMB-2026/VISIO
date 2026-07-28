@@ -121,62 +121,27 @@
     transition: .3s;
   }
 
-  .layout {
-    display: flex;
-  }
+  .layout{ display:flex; }
 
-  .sidebar {
+.sidebar {
     width: 280px;
     height: 100vh;
-    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 0; top: 0;
     padding: 25px;
+    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
     overflow-y: auto;
     z-index: 1000;
-  }
+}
 
-  .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-  }
+.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
+.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
+.menu { list-style: none; }
+.menu li { margin-bottom: 10px; }
+.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
+.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
 
-  .logo-area h2 {
-    color: white;
-    font-size: 28px;
-  }
-
-  .menu-title {
-    color: #64748b;
-    text-transform: uppercase;
-    font-size: 12px;
-    margin-bottom: 15px;
-    letter-spacing: 1px;
-  }
-
-  .menu {
-    list-style: none;
-  }
-
-  .menu li {
-    margin-bottom: 10px;
-  }
-
-  .menu a {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 15px;
-    border-radius: 14px;
-    text-decoration: none;
-    color: #e2e8f0;
-    transition: .3s;
-    font-weight: 500;
-    font-size: 16px;
-  }
 
  
 
@@ -399,7 +364,7 @@
     text-decoration:none;
     font-weight:600;
 ">
-            <i class="fa-solid fa-user" style="color:white;"></i>
+            <i class="fa-solid fa-user-shield" style="color:white;"></i>
             Perfil
           </a>
         </li>
@@ -520,15 +485,29 @@
       }
     });
 
-    /* ── Fonte ── */
+    /* ── Fonte (com transição suave, compatível com qualquer navegador) ── */
     let currentFontSize = parseInt(localStorage.getItem('visio_fontsize') || '16');
-    document.body.style.fontSize = currentFontSize + 'px';
+    document.body.style.zoom = currentFontSize / 16;
+
+    function animarZoom(de, para) {
+      const duracao = 250;
+      const inicio = performance.now();
+      function passo(agora) {
+        const t = Math.min((agora - inicio) / duracao, 1);
+        const ease = 1 - Math.pow(1 - t, 3); // ease-out cúbico
+        document.body.style.zoom = de + (para - de) * ease;
+        if (t < 1) requestAnimationFrame(passo);
+      }
+      requestAnimationFrame(passo);
+    }
 
     function changeFontSize(delta) {
       const novo = currentFontSize + delta;
       if (novo < 12 || novo > 26) return;
+      const zoomAntigo = currentFontSize / 16;
       currentFontSize = novo;
-      document.body.style.fontSize = currentFontSize + 'px';
+      const zoomNovo = currentFontSize / 16;
+      animarZoom(zoomAntigo, zoomNovo);
       localStorage.setItem('visio_fontsize', currentFontSize);
     }
 
@@ -571,4 +550,15 @@
       fala.lang = 'pt-BR';
       window.speechSynthesis.speak(fala);
     }
+  </script>
+  
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>

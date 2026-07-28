@@ -13,8 +13,9 @@ use App\Models\RespondeModel;
  *
  * Rotas:
  *   GET  /quiz           → index()    — inicia o quiz
- *   GET  /quiz/pergunta  → pergunta() — exibe pergunta atual
- *   POST /quiz/responder → responder() — registra resposta e avança
+ *   GET  /quiz/pergunta  → pergunta() — exibe pergunta atual (ou feedback, se já respondida)
+ *   POST /quiz/responder → responder() — registra resposta e calcula o feedback
+ *   POST /quiz/avancar   → avancar()  — avança para a próxima pergunta (ou resultado)
  *   GET  /quiz/resultado → resultado() — exibe resultado final
  */
 class QuizController extends BaseController
@@ -66,10 +67,18 @@ class QuizController extends BaseController
             return redirect()->to('/quiz/resultado');
         }
 
+        // Se a pergunta atual já foi respondida, exibe o feedback (modo revisão)
+        $feedback = session()->get('quiz_feedback');
+        if (!is_array($feedback) || (int) $feedback['id_pergunta'] !== (int) $idAtual) {
+            $feedback = null;
+        }
+
         return view('sistema/usuario/questoes/pergunta', [
             'pergunta' => $pergunta,
             'indice'   => $indice + 1,
             'total'    => session()->get('quiz_total'),
+            'feedback' => $feedback,
+            'ultima'   => ($indice + 1) >= session()->get('quiz_total'),
         ]);
     }
 
@@ -87,17 +96,70 @@ class QuizController extends BaseController
                 ->with('erro', 'Selecione uma alternativa antes de avançar.');
         }
 
+        $ids    = session()->get('quiz_ids') ?? [];
+        $indice = session()->get('quiz_indice') ?? 0;
+
+        if (empty($ids) || $indice >= count($ids)) {
+            return redirect()->to('/quiz/resultado');
+        }
+
+        $idPergunta = $ids[$indice];
+
+        // Já respondida? (evita registrar de novo se o usuário voltar/recarregar)
+        $feedbackAtual = session()->get('quiz_feedback');
+        if (is_array($feedbackAtual) && (int) $feedbackAtual['id_pergunta'] === (int) $idPergunta) {
+            return redirect()->to('/quiz/pergunta');
+        }
+
         // Registra no banco
         (new RespondeModel())->registrar($cpf, $idAlternativa);
 
         // Verifica acerto usando IS_CORRETA (coluna correta do banco)
-        $alternativa = (new AlternativaModel())->find($idAlternativa);
+        $alternativaModel = new AlternativaModel();
+        $alternativa      = $alternativaModel->find($idAlternativa);
+        $acertou          = $alternativa && (int) $alternativa['IS_CORRETA'] === 1;
 
-        if ($alternativa && (int) $alternativa['IS_CORRETA'] === 1) {
+        if ($acertou) {
             session()->set('quiz_acertos', session()->get('quiz_acertos') + 1);
         }
 
-        $indice = session()->get('quiz_indice') + 1;
+        // Busca a alternativa correta da pergunta para exibir no feedback
+        $correta = $alternativaModel
+            ->where('FK_ID_PERGUNTA', $idPergunta)
+            ->where('IS_CORRETA', 1)
+            ->first();
+
+        session()->set('quiz_feedback', [
+            'id_pergunta' => $idPergunta,
+            'escolhida'   => $idAlternativa,
+            'correta_id'  => $correta['ID_ALTERNATIVA'] ?? null,
+            'acertou'     => $acertou,
+        ]);
+
+        // Permanece na mesma pergunta para mostrar o feedback;
+        // o avanço para a próxima ocorre em /quiz/avancar
+        return redirect()->to('/quiz/pergunta');
+    }
+
+    // ---------------------------------------------------------------
+    // AVANÇAR PARA A PRÓXIMA PERGUNTA (após o feedback)
+    // ---------------------------------------------------------------
+
+    public function avancar()
+    {
+        $ids    = session()->get('quiz_ids') ?? [];
+        $indice = session()->get('quiz_indice') ?? 0;
+
+        // Só avança se a pergunta atual já tiver feedback registrado
+        $feedback = session()->get('quiz_feedback');
+        if (!is_array($feedback) || empty($ids) || $indice >= count($ids)
+            || (int) $feedback['id_pergunta'] !== (int) $ids[$indice]) {
+            return redirect()->to('/quiz/pergunta');
+        }
+
+        session()->remove('quiz_feedback');
+
+        $indice++;
         session()->set('quiz_indice', $indice);
 
         if ($indice >= session()->get('quiz_total')) {
@@ -118,7 +180,7 @@ class QuizController extends BaseController
             'total'   => session()->get('quiz_total')   ?? 0,
         ];
 
-        session()->remove(['quiz_ids', 'quiz_indice', 'quiz_acertos', 'quiz_total']);
+        session()->remove(['quiz_ids', 'quiz_indice', 'quiz_acertos', 'quiz_total', 'quiz_feedback']);
 
         return view('sistema/usuario/questoes/resultado', $dados);
     }

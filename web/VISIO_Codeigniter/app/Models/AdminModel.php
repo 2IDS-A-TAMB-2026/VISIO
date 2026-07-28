@@ -8,7 +8,6 @@ use CodeIgniter\Model;
  * AdminModel
  * Responsável por todas as operações da tabela ADMIN no MySQL.
  * Chave primária: CNPJ (string, sem auto-incremento).
- * CORREÇÃO: campo NOME removido de allowedFields — não existe na tabela ADMIN do banco.
  */
 class AdminModel extends Model
 {
@@ -19,7 +18,9 @@ class AdminModel extends Model
 
     protected $allowedFields = [
         'CNPJ',
+        'NOME',
         'EMAIL',
+        'FOTO',
         'TELEFONE',
         'SENHA',
     ];

@@ -10,10 +10,11 @@ class AdminAuth implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session()->get('admin_logado')) {
+       if (!session()->get('admin_logado')) {
             return redirect()->to('/login/admin')
                 ->with('erro', 'Acesso restrito! Por favor, faça login.');
-        }
+        } 
+           return;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

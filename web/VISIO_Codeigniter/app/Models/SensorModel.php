@@ -11,10 +11,10 @@ use CodeIgniter\Model;
  */
 class SensorModel extends Model
 {
-    protected $table            = 'SENSOR';
-    protected $primaryKey       = 'ID_SENSOR';
+    protected $table = 'SENSOR';
+    protected $primaryKey = 'ID_SENSOR';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
+    protected $returnType = 'array';
 
     protected $allowedFields = [
         'NOME',
@@ -31,5 +31,10 @@ class SensorModel extends Model
     public function buscarPorId(int $id): array|null
     {
         return $this->find($id);
+    }
+
+    public function buscarPorNome(string $nome): array|null
+    {
+        return $this->where('LOWER(NOME)', strtolower(trim($nome)))->first();
     }
 }

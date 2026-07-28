@@ -1,163 +1,128 @@
- <?php if (!$sensor): ?>
+<?= view('sistema/layout/header_adm') ?>
 
-                <div style="
-                    background:#fee2e2;
-                    padding:16px;
-                    border-radius:12px;
-                    color:#991b1b;
-                ">
+<div class="layout">
+    <?= view('sistema/admin/_sidebar', ['ativo' => 'sensores']) ?>
+
+    <div class="main">
+        <div class="content">
+
+            <div class="topbar">
+                <h1>Editar Sensor</h1>
+                <p>
+                    <a href="<?= base_url('/admin/sensores') ?>" style="color: var(--primary);">
+                        <i class="fa-solid fa-arrow-left"></i> Voltar à lista
+                    </a>
+                </p>
+            </div>
+
+            <?= view('sistema/layout/_flash') ?>
+
+            <?php if (!$sensor): ?>
+                <div style="background: #fee2e2; padding: 14px 18px; border-radius: 12px; color: #991b1b;">
                     Sensor não encontrado.
                 </div>
-
             <?php else: ?>
-
+            
                 <section class="card sensor-card">
-
                     <form
                         action="<?= base_url('/admin/sensor/atualizar/' . $sensor['ID_SENSOR']) ?>"
                         method="post"
                         enctype="multipart/form-data"
                         class="form-grid"
                     >
-
                         <?= csrf_field() ?>
 
                         <div class="form-group">
                             <label>Nome do sensor</label>
-                            <input
-                                type="text"
-                                name="nome"
-                                value="<?= esc($sensor['NOME']) ?>"
-                                required
-                            >
+                            <input type="text" name="nome" value="<?= esc($sensor['NOME']) ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label>Descrição</label>
-                            <input
-                                type="text"
-                                name="descricao"
-                                value="<?= esc($sensor['DESCRICAO']) ?>"
-                                required
-                            >
+                            <input type="text" name="descricao" value="<?= esc($sensor['DESCRICAO']) ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label>Circuito / Montagem</label>
-
-                            <textarea
-                                name="circuito"
-                                rows="6"
-                            ><?= esc($sensor['CIRCUITO'] ?? '') ?></textarea>
+                            <textarea name="circuito" rows="4"><?= esc($sensor['CIRCUITO'] ?? '') ?></textarea>
                         </div>
 
                         <?php if (!empty($sensor['FOTO'])): ?>
-
-                            <div class="form-group">
-                                <label>Foto atual</label>
-
-                                <img
-                                    src="<?= base_url($sensor['FOTO']) ?>"
-                                    alt="Foto do sensor"
-                                    class="sensor-img"
-                                >
-                            </div>
-
+                            <img src="<?= base_url($sensor['FOTO']) ?>" alt="Foto do sensor" style="width: 150px; border-radius: 12px; margin-top: 10px;">
                         <?php endif; ?>
 
                         <div class="form-group">
                             <label>Nova foto (opcional)</label>
-
-                            <input
-                                type="file"
-                                name="foto"
-                                accept="image/*"
-                            >
+                            <input type="file" name="foto" accept="image/*">
                         </div>
 
                         <div class="form-group">
-                            <button
-                                type="submit"
-                                class="btn-primary"
-                            >
+                            <button type="submit" class="btn-primary">
                                 <i class="fa-solid fa-floppy-disk"></i>
                                 Salvar alterações
                             </button>
                         </div>
-
                     </form>
-
                 </section>
 
             <?php endif; ?>
 
-        </div>
-
-    </main>
-
-</div>
+        </div><!-- /.content -->
+    </div><!-- /.main -->
+</div><!-- /.layout -->
 
 <style>
-.sensor-card{
-    width:100%;
-    max-width:1100px;
-    margin:20px auto;
-    padding:35px;
-    border-radius:18px;
+/* Layout Container */
+.layout-container { display: flex; min-height: 100vh; width: 100%; }
+.sidebar-col { width: 280px; flex-shrink: 0; }
+.main-content { flex: 1; padding: 30px; overflow-y: auto; background: var(--bg); }
+.content-wrapper { width: 100%; max-width: 1000px; margin: 0 auto; }
+
+/* Card */
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--shadow, 0 5px 20px rgba(0,0,0,.08));
+    border: 1px solid var(--border);
+    margin-top: 20px;
 }
 
-.form-grid{
-    display:flex;
-    flex-direction:column;
-    gap:22px;
+/* Formulário */
+.form-grid { display: flex; flex-direction: column; gap: 15px; }
+.form-group { width: 100%; }
+.form-group label {
+    display: block; margin-bottom: 6px; font-weight: 600; color: var(--text);
 }
+.form-group input,
+.form-group textarea {
+    width: 100%; padding: 12px; border: 1px solid var(--border);
+    border-radius: 12px; font-size: 15px; box-sizing: border-box;
+    background: var(--bg); color: var(--text);
+    transition: border-color .2s;
+}
+.form-group input:hover,
+.form-group textarea:hover { border-color: #93c5fd; }
+.form-group input:focus,
+.form-group textarea:focus { outline: none; border-color: #1e6be7; }
+.form-group textarea { min-height: 100px; }
 
-.form-group{
-    width:100%;
+/* Botão */
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #1e6be7; color: #fff; border: none;
+    padding: 12px 20px; border-radius: 12px; cursor: pointer;
+    font-size: 15px; font-weight: 600;
 }
+.btn-primary:hover { background: #1557c4; }
 
-.form-group label{
-    display:block;
-    margin-bottom:8px;
-    font-weight:600;
-    color:#0f172a;
+/* Topbar */
+.topbar {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 20px;
 }
-
-.form-group input[type="text"],
-.form-group input[type="file"],
-.form-group textarea{
-    width:100%;
-    padding:14px 16px;
-    border:1px solid #dbe2ea;
-    border-radius:12px;
-    font-size:15px;
-}
-
-.form-group textarea{
-    min-height:180px;
-    resize:vertical;
-}
-
-.sensor-img{
-    max-width:300px;
-    width:100%;
-    border-radius:12px;
-    display:block;
-    margin-top:10px;
-}
-
-.btn-primary{
-    padding:14px 24px;
-    border:none;
-    border-radius:12px;
-    background:#2957A4;
-    color:white;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-}
-
-.btn-primary:hover{
-    opacity:.9;
-}
+.topbar h1 { margin: 0; font-size: 28px; color: var(--text); }
+.topbar p  { margin: 0; }
 </style>
+
+<?= view('sistema/layout/footer_adm') ?>

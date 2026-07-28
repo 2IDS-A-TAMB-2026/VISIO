@@ -44,11 +44,15 @@
         </div>
     </div>
 
+    
+
 </main>
 
 <section class="services">
-    <video autoplay muted loop playsinline class="video-bg">
-        <source src="<?= base_url('assets/images/Videos/fun_video.mp4') ?>" type="video/mp4">
+    <video autoplay muted loop playsinline class="video-bg theme-video"
+        src="<?= base_url('assets/images/Videos/video_black.mp4') ?>"
+        data-light="<?= base_url('assets/images/Videos/video_white.mp4') ?>"
+        data-dark="<?= base_url('assets/images/Videos/video_black.mp4') ?>">
     </video>
 
     <div class="container">

@@ -119,7 +119,8 @@
     <nav>
 
       <img src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>" class="logo" alt="Logo plataforma VISIO"
-        id="logo">
+        id="logo" data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
+        data-light="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>">
 
       <ul class="nav-links">
 
@@ -183,11 +184,11 @@
       Acessibilidade
     </h3>
 
-    <button onclick="increaseFont()">
+    <button onclick="changeFontSize(2)">
       A+ Aumentar Fonte
     </button>
 
-    <button onclick="decreaseFont()">
+    <button onclick="changeFontSize(-2)">
       A- Diminuir Fonte
     </button>
 
@@ -243,34 +244,30 @@
 
     });
 
-    /* FONTE */
+    /* FONTE (com transição suave, compatível com qualquer navegador) */
+    let currentFontSize = parseInt(localStorage.getItem('visio_fontsize') || '16');
+    document.body.style.zoom = currentFontSize / 16;
 
-    let currentFontSize = 100;
-
-    function increaseFont() {
-
-      currentFontSize += 10;
-
-      document.body.style.fontSize =
-        currentFontSize + '%';
-
-      localStorage.setItem(
-        'fontSize',
-        currentFontSize
-      );
+    function animarZoom(de, para) {
+      const duracao = 250;
+      const inicio = performance.now();
+      function passo(agora) {
+        const t = Math.min((agora - inicio) / duracao, 1);
+        const ease = 1 - Math.pow(1 - t, 3); // ease-out cúbico
+        document.body.style.zoom = de + (para - de) * ease;
+        if (t < 1) requestAnimationFrame(passo);
+      }
+      requestAnimationFrame(passo);
     }
 
-    function decreaseFont() {
-
-      currentFontSize -= 10;
-
-      document.body.style.fontSize =
-        currentFontSize + '%';
-
-      localStorage.setItem(
-        'fontSize',
-        currentFontSize
-      );
+    function changeFontSize(delta) {
+      const novo = currentFontSize + delta;
+      if (novo < 12 || novo > 26) return;
+      const zoomAntigo = currentFontSize / 16;
+      currentFontSize = novo;
+      const zoomNovo = currentFontSize / 16;
+      animarZoom(zoomAntigo, zoomNovo);
+      localStorage.setItem('visio_fontsize', currentFontSize);
     }
 
     /* TEMA ESCURO */
@@ -347,17 +344,17 @@
         document.body.classList.add('reduce-motion');
       }
 
-      const savedFont =
-        localStorage.getItem('fontSize');
-
-      if (savedFont) {
-
-        currentFontSize = savedFont;
-
-        document.body.style.fontSize =
-          currentFontSize + '%';
-      }
-
     };
 
+  </script>
+  
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>

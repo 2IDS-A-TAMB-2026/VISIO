@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Controllers;
-
 use App\Models\UsuarioModel;
+use App\Models\RespondeModel;
 
 /**
  * UsuarioController
@@ -21,6 +21,7 @@ class UsuarioController extends BaseController
 
     public function cadastrar()
     {
+        $nome = $this->request->getPost('nome');
         $cpf = $this->request->getPost('cpf');
         $email = $this->request->getPost('email');
         $senha = $this->request->getPost('senha');
@@ -28,9 +29,9 @@ class UsuarioController extends BaseController
         $data = $this->request->getPost('data_nascimento');
         $tel = $this->request->getPost('telefone');
 
-        if (empty($cpf) || empty($email) || empty($senha)) {
+        if (empty($nome) || empty($cpf) || empty($email) || empty($senha)) {
             return redirect()->to('/usuario/cadastro')
-                ->with('erro', 'CPF, e-mail e senha são obrigatórios.');
+                ->with('erro', 'Nome, CPF, e-mail e senha são obrigatórios.');
         }
 
         $model = new UsuarioModel();
@@ -47,6 +48,7 @@ class UsuarioController extends BaseController
 
         $model->insert([
             'CPF' => $cpf,
+            'NOME' => $nome,
             'EMAIL' => $email,
             'SENHA' => password_hash($senha, PASSWORD_BCRYPT),
             'CARTAO' => $cartao,
@@ -74,63 +76,93 @@ class UsuarioController extends BaseController
     public function perfil(): string
     {
         $cpf = session()->get('usuario_cpf');
-        $model = new UsuarioModel();
+
+        $usuarioModel = new UsuarioModel();
+        $respondeModel = new RespondeModel();
+
+        // Dados do usuário
+        $usuario = $usuarioModel->where('CPF', $cpf)->first();
+
+        // Estatísticas do quiz
+        $total = $respondeModel->totalPorUsuario($cpf);
+        $acertos = $respondeModel->totalAcertosPorUsuario($cpf);
+
+        $percentual = $total > 0
+            ? round(($acertos / $total) * 100)
+            : 0;
 
         return view('sistema/usuario_logado/perfil/index', [
-            'usuario' => $model->where('CPF', $cpf)->first(),
+            'usuario'    => $usuario,
+            'total'      => $total,
+            'acertos'    => $acertos,
+            'percentual' => $percentual,
         ]);
     }
 
-    public function atualizarPerfil()
-    {
-        $cpf = session()->get('usuario_cpf');
-        $model = new UsuarioModel();
-        $email = $this->request->getPost('email');
 
-        $emailExistente = $model->where('EMAIL', $email)->where('CPF !=', $cpf)->first();
-        if ($emailExistente) {
-            return redirect()->to('/perfil')
-                ->with('erro', 'Este e-mail já está em uso por outra conta.');
-        }
 
-        $dados = [
-            'EMAIL' => $email,
-            'CARTAO' => $this->request->getPost('cartao') ?? '',
-            'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
-            'TELEFONE' => $this->request->getPost('telefone'),
-        ];
+   public function atualizarPerfil()
+{
+    $cpf = session()->get('usuario_cpf');
+    $model = new UsuarioModel();
+    $email = $this->request->getPost('email');
 
-        $novaSenha = $this->request->getPost('senha');
-        if (!empty($novaSenha)) {
-            $dados['SENHA'] = password_hash($novaSenha, PASSWORD_BCRYPT);
-        }
-
-        $model->update($cpf, $dados);
-
+    // 1. Validação de Email Existente
+    $emailExistente = $model->where('EMAIL', $email)->where('CPF !=', $cpf)->first();
+    if ($emailExistente) {
         return redirect()->to('/perfil')
-            ->with('sucesso', 'Perfil atualizado com sucesso!');
+            ->with('erro', 'Este e-mail já está em uso por outra conta.');
     }
 
-    // ---------------------------------------------------------------
-    // HISTÓRICO DE RESPOSTAS DO USUÁRIO LOGADO
-    // ---------------------------------------------------------------
+    // 2. Montagem dos dados básicos
+    $dados = [
+        'NOME'            => $this->request->getPost('nome'),
+        'EMAIL'           => $email,
+        'CARTAO'          => $this->request->getPost('cartao') ?? '',
+        'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
+        'TELEFONE'        => $this->request->getPost('telefone'),
+    ];
 
-    public function historico(): string
-    {
-        $cpf = session()->get('usuario_cpf');
-        $model = new UsuarioModel();
-
-        return view('sistema/usuario/questoes/historico', [
-            'historico' => $model->historicoPorCpf($cpf),
-            'respostas' => $model->historicoPorCpf($cpf),
-            'total' => count($model->historicoPorCpf($cpf)),
-            'total_acertos' => 0, // será calculado na view
+    // 3. Upload da Foto de Perfil
+    $foto = $this->request->getFile('foto'); // Nome que deve estar no 'name' do input HTML
+    if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+        // Validação básica de extensão/tamanho para segurança
+        $validacao = $this->validate([
+            'foto' => [
+                'uploaded[foto]',
+                'mime_in[foto,image/jpg,image/jpeg,image/png,image/webp]',
+                'max_size[foto,2048]', // Máximo 2MB
+            ],
         ]);
+
+        if (!$validacao) {
+            return redirect()->to('/perfil')->with('erro', 'Arquivo inválido. Escolha uma imagem PNG, JPG ou WEBP de até 2MB.');
+        }
+        // Nome aleatório e seguro para evitar conflitos de arquivos com o mesmo nome
+        $novoNome = $foto->getRandomName();
+        // Move para a pasta public/uploads/perfil/
+        $foto->move(ROOTPATH . 'public/uploads/perfil/', $novoNome);
+        // Busca o usuário atual para apagar a foto antiga do servidor (evita lixo no servidor)
+        $usuarioAtual = $model->find($cpf);
+        if (!empty($usuarioAtual['FOTO']) && file_exists(ROOTPATH . 'public/' . $usuarioAtual['FOTO'])) {
+            if (!unlink(ROOTPATH . 'public/' . $usuarioAtual['FOTO'])) {
+                log_message('warning', 'Não foi possível remover a foto antiga do usuário ' . $cpf . ': ' . $usuarioAtual['FOTO']);
+            }
+        }
+        // Salva o caminho relativo no banco de dados
+        $dados['FOTO'] = 'uploads/perfil/' . $novoNome;
     }
 
-    //TENTANDO FZR O RECUPERAR SENHA
-    public function esqueceu_senha(): string
-    {
-        return view('sistema/usuario/esqueceu_senha/index');
+    // 4. Verificação de Nova Senha
+    $novaSenha = $this->request->getPost('senha');
+    if (!empty($novaSenha)) {
+        $dados['SENHA'] = password_hash($novaSenha, PASSWORD_BCRYPT);
     }
+
+    // 5. Atualização no Banco de Dados
+    $model->update($cpf, $dados);
+    return redirect()->to('/perfil')
+        ->with('sucesso', 'Perfil atualizado com sucesso!');
+}
+
 }

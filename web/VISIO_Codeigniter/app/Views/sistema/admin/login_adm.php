@@ -23,13 +23,13 @@
                     <i class="fa-solid fa-right-to-bracket"></i> Entrar como ADM
                 </button>
                 <br><br>
-                <p> <a href="<?= base_url('/usuario/esqueceu_senha') ?>" style="color: #0084f7;">Esqueceu senha?</a></p>
+                <p> <a href="<?= base_url('/admin/esqueceu_senha') ?>" style="color: #0084f7;">Esqueceu senha?</a></p>
             </form>
         </div>
         <div class="login-image">
             <img class="theme-img"
                  src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                 data-light="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
+                 data-light="<?= base_url('assets/images/logos/Logo/LogoLight.png') ?>"
                  data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
                  alt="Logo"
                  style="width:100%; box-shadow:0 4px 15px rgba(0,0,0,.2);">

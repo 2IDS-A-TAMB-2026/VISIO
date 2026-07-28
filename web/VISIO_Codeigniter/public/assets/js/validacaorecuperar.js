@@ -1,24 +1,36 @@
-const form = document.getElementById("form");
-const inputEmail = document.getElementById("email");
-const erroEmail = document.getElementById("erroEmail");
+(function () {
+    'use strict';
 
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    let formValido = true;
+    /* Procura o formulário pelo id — só executa se estiver na página */
+    const form = document.getElementById("form");
+    if (!form) return;
 
-    if (inputEmail.value.trim() === "") {
-        erroEmail.innerText = "O email é obrigatório";
-        inputEmail.classList.add("input-error"); inputEmail.classList.remove("input-valid");
-        formValido = false;
-    } else {
-        erroEmail.innerText = "";
-        inputEmail.classList.remove("input-error"); inputEmail.classList.add("input-valid");
-    }
+    const inputEmail = document.getElementById("email");
+    const erroEmail = document.getElementById("erroEmail");
 
-    if (!formValido) {
-        alert("Por favor, corrija os erros no formulário antes de enviar.");
-        return;
-    }
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let formValido = true;
 
-    form.submit();
-});
+        if (!inputEmail || inputEmail.value.trim() === "") {
+            if (erroEmail) erroEmail.innerText = "O email é obrigatório";
+            if (inputEmail) {
+                inputEmail.classList.add("input-error");
+                inputEmail.classList.remove("input-valid");
+            }
+            formValido = false;
+        } else {
+            if (erroEmail) erroEmail.innerText = "";
+            inputEmail.classList.remove("input-error");
+            inputEmail.classList.add("input-valid");
+        }
+
+        if (!formValido) {
+            alert("Por favor, corrija os erros no formulário antes de enviar.");
+            return;
+        }
+
+        form.submit();
+    });
+
+})();

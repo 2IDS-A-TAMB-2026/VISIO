@@ -6,14 +6,38 @@
 body.dark{ --bg:#0b1120;  --text:#f8fafc; --text2:#94a3b8; --border:#1e293b; --sidebar:#020617; --sidebar2:#0f172a; }
 body{ background:var(--bg); color:var(--text); min-height:100vh; transition:.3s; }
 .layout{ display:flex; }
-.sidebar{ width:280px; height:100vh; background:linear-gradient(180deg,var(--sidebar),var(--sidebar2)); position:fixed; left:0; top:0; padding:25px; overflow-y:auto; z-index:1000; }
-.logo-area{ display:flex; align-items:center; gap:15px; margin-bottom:40px; }
-.logo-area h2{ color:white; font-size:28px; }
-.menu-title{ color:#64748b; text-transform:uppercase; font-size:12px; margin-bottom:15px; letter-spacing:1px; }
-.menu{ list-style:none; }
-.menu li{ margin-bottom:10px; }
-.menu a{ display:flex; align-items:center; gap:14px; padding:15px; border-radius:14px; text-decoration:none; color:#e2e8f0; transition:.3s; font-weight:500; font-size:16px; }
 
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    padding: 25px;
+    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
+    overflow-y: auto;
+    z-index: 1000;
+}
+.card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
+    }
+
+    body.dark .card {
+    background: #131b4f;
+    border-color: #2662d9;
+    box-shadow: none;
+}
+.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
+.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
+.menu { list-style: none; }
+.menu li { margin-bottom: 10px; }
+.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
+.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
+
+.main { width: calc(100% - 280px); margin-left: 280px; }
 .main{ width:calc(100% - 280px); margin-left:280px; }
 header{ height:90px; background:var(--card); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 30px; position:sticky; top:0; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,.04); }
 .nav-right{ display:flex; align-items:center; gap:20px; }
@@ -24,7 +48,16 @@ header{ height:90px; background:var(--card); border-bottom:1px solid var(--borde
 .page-sub{ color:var(--text2); margin-bottom:25px; }
 .top-actions{ margin-bottom:25px; }
 .btn-add{ background:var(--primary); color:white; padding:14px 20px; border-radius:14px; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:10px; box-shadow:var(--shadow); }
-.card{ background:var(--card); border-radius:22px; padding:25px; box-shadow:var(--shadow); overflow-x:auto; }
+.card{ background:var(--card); border-radius:22px; padding:25px; box-shadow:var(--shadow); }
+table{ width:100%; border-collapse:collapse; }
+thead{ background:var(--bg); }
+th{ padding:14px 16px; text-align:left; font-size:12px; text-transform:uppercase; color:var(--text2); font-weight:600; border-bottom:2px solid var(--border); }
+td{ padding:14px 16px; color:var(--text); border-bottom:1px solid var(--border); font-size:14px; }
+tbody tr:hover{ background: rgba(37, 99, 235, 0.06); transition: background .15s; }
+body.dark tbody tr:hover{ background: rgba(38, 98, 217, 0.1); }
+body.high-contrast th{ color:#ff0 !important; background:#000 !important; border-color:#ff0 !important; }
+body.high-contrast td{ color:#ff0 !important; background:#000 !important; border-color:#ff0 !important; }
+body.high-contrast .card{ background:#000 !important; border:1px solid #ff0 !important; }
 table{ width:100%; border-collapse:collapse; }
 
 
@@ -40,54 +73,7 @@ table{ width:100%; border-collapse:collapse; }
 <div class="layout">
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
-
-            <div class="logo-area">
-                <h2>VISIO</h2>
-            </div>
-
-            <p class="menu-title">Menu principal</p>
-
-            <ul class="menu">
-
-                <li>
-                    <a href="<?= base_url('/admin/dashboard') ?>">
-                        <i class="fa-solid fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/usuarios') ?>">
-                        <i class="fa-solid fa-users"></i>
-                        Usuários
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/perguntas') ?>" class="active">
-                        <i class="fa-solid fa-clipboard-list"></i>
-                        Questões
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/sensores') ?>">
-                        <i class="fa-solid fa-microchip"></i>
-                        Sensores
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/logout') ?>" style="color:#ef4444;">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        Sair
-                    </a>
-                </li>
-
-            </ul>
-
-        </aside>
+<?= view('sistema/admin/_sidebar', ['ativo' => 'perguntas']) ?>
 
     <div class="main">
 
@@ -119,16 +105,23 @@ table{ width:100%; border-collapse:collapse; }
                                 <td><?= esc($p['DESCRICAO']) ?></td>
                                 <td><?= esc($p['NIVEL_DIFICULDADE'] ?? '—') ?></td>
                                 <td>
-                                    <a href="<?= base_url('/admin/pergunta/editar/' . $p['ID_PERGUNTA']) ?>"
-                                       style="display:block;margin-bottom:8px;background:#f59e0b;color:white;padding:10px;border-radius:10px;text-align:center;text-decoration:none;font-weight:600;">
-                                        <i class="fa-solid fa-pen"></i> Editar
-                                    </a>
-                                    <a href="<?= base_url('/admin/pergunta/excluir/' . $p['ID_PERGUNTA']) ?>"
-                                       class="btn-delete"
-                                       style="display:block;text-align:center;text-decoration:none;"
-                                       onclick="return confirm('Excluir esta questão?')">
-                                        <i class="fa-solid fa-trash"></i> Excluir
-                                    </a>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <a href="<?= base_url('/admin/pergunta/editar/' . $p['ID_PERGUNTA']) ?>"
+                                        style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 10px; font-weight: 600; color: white; background-color: #F6A316; text-decoration: none; text-align: center;">
+                                            <i class="fa-solid fa-pen"></i> Editar
+                                        </a>
+
+                                        <form action="<?= base_url('/admin/pergunta/excluir/' . $p['ID_PERGUNTA']) ?>"
+                                            method="POST"
+                                            onsubmit="return confirm('Excluir esta questão?')"
+                                            style="flex: 1; margin: 0;">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn-delete"
+                                                    style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: none; cursor: pointer; padding: 10px; border-radius: 10px; font-weight: 600; color: white; background-color: #E84C4C;">
+                                                <i class="fa-solid fa-trash"></i> Excluir
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -139,20 +132,5 @@ table{ width:100%; border-collapse:collapse; }
         </div>
     </div>
 </div>
-
-<script>
-const toggle = document.getElementById('theme-toggle');
-const icon   = toggle.querySelector('i');
-if (localStorage.getItem('visio_adm_tema') === 'dark') {
-    document.body.classList.add('dark');
-    icon.className = 'fa-solid fa-sun';
-}
-toggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const d = document.body.classList.contains('dark');
-    localStorage.setItem('visio_adm_tema', d ? 'dark' : 'light');
-    icon.className = d ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-});
-</script>
 
 <?= view('sistema/layout/footer_adm') ?>

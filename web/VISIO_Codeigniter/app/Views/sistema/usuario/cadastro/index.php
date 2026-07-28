@@ -6,14 +6,13 @@
             <p>Cadastre-se para acessar todas as funcionalidades da plataforma VISIO.</p>
             <form action="<?= base_url('/usuario/cadastro') ?>" method="post" id="form">
                 <?= csrf_field() ?>
-                <input type="hidden" name="redirect_html" value="1">
                 <input type="text" name="nome" id="nome" placeholder="Nome">
                 <span class="erro" id="erroNome"></span>
                 <input type="text" name="cpf" id="cpf" placeholder="CPF">
                 <span class="erro" id="erroCpf"></span>
                 <input type="email" name="email" id="email" placeholder="Email">
                 <span class="erro" id="erroEmail"></span>
-                <input type="text" name="data_nascimento" id="data_nascimento" placeholder="Data de nascimento">
+                <input type="date" name="data_nascimento" id="data_nascimento">
                 <span class="erro" id="erroDataNascimento"></span>
                 <input type="tel" name="telefone" id="telefone" placeholder="Telefone">
                 <span class="erro" id="erroTelefone"></span>
@@ -32,11 +31,12 @@
             </div>
         </div>
         <div class="signup-image">
-            <img src="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>" <img class="theme-img"
+            <img class="theme-img logo"
                 src="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>"
                 data-light="<?= base_url('assets/images/logos/Icone/IconeLight.png') ?>"
-                data-dark="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>" alt="Logo"
-                style="width: 100%;  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                data-dark="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>"
+                alt="Logo VISIO"
+                style="width:100%;box-shadow:0 4px 15px rgba(0,0,0,.2);">
         </div>
     </div>
 </main>

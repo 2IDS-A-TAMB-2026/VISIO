@@ -5,26 +5,23 @@
     const form = document.getElementById('form');
     if (!form) return;
 
-    /* Referências aos campos */
-    const nome      = document.getElementById('nome');
-    const cpf       = document.getElementById('cpf');
-    const email     = document.getElementById('email');
-    const data      = document.getElementById('data_nascimento');
-    const telefone  = document.getElementById('telefone');
-    const senha     = document.getElementById('senha');
+    const nome = document.getElementById('nome');
+    const cpf = document.getElementById('cpf');
+    const email = document.getElementById('email');
+    const data = document.getElementById('data_nascimento');
+    const telefone = document.getElementById('telefone');
+    const senha = document.getElementById('senha');
 
-    /* Referências às mensagens de erro */
-    const erroNome     = document.getElementById('erroNome');
-    const erroCpf      = document.getElementById('erroCpf');
-    const erroEmail    = document.getElementById('erroEmail');
-    const erroData     = document.getElementById('erroDataNascimento');
+    const erroNome = document.getElementById('erroNome');
+    const erroCpf = document.getElementById('erroCpf');
+    const erroEmail = document.getElementById('erroEmail');
+    const erroData = document.getElementById('erroDataNascimento');
     const erroTelefone = document.getElementById('erroTelefone');
-    const erroSenha    = document.getElementById('erroSenha');
+    const erroSenha = document.getElementById('erroSenha');
 
-    /* ── Limpa erros ao digitar ── */
     const pares = [
         [nome, erroNome], [cpf, erroCpf], [email, erroEmail],
-        [data, erroData], [telefone, erroTelefone], [senha, erroSenha], 
+        [data, erroData], [telefone, erroTelefone], [senha, erroSenha],
     ];
 
     pares.forEach(function ([input, span]) {
@@ -35,7 +32,6 @@
         });
     });
 
-    /* ── Validação no submit ── */
     form.addEventListener('submit', function (event) {
         let valido = true;
 
@@ -53,12 +49,12 @@
             }
         }
 
-        validarCampo(nome,     erroNome,     'Nome obrigatório.');
-        validarCampo(cpf,      erroCpf,      'CPF obrigatório.');
-        validarCampo(email,    erroEmail,    'E-mail obrigatório.');
-        validarCampo(data,     erroData,     'Data de nascimento obrigatória.');
+        validarCampo(nome, erroNome, 'Nome obrigatório.');
+        validarCampo(cpf, erroCpf, 'CPF obrigatório.');
+        validarCampo(email, erroEmail, 'E-mail obrigatório.');
+        validarCampo(data, erroData, 'Data de nascimento obrigatória.');
         validarCampo(telefone, erroTelefone, 'Telefone obrigatório.');
-        validarCampo(senha,    erroSenha,    'Senha obrigatória.');
+        validarCampo(senha, erroSenha, 'Senha obrigatória.');
 
         /* Validação extra: formato de e-mail */
         if (email && email.value.trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
@@ -79,13 +75,13 @@
 
             if (window.Swal) {
                 Swal.fire({
-                    toast:             true,
-                    position:          'top-end',
-                    icon:              'warning',
-                    title:             'Corrija os campos em vermelho antes de continuar.',
-                    showConfirmButton:  false,
-                    timer:             3500,
-                    timerProgressBar:  true,
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Corrija os campos em vermelho antes de continuar.',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true,
                 });
             }
         }
@@ -98,9 +94,9 @@
     if (cpf) {
         cpf.addEventListener('input', function () {
             let v = this.value.replace(/\D/g, '').slice(0, 11);
-            if (v.length > 9)      v = v.slice(0,3) + '.' + v.slice(3,6) + '.' + v.slice(6,9) + '-' + v.slice(9);
-            else if (v.length > 6) v = v.slice(0,3) + '.' + v.slice(3,6) + '.' + v.slice(6);
-            else if (v.length > 3) v = v.slice(0,3) + '.' + v.slice(3);
+            if (v.length > 9) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6, 9) + '-' + v.slice(9);
+            else if (v.length > 6) v = v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6);
+            else if (v.length > 3) v = v.slice(0, 3) + '.' + v.slice(3);
             this.value = v;
         });
     }
@@ -111,12 +107,23 @@
     if (telefone) {
         telefone.addEventListener('input', function () {
             let v = this.value.replace(/\D/g, '').slice(0, 11);
-            if (v.length > 10)     v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
-            else if (v.length > 6) v = '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
-            else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+            if (v.length > 10) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, 7) + '-' + v.slice(7);
+            else if (v.length > 6) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, 6) + '-' + v.slice(6);
+            else if (v.length > 2) v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
             else if (v.length > 0) v = '(' + v;
             this.value = v;
         });
+    }
+    /* ─────────────────────────────────────────────────
+       DATA DE NASCIMENTO (type="date")
+       Impede a seleção de datas futuras, igual a /perfil.
+       ───────────────────────────────────────────────── */
+    if (data) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        data.max = `${ano}-${mes}-${dia}`;
     }
 
 

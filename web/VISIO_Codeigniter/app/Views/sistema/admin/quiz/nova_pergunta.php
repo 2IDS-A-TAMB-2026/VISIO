@@ -6,14 +6,26 @@
 body.dark{ --bg:#0b1120; --card:#111827; --text:#f8fafc; --text2:#94a3b8; --border:#1e293b; --sidebar:#020617; --sidebar2:#0f172a; }
 body{ background:var(--bg); color:var(--text); min-height:100vh; transition:.3s; }
 .layout{ display:flex; }
-.sidebar{ width:280px; height:100vh; background:linear-gradient(180deg,var(--sidebar),var(--sidebar2)); position:fixed; left:0; top:0; padding:25px; overflow-y:auto; z-index:1000; }
-.logo-area{ display:flex; align-items:center; gap:15px; margin-bottom:40px; }
-.logo-area h2{ color:white; font-size:28px; }
-.menu-title{ color:#64748b; text-transform:uppercase; font-size:12px; margin-bottom:15px; letter-spacing:1px; }
-.menu{ list-style:none; }
-.menu li{ margin-bottom:10px; }
-.menu a{ display:flex; align-items:center; gap:14px; padding:15px; border-radius:14px; text-decoration:none; color:#e2e8f0; transition:.3s; font-weight:500; font-size:16px; }
-.menu a:hover, .menu a.active{ background:rgba(37,99,235,.2); }
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    padding: 25px;
+    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
+.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
+.menu { list-style: none; }
+.menu li { margin-bottom: 10px; }
+.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
+.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
+
 .main{ width:calc(100% - 280px); margin-left:280px; }
 header{ height:90px; background:var(--card); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 30px; position:sticky; top:0; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,.04); }
 .nav-right{ display:flex; align-items:center; gap:20px; }
@@ -26,7 +38,8 @@ header{ height:90px; background:var(--card); border-bottom:1px solid var(--borde
 .card{ background:var(--card); border-radius:22px; padding:30px; box-shadow:var(--shadow); }
 .form-grid{ display:grid; gap:20px; }
 label{ font-weight:600; margin-bottom:8px; display:block; }
-textarea, input, select{ width:100%; padding:15px; border-radius:14px; border:1px solid var(--border); background:var(--bg); color:var(--text); outline:none; font-size:15px; }
+textarea, input, select{ width:100%; padding:15px; border-radius:14px; border:1px solid var(--border); background:var(--bg); color:var(--text); outline:none; font-size:15px; transition:border-color .2s; }
+textarea:focus, input:focus, select:focus{ border-color:var(--primary); }
 textarea{ resize:none; }
 .form-section{ margin-top:10px; margin-bottom:5px; font-weight:700; font-size:18px; }
 .alt-row{ display:flex; align-items:center; gap:12px; }
@@ -39,58 +52,9 @@ textarea{ resize:none; }
 <div class="layout">
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
-
-            <div class="logo-area">
-                <h2>VISIO</h2>
-            </div>
-
-            <p class="menu-title">Menu principal</p>
-
-            <ul class="menu">
-
-                <li>
-                    <a href="<?= base_url('/admin/dashboard') ?>">
-                        <i class="fa-solid fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/usuarios') ?>">
-                        <i class="fa-solid fa-users"></i>
-                        Usuários
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/perguntas') ?>" class="active">
-                        <i class="fa-solid fa-clipboard-list"></i>
-                        Questões
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/admin/sensores') ?>">
-                        <i class="fa-solid fa-microchip"></i>
-                        Sensores
-                    </a>
-                </li>
-
-                <li>
-                    <a href="<?= base_url('/logout') ?>" style="color:#ef4444;">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        Sair
-                    </a>
-                </li>
-
-            </ul>
-
-        </aside>
+<?= view('sistema/admin/_sidebar', ['ativo' => 'perguntas']) ?>
 
     <div class="main">
-
-        
 
         <div class="content">
 
@@ -161,20 +125,5 @@ textarea{ resize:none; }
         </div>
     </div>
 </div>
-
-<script>
-const toggle = document.getElementById('theme-toggle');
-const icon   = toggle.querySelector('i');
-if (localStorage.getItem('visio_adm_tema') === 'dark') {
-    document.body.classList.add('dark');
-    icon.className = 'fa-solid fa-sun';
-}
-toggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const d = document.body.classList.contains('dark');
-    localStorage.setItem('visio_adm_tema', d ? 'dark' : 'light');
-    icon.className = d ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-});
-</script>
 
 <?= view('sistema/layout/footer_adm') ?>

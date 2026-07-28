@@ -27,6 +27,15 @@ class PerguntaModel extends Model
     }
 
     /**
+     * Conta quantas perguntas existem para um determinado nível de dificuldade.
+     * Usado no dashboard administrativo (card "Questões difíceis").
+     */
+    public function contarPorNivel(string $nivel): int
+    {
+        return $this->where('NIVEL_DIFICULDADE', $nivel)->countAllResults();
+    }
+
+    /**
      * Busca uma pergunta específica e anexa as suas alternativas
      * Usado no QuizController
      */

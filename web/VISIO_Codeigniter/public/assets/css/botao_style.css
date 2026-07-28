@@ -348,8 +348,8 @@
   left: 0px;
   width: 100%;
   height: 2px;
-  background: -webkit-gradient(linear, right top, left top, from(rgba(43, 26, 8, 0)), to(#d98026));
-  background: linear-gradient(to left, rgba(43, 26, 8, 0),  #6390f1);
+  background: -webkit-gradient(linear, right top, left top, from(rgba(43, 26, 8, 0)), to( #2662d9));
+  background: linear-gradient(to left, rgba(43, 26, 8, 0),  #2662d9);
   -webkit-animation: 2s animateTop linear infinite;
           animation: 2s animateTop linear infinite;
 }
@@ -1684,7 +1684,7 @@
   left: 0px;
   height: 100%;
   width: 2px;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgba(43, 8, 26, 0)), to(#d92680));
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(43, 8, 26, 0)), to( #2662d9));
   background: linear-gradient(to bottom, rgba(43, 8, 26, 0), #6390f1);
   -webkit-animation: 2s animateLeft linear -1s infinite;
           animation: 2s animateLeft linear -1s infinite;

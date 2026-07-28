@@ -1,17 +1,4 @@
-<?= view('sistema/layout/header_logado') ?>
+<?php
 
-
-    <main class="questoes-page">
-        <div class="questoes-container questoes-layout">
-            <div class="questao-box"><br><br><br>
-                <h1 class="questoes-titulo">Quiz IoT</h1>
-                <p class="questoes-intro">Responda às questões cadastradas no sistema. As perguntas são carregadas
-                    dinamicamente.</p>
-                <div id="quiz-root"></div>
-            </div>
-        </div>
-    </main>
-
-</html>
-
-<?= view('sistema/layout/footer') ?>
+header('Location: ' . base_url('/quiz'));
+exit;

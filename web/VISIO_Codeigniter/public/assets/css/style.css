@@ -1,15 +1,12 @@
-/* 
-   PALETA DE CORES
-*/
 :root {
     /* === FUNDOS === */
     --color-bg-base: #000000;
     --color-bg-dark: #090b10;
     --color-bg-card: #161b22;
-    --color-bg-card-dark: #020321;
+    --color-bg-card-dark: #0d0f14;
     --color-bg-card-alt: #121212;
     --color-bg-input: #1a1a1a;
-    --color-bg-sidebar: #11141d;
+    --color-bg-sidebar: #0f1219;
     --color-bg-status-item: #0b0f17;
 
     /* === SUPERFÍCIES === */
@@ -18,19 +15,30 @@
     --color-surface-btn: #2a3472;
     --color-surface-btn-hover: #515b99;
 
-    /* === AZUL  === */
-    --color-primary: #1e6be7;
-    --color-primary-hover: #47cdfd;
+    /* === AZUL === */
+    --color-primary: #3a86ff;
+    --color-primary-hover: #60a5fa;
     --color-primary-dark: #1557c0;
     --color-primary-accent: #2662d9;
     --color-accent-adm: #3a86ff;
 
-    /* === BOTÃO=== */
-    --color-btn-grad-a: #0b1b3d;
-    --color-btn-grad-b: #08142b;
-    --color-btn-grad-text: #d4e0f7;
+    /* === BOTÃO === */
+    --color-btn-grad-a: #1e3a8a;
+    --color-btn-grad-b: #1e40af;
+    --color-btn-grad-text: #ffffff;
     --color-btn-grad-before: #8592ad;
 
+    /* === TEXTO (CORREÇÕES DE CONTRASTE) === */
+    --color-text-primary: #f8fafc;       /* Branco略带 azul para melhor visibilidade */
+    --color-text-muted: #94a3b8;        /* Reduzido de #bbbbbb */
+    --color-text-soft: #cbd5e1;          /* Mais escuro que o anterior */
+    --color-text-number: #e2e8f0;
+    --color-text-light: #f1f5f9;
+    --color-text-table: #e2e8f0;
+    --color-text-adm: #f1f5f9;
+    --color-text-adm-muted: #94a3b8;
+   /*PALETA DE CORES
+*/
     /* === TEXTO === */
     --color-text-primary: #ffffff;
     --color-text-muted: #bbbbbb;
@@ -64,6 +72,7 @@
 body.light {
 
     /* === FUNDOS === */
+
     --color-bg-base: #f5f7fb;
     --color-bg-dark: #e4e7ec;
     --color-bg-card: #ffffff;
@@ -266,6 +275,7 @@ footer {
     transition: all 0.3s ease;
 }
 
+
 /* 
    INDEX
 */
@@ -295,19 +305,18 @@ footer {
     overflow: hidden;
 }
 
-/* Overlay semitransparente garante legibilidade do texto sobre o vídeo em ambos os temas */
 .services::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.1);
     z-index: 0;
     pointer-events: none;
 }
 
-body.light .services::after {
+/* body.light .services::after {
     background: rgba(0, 0, 0, 0.45);
-}
+} */
 
 .services .container,
 .services .emp-section {
@@ -330,7 +339,6 @@ body.light .services::after {
 
 .secao-video {
     min-height: 600px;
-
 }
 
 .video-bg {
@@ -341,7 +349,6 @@ body.light .services::after {
     height: 100%;
     object-fit: cover;
     z-index: 0;
-
 }
 
 .container {
@@ -372,7 +379,6 @@ body.light .services::after {
     transition: 0.3s;
     box-shadow: 0 0 10px 3px rgba(0, 183, 255, 0.5);
     position: relative;
-    overflow: hidden;
     cursor: pointer;
     aspect-ratio: 1 / 1;
 }
@@ -380,6 +386,7 @@ body.light .services::after {
 .card:hover {
     transform: translateY(-5px);
     background: var(--color-surface-card-hover);
+    box-shadow: #0077ff;
 }
 
 .card img {
@@ -412,12 +419,18 @@ body.light .services::after {
     position: relative;
     aspect-ratio: 1 / 1;
     box-shadow: 0 10px 25px rgba(58, 60, 98, 0.744);
+     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 15px #525151;
 }
 
 .card1:hover {
     transform: translateY(-8px);
     background: var(--color-surface-card);
     box-shadow: 0 20px 40px rgba(0, 154, 255, 0.3);
+    transform: translateY(-4px);
+    border-color: var(--color-accent-adm);
+    box-shadow: 0 4px 15px #3a86ff;
 }
 
 .card1 img {
@@ -981,9 +994,6 @@ video {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* 
-   QUESTÕES
-*/
 /* ==============================
    QUESTÕES (VISÃO PÚBLICA)
    ==============================
@@ -1060,7 +1070,6 @@ video {
 
 .btn_confirmar:hover {
     background-color: var(--color-surface-btn-hover);
-    /* Correção: Trocado scale(1.1) por um levantamento sutil translateY */
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -1101,7 +1110,7 @@ video {
     border: 1px solid var(--color-border-adm, #333);
     background-color: var(--color-bg-dark, #222);
     /* Fundo escuro */
-    color: var(--color-text-primary, #fff);
+    color: var(--color-text-primary);
     /* Texto branco */
     font-size: 14px;
 }
@@ -1187,11 +1196,9 @@ table select {
     /* Centraliza a página de questões */
 }
 
-/* Media Query para Responsividade (Telemóveis) */
 @media (max-width: 768px) {
     .questoes-layout {
         grid-template-columns: 1fr;
-        /* Em ecrãs pequenos, vira 1 coluna */
     }
 }
 
@@ -1459,13 +1466,13 @@ body:has(.video-bg-sobre)::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.1);
     z-index: -99;
     pointer-events: none;
 }
 
 body.light:has(.video-bg-sobre)::before {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 /*LISTA DE USUÁRIOS*/
@@ -1616,15 +1623,13 @@ tbody tr:last-child td {
 }
 
 .cardi img {
-    width: 100%;
-    height: 160px;
+    
     object-fit: cover;
     border-radius: 10px;
     margin-bottom: 12px;
 }
 
 .cardi p {
-    font-size: 14px;
     color: var(--color-text-soft);
     line-height: 1.45;
     text-align: left;
@@ -1650,66 +1655,12 @@ tbody tr:last-child td {
     display: flex;
     flex-direction: column;
     padding: 25px;
-    border-radius: 16px;
-    /* Borda arredondada suave na sidebar */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-left: none; 
+
 }
 
-.menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    color: var(--color-text-adm-muted, #bbbbbb);
-    text-decoration: none;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.menu a.active {
-    transform: translateX(5px);
-    /* Pequeno salto pro lado ao focar */
-}
-
-/* =========================================
-   ÁREA PRINCIPAL & CABEÇALHO
-   ========================================= */
-.adm-main-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    padding: 10px 0;
-}
-
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.adm-page-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: var(--color-text-primary, #ffffff);
-}
-
-.lista-sub {
-    font-size: 14px;
-    color: var(--color-text-adm-muted, #bbbbbb);
-}
 
 /* =========================================
    DASHBOARD CARDS (GRID)
@@ -2060,6 +2011,11 @@ tbody tr:last-child td {
 
 .tech-tags {
     display: flex;
+  justify-content: center;  /* Centraliza horizontalmente */
+  list-style: none;
+  padding: 0;
+    text-align: center;
+    display: flex;
     flex-wrap: wrap;
     gap: 10px 16px;
     list-style: none;
@@ -2202,6 +2158,8 @@ tbody tr:last-child td {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 15px #525151;
 }
 
 .emp-card:hover {
@@ -2508,6 +2466,11 @@ body.light .direitos_reservados {
     color: #ffffff;
 }
 
+/*TENTANDO MUDAR A COR DO CARD DEBAIXO NO INDEX*/
+/* .card1 background removido — usar var(--color-bg-card-dark) definido acima */
+/* 
+   VALIDAÇÃO DE FORMULÁRIOS — estados visuais via classe
+*/
 .input-error {
     border: 2px solid var(--color-error) !important;
 }
@@ -2629,17 +2592,15 @@ header {
 .services .emp-card h3,
 .services .emp-card p {
     color: var(--color-text-primary);
-    /* Usa a variável (Preto no claro, Branco no escuro) */
 }
 
 .services::after {
-    /* O overlay escuro precisa ser mais forte no tema claro para garantir legibilidade */
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.3);
 }
 
-body.light .services::after {
+/* body.light .services::after {
     background: rgba(0, 0, 0, 0.75);
-}
+} */
 
 body.light .intro h1 {
     color: var(--color-text-primary);
@@ -2677,10 +2638,9 @@ body.light .brand-text p {
 }
 
 /* VIDEO BACKGROUND FIXO */
-body.light .video-descricao {
+/* body.light .video-descricao {
     color: #000000;
-    /* Fundo preto atrás do vídeo para contraste */
-}
+} */
 
 /* CARDS DA HOME (Coração do problema) */
 body.light .card1,
@@ -2905,6 +2865,28 @@ body.high-contrast #theme-toggle {
 }
 
 
+/* ================================================================
+   CORREÇÕES DE FONTE E MODO CLARO — VISIO
+   ================================================================
+
+   PROBLEMA 1 — Escalamento de fonte:
+     O JS do painel de acessibilidade faz  document.body.style.fontSize = '18px'.
+     Elementos com font-size em px ABSOLUTO ignoram isso.
+     Aqui convertemos os principais para em (relativo ao body),
+     então quando o body muda, eles escalam junto.
+
+   PROBLEMA 2 — Modo claro com texto branco:
+     No tema claro, --color-primary: #ffffff (branco).
+     Vários elementos usam essa variável como background, gerando
+     botões brancos com texto branco — invisíveis.
+     Também há cores hardcoded (#fff, white) no footer e nav.
+   ================================================================ */
+
+
+/* ---------------------------------------------------------------
+   1. ESCALAMENTO DE FONTE — converte px fixo para em
+      1em = tamanho atual do body (padrão 16px, sobe/desce via JS)
+   --------------------------------------------------------------- */
 
 h1 {
     font-size: 2.8em;
@@ -3061,6 +3043,9 @@ textarea {
     font-size: 0.88em;
 }
 
+
+
+   
 /* ── Navegação ── */
 /* Nav link: --color-primary é branco no claro → azul real */
 body.light .nav-links a {
@@ -3266,4 +3251,19 @@ body.light header {
     border: none !important;
     outline: none !important;
 }
+.subtitle{
+    color: --color-bg-base !important;
+}
+.fa-solid fa-camera{
+    color: --color-bg-base;
+}
 
+.logo {
+  width: 60px;      /* Ajuste o tamanho */
+  height: auto;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}

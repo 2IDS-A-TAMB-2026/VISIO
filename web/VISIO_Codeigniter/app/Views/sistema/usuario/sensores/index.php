@@ -35,7 +35,7 @@
             title: s.nome,
             html: imagemHtml +
                 '<div style="text-align:left;font-size:15px;line-height:1.8;padding:6px 10px;">' +
-                    '<p>' + s.descricao + '</p>' +
+                    '<p><b>Descrição:</b> ' + s.descricao + '</p>' +
                     circuitoHtml +
                 '</div>',
             confirmButtonText: 'Fechar',
@@ -95,5 +95,6 @@
         </div>
     <?php endif; ?>
 </main>
+
 
 <?= view('sistema/layout/footer') ?>

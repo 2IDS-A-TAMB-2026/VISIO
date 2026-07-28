@@ -57,38 +57,35 @@ class AuthController extends BaseController
         return view('sistema/admin/login_adm');
     }
 
+    public function esqueceuSenhaAdmForm(): string
+    {
+        return view('sistema/admin/esqueceu_senha_adm/index');
+    }
+
     public function loginAdmin()
     {
-        // $email = $this->request->getPost('email');
-        // $senha = $this->request->getPost('senha');
+        $email = $this->request->getPost('email');
+        $senha = $this->request->getPost('senha');
 
-        // if (empty($email) || empty($senha)) {
-        //     return redirect()->to('/login/admin')
-        //         ->with('erro', 'E-mail e senha são obrigatórios.');
-        // }
+        if (empty($email) || empty($senha)) {
+            return redirect()->to('/login/admin')
+                ->with('erro', 'E-mail e senha são obrigatórios.');
+        }
 
-        // $model = new AdminModel();
-        // $admin = $model->buscarPorEmail($email);
+        $model = new AdminModel();
+        $admin = $model->buscarPorEmail($email);
 
-        // // Verifica se o admin existe e valida o hash da senha
-        // if (!$admin || !password_verify($senha, $admin['SENHA'])) {
-        //     return redirect()->to('/login/admin')
-        //         ->with('erro', 'E-mail ou senha incorretos.');
-        // }
+        // Verifica se o admin existe e valida o hash da senha
+        if (!$admin || !password_verify($senha, $admin['SENHA'])) {
+            return redirect()->to('/login/admin')
+                ->with('erro', 'E-mail ou senha incorretos.');
+        }
 
-        // session()->set([
-        //     'admin_logado' => true,
-        //     'admin_cnpj'   => $admin['CNPJ'],
-        //     'admin_email'  => $admin['EMAIL'],
-        //     'tipo'         => 'admin',
-        // ]);
-
-        // return redirect()->to('/admin/dashboard');
         session()->set([
             'admin_logado' => true,
-            'admin_cnpj' => '12.345.678/0001-01',
-            'admin_email' => 'admin@visio.com',
-            'tipo' => 'admin',
+            'admin_cnpj'   => $admin['CNPJ'],
+            'admin_email'  => $admin['EMAIL'],
+            'tipo'         => 'admin',
         ]);
 
         return redirect()->to('/admin/dashboard');

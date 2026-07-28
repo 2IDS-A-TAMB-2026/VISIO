@@ -1,58 +1,45 @@
 <?= view('sistema/layout/header') ?>
 
-<!-- PAGINA DA EMILY -->
+<main class="forgot-page">
+    <p id="senha-feedback" class="contato-feedback" hidden></p>
 
-<!DOCTYPE html>
-<html lang="pt-br">
+    <div class="forgot-container">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Senha — VISIO</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="assets/Marca/Simbolo/SimboloDark.jpg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-</head>
+        <section class="forgot-form">
+            <h1>Recuperar Senha</h1>
+            <p>Digite seu e-mail cadastrado. Você receberá um link para redefinir sua senha.</p>
 
-<body>
-    <main class="forgot-page">
-        <p id="senha-feedback" class="contato-feedback" hidden></p>
-        <div class="forgot-container">
-            <section class="forgot-form">
-                <h1>Recuperar Senha</h1>
-                <p>Digite seu e-mail. O pedido será registrado (demonstração — sem envio real de link).</p>
-                <form action="api/recuperar_senha.php" method="post" id="form">
-                    <input type="email" name="email" id="email" placeholder="Seu e-mail">
-                    <span class="erro" id="erroEmail"></span>
-                    <button type="button" onclick="mostrarAlerta()">
-                        <i class="fa-solid fa-envelope"></i> Registrar pedido
-                    </button>
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script>
-                    function mostrarAlerta() {
-                        Swal.fire({
-                            title: "Pedido registrado!",
-                            icon: "success",
-                            draggable: true
-                        });
-                    }
-                    </script>
-                </form>
-            </section>
-            <div class="login-image">
-            <img class="theme-img" src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                data-light="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>" alt="Logo"
-                style="width: 100%;  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+            <?php if (session()->getFlashdata('erro')): ?>
+                <p class="contato-feedback contato-feedback--erro" style="margin-bottom:14px;">
+                    <?= session()->getFlashdata('erro') ?>
+                </p>
+            <?php endif; ?>
+
+            <form action="<?= base_url('/usuario/esqueceu_senha') ?>" method="post" id="form">
+                <?= csrf_field() ?>
+                <input type="email" name="email" id="email" placeholder="Seu e-mail">
+                <span class="erro" id="erroEmail"></span>
+                <button type="submit">
+                    <i class="fa-solid fa-envelope"></i> Enviar link de recuperação
+                </button>
+            </form>
+
+            <div class="forgot-footer" style="margin-top:20px;">
+                <p>Lembrou a senha? <a href="<?= base_url('/login') ?>" style="color:#0084f7;">Entrar</a></p>
             </div>
+        </section>
+
+        <div class="login-image">
+            <img class="theme-img"
+                src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
+                data-light="<?= base_url('assets/images/logos/Logo/LogoLight.png') ?>"
+                data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
+                alt="Logo VISIO"
+                style="width:100%; box-shadow:0 4px 15px rgba(0,0,0,.2);">
         </div>
-    </main>
 
-    <script>
-    </script>
-    <script src="JS/validacaorecuperar.js"></script>
-    <script src="JS/theme.js"></script>
-</body>
-</html>
+    </div>
+</main>
 
-<?= view('sistema/layout/footer_adm') ?>
+<script src="<?= base_url('assets/js/validacaorecuperar.js') ?>"></script>
+<?= view('sistema/layout/footer') ?>

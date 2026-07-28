@@ -165,15 +165,29 @@
       }
     });
 
-    /* ── Fonte ── */
+    /* ── Fonte (com transição suave, compatível com qualquer navegador) ── */
     let currentFontSize = parseInt(localStorage.getItem('visio_fontsize') || '16');
-    document.body.style.fontSize = currentFontSize + 'px';
+    document.body.style.zoom = currentFontSize / 16;
+
+    function animarZoom(de, para) {
+      const duracao = 250;
+      const inicio = performance.now();
+      function passo(agora) {
+        const t = Math.min((agora - inicio) / duracao, 1);
+        const ease = 1 - Math.pow(1 - t, 3); // ease-out cúbico
+        document.body.style.zoom = de + (para - de) * ease;
+        if (t < 1) requestAnimationFrame(passo);
+      }
+      requestAnimationFrame(passo);
+    }
 
     function changeFontSize(delta) {
       const novo = currentFontSize + delta;
       if (novo < 12 || novo > 26) return;
+      const zoomAntigo = currentFontSize / 16;
       currentFontSize = novo;
-      document.body.style.fontSize = currentFontSize + 'px';
+      const zoomNovo = currentFontSize / 16;
+      animarZoom(zoomAntigo, zoomNovo);
       localStorage.setItem('visio_fontsize', currentFontSize);
     }
 
@@ -217,6 +231,19 @@
       window.speechSynthesis.speak(fala);
     }
   </script>
+
+
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+ 
 </body>
 
 </html>

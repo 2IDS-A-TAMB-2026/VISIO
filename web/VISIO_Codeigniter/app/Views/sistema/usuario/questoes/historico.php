@@ -1,4 +1,4 @@
-<?= view('sistema/layout/header') ?>
+<?= view('sistema/layout/header_logado') ?>
 
 <main class="questoes-page">
     <div class="questoes-container">
@@ -12,8 +12,7 @@
         <?php endif; ?>
 
         <?php
-            // Compatível com RespostaController (respostas + total + total_acertos)
-            // e com UsuarioController::historico (historico)
+            // Dados fornecidos por RespostaController::historico() (chave 'respostas')
             $lista  = $respostas ?? $historico ?? [];
             $qtd    = count($lista);
             $acertos = 0;
@@ -59,11 +58,16 @@
                             </td>
                             <td style="padding:12px;"><?= esc($r['RESPONDIDO_EM'] ?? '—') ?></td>
                             <td style="padding:12px;">
-                                <a href="<?= base_url('/resposta/excluir/' . esc($r['ID_RESPONDE'])) ?>"
-                                   onclick="return confirm('Remover esta resposta do histórico?')"
-                                   style="color:#ef4444;font-weight:600;">
-                                    <i class="fa-solid fa-trash"></i> Excluir
-                                </a>
+                                <form action="<?= base_url('/resposta/excluir/' . esc($r['ID_RESPONDE'])) ?>"
+                                      method="POST"
+                                      onsubmit="return confirm('Remover esta resposta do histórico?')"
+                                      style="display:inline;">
+                                    <?= csrf_field() ?>
+                                    <button type="submit"
+                                            style="color:#ef4444;font-weight:600;background:none;border:none;cursor:pointer;padding:0;font-size:inherit;font-family:inherit;">
+                                        <i class="fa-solid fa-trash"></i> Excluir
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

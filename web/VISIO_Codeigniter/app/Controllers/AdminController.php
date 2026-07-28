@@ -21,6 +21,7 @@ class AdminController extends BaseController
 
     public function dashboard(): string
     {
+        
         $respondeModel = new RespondeModel();
         $totalRespostas = $respondeModel->countAllResults();
         $totalAcertos = 0;
@@ -37,14 +38,53 @@ class AdminController extends BaseController
             ? round(($totalAcertos / $totalRespostas) * 100)
             : 0;
 
+        $atividadesRecentes = $respondeModel->atividadesRecentes(4);
+        foreach ($atividadesRecentes as &$atividade) {
+            $atividade['TEMPO_RELATIVO'] = $this->tempoRelativo($atividade['RESPONDIDO_EM']);
+        }
+
+        $adminModel = new AdminModel();
+        $admin = $adminModel->find(session()->get('admin_cnpj'));
+
         return view('sistema/admin/index', [
+            'admin' => $admin,
             'total_usuarios' => (new UsuarioModel())->countAllResults(),
             'total_sensores' => (new SensorModel())->countAllResults(),
             'total_perguntas' => (new PerguntaModel())->countAllResults(),
+            'total_perguntas_dificeis' => (new PerguntaModel())->contarPorNivel('Difícil'),
             'total_respostas' => $totalRespostas,
             'total_acertos' => $totalAcertos,
+            'total_erros' => $totalRespostas - $totalAcertos,
             'taxa_acerto' => $taxaAcerto,
+            'desempenho_semanal' => $respondeModel->desempenhoSemanal(),
+            'perguntas_mais_acertadas' => $respondeModel->perguntasPorTaxaAcerto(5, 'DESC'),
+            'perguntas_mais_erradas' => $respondeModel->perguntasPorTaxaAcerto(5, 'ASC'),
+            'ranking_usuarios' => $respondeModel->rankingUsuarios(3),
+            'atividades_recentes' => $atividadesRecentes,
         ]);
+    }
+
+    /**
+     * Converte um datetime ('Y-m-d H:i:s') em texto relativo ("Há 5 minutos", "Há 2 dias" etc.)
+     * Usado na seção "Atividades recentes" do dashboard.
+     */
+    private function tempoRelativo(string $datetime): string
+    {
+        $diferenca = time() - strtotime($datetime);
+
+        if ($diferenca < 60) {
+            return 'Agora mesmo';
+        }
+        if ($diferenca < 3600) {
+            $min = (int) floor($diferenca / 60);
+            return 'Há ' . $min . ' minuto' . ($min > 1 ? 's' : '');
+        }
+        if ($diferenca < 86400) {
+            $horas = (int) floor($diferenca / 3600);
+            return 'Há ' . $horas . ' hora' . ($horas > 1 ? 's' : '');
+        }
+        $dias = (int) floor($diferenca / 86400);
+        return 'Há ' . $dias . ' dia' . ($dias > 1 ? 's' : '');
     }
 
     // ---------------------------------------------------------------
@@ -56,6 +96,38 @@ class AdminController extends BaseController
         return view('sistema/admin/usuarios/index', [
             'usuarios' => (new UsuarioModel())->findAll(),
         ]);
+    }
+
+    public function atualizarUsuario(string $cpf)
+    {
+        $model = new UsuarioModel();
+        $usuario = $model->where('CPF', $cpf)->first();
+
+        if (!$usuario) {
+            return redirect()->to('/admin/usuarios')
+                ->with('erro', 'Usuário não encontrado.');
+        }
+
+        $email = $this->request->getPost('email');
+
+        $emailExistente = $model->where('EMAIL', $email)
+            ->where('CPF !=', $cpf)
+            ->first();
+        if ($emailExistente) {
+            return redirect()->to('/admin/usuarios')
+                ->with('erro', 'E-mail já está em uso por outro usuário.');
+        }
+
+        $model->update($cpf, [
+            'NOME' => $this->request->getPost('nome'),
+            'EMAIL' => $email,
+            'CARTAO' => $this->request->getPost('cartao') ?? '',
+            'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
+            'TELEFONE' => $this->request->getPost('telefone'),
+        ]);
+
+        return redirect()->to('/admin/usuarios')
+            ->with('sucesso', 'Usuário ' . $cpf . ' atualizado com sucesso!');
     }
 
     public function excluirUsuario(string $cpf)
@@ -87,8 +159,11 @@ class AdminController extends BaseController
         $arquivo = $this->request->getFile('foto');
 
         if ($arquivo && $arquivo->isValid() && !$arquivo->hasMoved()) {
+            if ($arquivo->getSize() > 2 * 1024 * 1024) {
+                return redirect()->to('/admin/sensor/novo')
+                    ->with('erro', 'A imagem deve ter no máximo 2 MB.');
+            }
             $novoNome = $arquivo->getRandomName();
-
             $arquivo->move(ROOTPATH . 'public/uploads/sensores', $novoNome);
             $foto = 'uploads/sensores/' . $novoNome;
         }
@@ -119,11 +194,13 @@ class AdminController extends BaseController
 
         $arquivo = $this->request->getFile('foto');
         if ($arquivo && $arquivo->isValid() && !$arquivo->hasMoved()) {
-
+            if ($arquivo->getSize() > 2 * 1024 * 1024) {
+                return redirect()->to('/admin/sensor/editar/' . $id)
+                    ->with('erro', 'A imagem deve ter no máximo 2 MB.');
+            }
             if (!empty($sensor['FOTO']) && file_exists(ROOTPATH . 'public/' . $sensor['FOTO'])) {
                 unlink(ROOTPATH . 'public/' . $sensor['FOTO']);
             }
-
             $novoNome = $arquivo->getRandomName();
             $arquivo->move(ROOTPATH . 'public/uploads/sensores', $novoNome);
             $foto = 'uploads/sensores/' . $novoNome;
@@ -137,7 +214,7 @@ class AdminController extends BaseController
         ]);
 
         return redirect()->to('/admin/sensores')
-            ->with('sucesso', 'Sensor updated.');
+            ->with('sucesso', 'Sensor atualizado.');
     }
 
     public function excluirSensor(int $id)
@@ -169,6 +246,7 @@ class AdminController extends BaseController
     {
         return view('sistema/admin/quiz/nova_pergunta');
     }
+
     public function inserirPergunta()
     {
         $perguntaModel = new PerguntaModel();
@@ -196,7 +274,6 @@ class AdminController extends BaseController
                     'FK_ID_PERGUNTA' => $idPergunta,
                 ];
             }
-
             $alternativaModel->insertBatch($lote);
         }
 
@@ -240,20 +317,9 @@ class AdminController extends BaseController
 
     public function excluirPergunta(int $id)
     {
-        (new PerguntaModel())->delete($id); // CASCADE apaga as alternativas
+        (new PerguntaModel())->delete($id);
         return redirect()->to('/admin/perguntas')
             ->with('sucesso', 'Pergunta e alternativas removidas com sucesso.');
-    }
-
-    // ---------------------------------------------------------------
-    // HISTÓRICO GERAL DE RESPOSTAS — CORRIGIDO: view dedicada
-    // ---------------------------------------------------------------
-
-    public function respostas(): string
-    {
-        return view('sistema/admin/respostas/index', [
-            'respostas' => (new RespondeModel())->listarComDetalhes(),
-        ]);
     }
 
     // ---------------------------------------------------------------
@@ -267,5 +333,64 @@ class AdminController extends BaseController
         return view('sistema/admin/perfil_adm', [
             'admin' => $model->find($cnpj),
         ]);
+    }
+
+    public function atualizarPerfilAdmin()
+    {
+        $cnpj  = session()->get('admin_cnpj');
+        $model = new AdminModel();
+        $email = $this->request->getPost('email');
+
+        $emailExistente = $model->where('EMAIL', $email)->where('CNPJ !=', $cnpj)->first();
+        if ($emailExistente) {
+            return redirect()->to('/admin/perfil')
+                ->with('erro', 'Este e-mail já está em uso por outro administrador.');
+        }
+
+        $dados = [
+            'NOME'     => $this->request->getPost('nome'),
+            'EMAIL'    => $email,
+            'TELEFONE' => $this->request->getPost('telefone') ?? '',
+        ];
+
+        // Upload da foto de perfil (mesmo padrão de UsuarioController::atualizarPerfil)
+        $foto = $this->request->getFile('foto');
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $validacao = $this->validate([
+                'foto' => [
+                    'uploaded[foto]',
+                    'mime_in[foto,image/jpg,image/jpeg,image/png,image/webp]',
+                    'max_size[foto,2048]', // Máximo 2MB
+                ],
+            ]);
+
+            if (!$validacao) {
+                return redirect()->to('/admin/perfil')
+                    ->with('erro', 'Arquivo inválido. Escolha uma imagem PNG, JPG ou WEBP de até 2MB.');
+            }
+
+            $novoNome = $foto->getRandomName();
+            $foto->move(ROOTPATH . 'public/uploads/admin/', $novoNome);
+
+            // Remove a foto antiga do servidor, se existir
+            $adminAtual = $model->find($cnpj);
+            if (!empty($adminAtual['FOTO']) && file_exists(ROOTPATH . 'public/' . $adminAtual['FOTO'])) {
+                if (!unlink(ROOTPATH . 'public/' . $adminAtual['FOTO'])) {
+                    log_message('warning', 'Não foi possível remover a foto antiga do admin ' . $cnpj . ': ' . $adminAtual['FOTO']);
+                }
+            }
+
+            $dados['FOTO'] = 'uploads/admin/' . $novoNome;
+        }
+
+        $novaSenha = $this->request->getPost('senha');
+        if (!empty($novaSenha)) {
+            $dados['SENHA'] = password_hash($novaSenha, PASSWORD_BCRYPT);
+        }
+
+        $model->update($cnpj, $dados);
+
+        return redirect()->to('/admin/perfil')
+            ->with('sucesso', 'Perfil atualizado com sucesso!');
     }
 }

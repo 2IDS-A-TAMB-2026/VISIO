@@ -84,7 +84,7 @@
             if (!Array.isArray(data)) {
                 questoes = [];
             } else {
-                // Algoritmo que baralha as questões para que o Quiz seja sempre diferente
+                // Algoritmo que embaralha as questões para que o Quiz seja sempre diferente
                 questoes = data.slice();
                 for (var i = questoes.length - 1; i > 0; i--) {
                     var j = Math.floor(Math.random() * (i + 1));

@@ -9,7 +9,7 @@
             <!-- SENSOR TEMPERATURA -->
         <div class="cardi" onclick="mostrarSensor()">
             <h3>Sensor de Temperatura</h3>
-            <img src="./assets/images/Sensores/sensor_temperatura.png" alt="Sensor de temperatura">
+            <img src="./assets/images/Sensores/sensor_temperatura.png"  width="100" height="50" alt="Sensor de temperatura">
             <p>Identifica variações de calor ou frio em um ambiente ou objeto.</p>
         </div>
 

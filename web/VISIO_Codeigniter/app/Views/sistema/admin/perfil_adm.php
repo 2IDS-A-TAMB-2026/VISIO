@@ -1,506 +1,256 @@
 <?= view('sistema/layout/header_adm') ?>
 
 <style>
-
-/* ===== RESET ===== */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI', sans-serif;
+/* Tema claro é o padrão, herdado do header_adm.php (:root com vars claras) */
+/* body.dark também é herdado do header_adm.php — não sobrescrever aqui,    */
+/* para manter o fundo idêntico ao resto do sistema.                       */
+body {
+    font-family: sans-serif;
+    margin: 0;
 }
 
-/* ===== VARIÁVEIS IGUAL DASHBOARD ===== */
-:root{
-    --bg:#f1f5f9;
-    --card:#ffffff;
-    --text:#0f172a;
-    --text2:#64748b;
-    --border:#e2e8f0;
-    --primary:#2563eb;
-    --sidebar:#0f172a;
-    --sidebar2:#111827;
-    --shadow:0 10px 25px rgba(0,0,0,0.08);
+/* ── 3. LAYOUT E ESTRUTURA (Funciona em ambos os temas através das variáveis) ── */
+.layout { display: flex; }
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    padding: 25px;
+    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
+    overflow-y: auto;
+    z-index: 1000;
 }
 
-/* DARK MODE */
-body.dark{
-    --bg:#0b1120;
-    --card:#111827;
-    --text:#f8fafc;
-    --text2:#94a3b8;
-    --border:#1e293b;
-    --sidebar:#020617;
-    --sidebar2:#0f172a;
-}
+.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
+.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
+.menu { list-style: none; padding: 0; }
+.menu li { margin-bottom: 10px; }
+.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
+.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
 
-body{
-    background:var(--bg);
-    color:var(--text);
-}
+.main { width: calc(100% - 280px); margin-left: 280px; min-height: 100vh; transition: background 0.3s; }
+.content { padding: 30px; }
 
-/* ===== LAYOUT ===== */
-.layout{
-    display:flex;
-}
+.perfil-header { margin-bottom: 30px; }
+.perfil-header h1 { font-size: 30px; color: var(--text); }
+.perfil-sub { color: var(--text2); margin-top: 8px; }
 
-/* ===== SIDEBAR IGUAL DASHBOARD ORIGINAL ===== */
-.sidebar{
-    width:280px;
-    height:100vh;
-    position:fixed;
-    left:0;
-    top:0;
-    padding:25px;
-    background:linear-gradient(180deg,var(--sidebar),var(--sidebar2));
-}
+.container-perfil { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
 
-/* LOGO IGUAL DASHBOARD */
-.logo-area{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    margin-bottom:40px;
+/* Lateral (Avatar) */
+.perfil-lateral {
+    width: 280px;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 30px 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+    transition: background 0.3s, border-color 0.3s;
 }
-
-.logo-area h2{
-    color:white;
-    font-size:28px;
-    font-weight:700;
+.perfil-lateral img {
+    width: 160px; height: 160px;
+    border-radius: 50%; object-fit: cover;
+    border: 5px solid var(--primary);
+    box-shadow: 0 10px 30px rgba(37,99,235,.2);
+    margin-bottom: 15px;
 }
+.perfil-lateral h3 { font-size: 18px; margin-bottom: 4px; color: var(--text); }
+.perfil-lateral span { color: var(--text2); font-size: 13px; }
 
-/* MENU PRINCIPAL IGUAL ORIGINAL */
-.menu-title{
-    color:#64748b;
-    text-transform:uppercase;
-    font-size:12px;
-    margin-bottom:15px;
-    letter-spacing:1px;
+.btn-foto {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 18px;
+    background: var(--primary); 
+    padding: 10px 16px; border-radius: 12px;
+    font-weight: 600; color: #fff !important;
+    cursor: pointer; width: 100%; box-sizing: border-box;
+    transition: background .2s;
 }
+.btn-foto:hover { background: #1d4ed8; }
 
-.menu a{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:15px;
-    border-radius:14px;
-    text-decoration:none;
-    color:#e2e8f0;
-    font-weight:500;
-    margin-bottom:10px;
+/* Formulário */
+.card-form {
+    flex: 1; min-width: 360px;
+    background: var(--card);
+    padding: 35px;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: background 0.3s, border-color 0.3s;
 }
+.card-form h2 { font-size: 20px; margin-bottom: 24px; color: var(--text); }
 
-
-/* ===== MAIN ===== */
-.main{
-    width:calc(100% - 280px);
-    margin-left:280px;
+.campo { margin-bottom: 18px; }
+.campo label { display: block; margin-bottom: 7px; font-weight: 600; color: var(--text); }
+.campo input {
+    width: 100%; height: 52px;
+    padding: 0 16px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+    color: var(--text);
+    box-sizing: border-box;
+    transition: border-color .2s, background 0.3s, color 0.3s;
 }
+.campo input:focus { outline: none; border-color: var(--primary); }
+.campo input[readonly] { opacity: .55; cursor: not-allowed; }
 
-/* ===== HEADER IGUAL DASHBOARD (IMPORTANTE) ===== */
-header{
-    height:90px;
-    background:var(--card);
-    border-bottom:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 30px;
-    position:sticky;
-    top:0;
-    z-index:999;
-    box-shadow:var(--shadow);
+.senha-wrap { position: relative; }
+.senha-wrap input { padding-right: 48px; }
+.btn-ver {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--text2); padding: 0;
 }
+.btn-ver:hover { color: var(--text); }
+.campo small { display: block; margin-top: 5px; font-size: 12px; color: var(--text2); }
 
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:15px;
+.btn-salvar {
+    width: 100%; height: 52px;
+    border: none; border-radius: 14px;
+    background: var(--primary); color: white;
+    font-weight: 600;
+    cursor: pointer; margin-top: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background .2s;
 }
+.btn-salvar:hover { background: #1d4ed8; }
 
-/* PERFIL BTN IGUAL DASHBOARD */
-.profile-btn{
-    background:var(--primary);
-    color:white;
-    padding:10px 15px;
-    border-radius:10px;
-    text-decoration:none;
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-/* THEME BTN */
-#theme-toggle{
-    width:42px;
-    height:42px;
-    border:none;
-    border-radius:12px;
-    background:var(--bg);
-    cursor:pointer;
-}
-
-/* ===== CONTENT ===== */
-.content{
-    padding:30px;
-}
-
-.page-title{
-    font-size:30px;
-    margin-bottom:20px;
-}
-
-/* PERFIL */
-.container{
-    display:flex;
-    gap:40px;
-    flex-wrap:wrap;
-}
-
-/* FOTO */
-.foto{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:15px;
-}
-
-.foto img{
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    object-fit:cover;
-    box-shadow:var(--shadow);
-}
-
-.btn-foto{
-    background:var(--primary);
-    color:white;
-    padding:8px 14px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-/* FORM */
-.card{
-    flex:1;
-    background:var(--card);
-    padding:25px;
-    border-radius:20px;
-    box-shadow:var(--shadow);
-}
-
-input{
-    padding:10px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    margin-bottom:10px;
-    width:100%;
-}
-
-.btn-salvar{
-    background:var(--primary);
-    color:white;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
-.perfil-header{
-    margin-bottom:30px;
-}
-
-.perfil-sub{
-    color:var(--text2);
-    margin-top:8px;
-}
-
-.container{
-    display:flex;
-    gap:30px;
-    flex-wrap:wrap;
-    align-items:flex-start;
-}
-
-.perfil-lateral{
-    width:300px;
-    background:var(--card);
-    border-radius:24px;
-    padding:30px;
-    box-shadow:var(--shadow);
-    border:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-}
-
-.perfil-lateral img{
-    width:180px;
-    height:180px;
-    border-radius:50%;
-    object-fit:cover;
-    border:5px solid #2563eb;
-    box-shadow:0 15px 35px rgba(37,99,235,.20);
-    margin-bottom:15px;
-}
-
-.perfil-lateral h3{
-    margin-bottom:5px;
-}
-
-.perfil-lateral span{
-    color:var(--text2);
-    font-size:14px;
-    margin-bottom:20px;
-}
-
-.btn-foto{
-    background:#2563eb;
-    color:white;
-    padding:12px 18px;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    width:100%;
-    text-align:center;
-}
-
-.card{
-    flex:1;
-    min-width:450px;
-    background:var(--card);
-    padding:35px;
-    border-radius:24px;
-    box-shadow:var(--shadow);
-    border:1px solid var(--border);
-}
-
-.titulo-card{
-    margin-bottom:25px;
-}
-
-.campo{
-    margin-bottom:18px;
-}
-
-.campo label{
-    display:block;
-    margin-bottom:8px;
-    font-weight:600;
-}
-
-input{
-    width:100%;
-    height:55px;
-    padding:0 18px;
-    border:2px solid var(--border);
-    border-radius:14px;
-    background:var(--bg);
-    color:var(--text);
-    font-size:15px;
-}
-
-input:focus{
-    border-color:#2563eb;
-    outline:none;
-}
-
-.btn-salvar{
-    width:100%;
-    height:55px;
-    border:none;
-    border-radius:14px;
-    background:#2563eb;
-    color:white;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    margin-top:10px;
-}
-
+/* ── 4. ALTO CONTRASTE ── */
+body.high-contrast .perfil-lateral,
+body.high-contrast .card-form      { background: #000 !important; border-color: #ff0 !important; }
+body.high-contrast .campo input    { background: #000 !important; color: #ff0 !important; border-color: #ff0 !important; }
+body.high-contrast .campo label,
+body.high-contrast .card-form h2,
+body.high-contrast .perfil-header h1 { color: #ff0 !important; }
+body.high-contrast .btn-salvar     { background: #ff0 !important; color: #000 !important; }
+body.high-contrast .btn-foto       { background: #ff0 !important; color: #000 !important; }
 </style>
 
-</head>
-
-<body>
-
 <div class="layout">
+    <?= view('sistema/admin/_sidebar', ['ativo' => 'perfil']) ?>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-
-            <div class="logo-area">
-                <h2>VISIO</h2>
+    <div class="main">
+        <div class="content">
+            <div class="perfil-header">
+                <h1><i class="fa-solid fa-user-shield"></i> Perfil do Administrador</h1>
+                <p class="perfil-sub">Gerencie suas informações e configurações da conta.</p>
             </div>
 
-            <p class="menu-title">Menu principal</p>
+            <?= view('sistema/layout/_flash') ?>
 
-            <ul class="menu">
+            <div class="container-perfil">
+                <div class="perfil-lateral">
+                    <img id="preview_foto"
+                         src="<?= !empty($admin['FOTO']) ? base_url($admin['FOTO']) : 'https://ui-avatars.com/api/?name=ADM&background=2563eb&color=fff&size=160' ?>"
+                         alt="Foto de perfil"
+                         onerror="this.src='https://ui-avatars.com/api/?name=ADM&background=2563eb&color=fff&size=160'">
+                    <h3><?= esc($admin['NOME'] ?? '') !== '' ? esc($admin['NOME']) : 'Administrador' ?></h3>
+                    <span><?= esc($admin['EMAIL'] ?? '') ?></span>
+                    <label for="foto_adm_input" class="btn-foto">
+                        <i class="fa-solid fa-camera"></i> Alterar Foto
+                    </label>
+                    <small style="margin-top:10px;font-size:11px;color:var(--text2);">
+                        PNG, JPG ou WEBP, até 2MB.
+                    </small>
+                </div>
 
-                <li>
-                    <a href="<?= base_url('/admin/dashboard') ?>" class="active">
-                        <i class="fa-solid fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                </li>
+                <div class="card-form">
+                    <h2><i class="fa-solid fa-id-card"></i> Informações da conta</h2>
 
-                <li>
-                    <a href="<?= base_url('/admin/usuarios') ?>">
-                        <i class="fa-solid fa-users"></i>
-                        Usuários
-                    </a>
-                </li>
+                    <form action="<?= base_url('/admin/perfil') ?>" method="post" enctype="multipart/form-data">
+                        <?= csrf_field() ?>
 
-                <li>
-                    <a href="<?= base_url('/admin/perguntas') ?>">
-                        <i class="fa-solid fa-clipboard-list"></i>
-                        Questões
-                    </a>
-                </li>
+                        <input type="file" id="foto_adm_input" name="foto" accept="image/*" style="display:none;">
 
-                <li>
-                    <a href="<?= base_url('/admin/sensores') ?>">
-                        <i class="fa-solid fa-microchip"></i>
-                        Sensores
-                    </a>
-                </li>
+                        <div class="campo">
+                            <label>CNPJ</label>
+                            <input type="text" value="<?= esc($admin['CNPJ'] ?? '') ?>" readonly>
+                            <small>O CNPJ não pode ser alterado.</small>
+                        </div>
 
-                <li>
-                    <a href="<?= base_url('/logout') ?>" style="color:#ef4444;">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        Sair
-                    </a>
-                </li>
+                        <div class="campo">
+                            <label>Nome</label>
+                            <input type="text" name="nome" value="<?= esc($admin['NOME'] ?? '') ?>" required>
+                        </div>
 
-            </ul>
+                        <div class="campo">
+                            <label>E-mail</label>
+                            <input type="email" name="email" value="<?= esc($admin['EMAIL'] ?? '') ?>" required>
+                        </div>
 
-        </aside>
+                        <div class="campo">
+                            <label>Telefone</label>
+                            <input type="tel" name="telefone" id="campo_tel"
+                                   value="<?= esc($admin['TELEFONE'] ?? '') ?>"
+                                   placeholder="(00) 00000-0000">
+                        </div>
 
-<div class="content">
+                        <div class="campo">
+                            <label>Nova senha <small style="display:inline;opacity:.6;">(deixe em branco para não alterar)</small></label>
+                            <div class="senha-wrap">
+                                <input type="password" name="senha" id="campo_senha" placeholder="Digite a nova senha">
+                                <button type="button" class="btn-ver" onclick="toggleSenha()">
+                                    <i class="fa-solid fa-eye" id="icon_senha"></i>
+                                </button>
+                            </div>
+                        </div>
 
-    <div class="perfil-header">
-        <div>
-            <h1 class="page-title">
-                <i class="fa-solid fa-user-shield"></i>
-                Perfil do Administrador
-            </h1>
-            <p class="perfil-sub">
-                Gerencie suas informações pessoais e configurações da conta.
-            </p>
+                        <button type="submit" class="btn-salvar">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="container">
-
-        <!-- FOTO -->
-        <div class="perfil-lateral">
-
-            <img id="preview" src="images/foto_adm_perfil.jpeg">
-
-            <h3>Administrador</h3>
-
-            <span>Conta principal do sistema VISIO</span>
-
-            <input type="file" id="file" hidden>
-
-            <label for="file" class="btn-foto">
-                <i class="fa-solid fa-camera"></i>
-                Alterar Foto
-            </label>
-
-        </div>
-
-        <!-- FORM -->
-        <div class="card">
-
-            <h2 class="titulo-card">
-                Informações pessoais
-            </h2>
-
-            <div class="campo">
-                <label>Nome completo</label>
-                <input id="nome" placeholder="Digite seu nome completo">
-            </div>
-
-            <div class="campo">
-                <label>CPF</label>
-                <input id="cpf" placeholder="000.000.000-00">
-            </div>
-
-            <div class="campo">
-                <label>Telefone</label>
-                <input id="telefone" placeholder="(19) 99999-9999">
-            </div>
-
-            <div class="campo">
-                <label>Data de nascimento</label>
-                <input id="data" type="date">
-            </div>
-
-            <div class="campo">
-                <label>E-mail</label>
-                <input id="email" placeholder="email@visio.com">
-            </div>
-
-            <div class="campo">
-                <label>Cartão IoT</label>
-                <input id="cartao" placeholder="Código do cartão">
-            </div>
-
-            <div class="campo">
-                <label>Senha</label>
-                <input id="senha" type="password" placeholder="Digite sua senha">
-            </div>
-
-            <button class="btn-salvar" id="salvar">
-                <i class="fa-solid fa-floppy-disk"></i>
-                Salvar Alterações
-            </button>
-
-        </div>
-
-    </div>
-
 </div>
 
 <script>
+/* Máscara telefone */
+document.getElementById('campo_tel').addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    if      (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/,        '($1) $2');
+    else if (v.length > 0) v = v.replace(/^(\d{0,2})/,               '($1');
+    this.value = v;
+});
 
-/* THEME */
-document.getElementById("theme-toggle").onclick = () => {
-    document.body.classList.toggle("dark");
-};
-
-/* FOTO */
-const file = document.getElementById("file");
-const preview = document.getElementById("preview");
-
-file.onchange = e => {
-    const reader = new FileReader();
-    reader.onload = () => {
-        preview.src = reader.result;
-        localStorage.setItem("foto", reader.result);
-    };
-    reader.readAsDataURL(e.target.files[0]);
-};
-
-if(localStorage.getItem("foto")){
-    preview.src = localStorage.getItem("foto");
+/* Mostrar/ocultar senha */
+function toggleSenha() {
+    const c = document.getElementById('campo_senha');
+    const i = document.getElementById('icon_senha');
+    c.type = c.type === 'password' ? 'text' : 'password';
+    i.className = c.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
 }
 
-/* SALVAR */
-document.getElementById("salvar").onclick = () => {
+/* Preview de foto (será enviada ao servidor no submit do form) */
+const fotoInput   = document.getElementById('foto_adm_input');
+const fotoPreview = document.getElementById('preview_foto');
 
-    ["nome","cpf","telefone","data","email","cartao","senha"].forEach(id=>{
-        localStorage.setItem(id, document.getElementById(id).value);
-    });
-
-    alert("Dados salvos!");
-};
-
+fotoInput.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Imagem muito grande. Máximo: 2 MB.');
+        this.value = '';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+        fotoPreview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
 </script>
-</div>
-
-</main>
 
 <?= view('sistema/layout/footer_adm') ?>
