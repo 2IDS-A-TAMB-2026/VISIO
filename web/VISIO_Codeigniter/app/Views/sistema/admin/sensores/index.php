@@ -1,6 +1,14 @@
 <?= view('sistema/layout/header_adm') ?>
 
 <style>
+    /* === RESET GLOBAL DE ROLAGEM === */
+    html, body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important; /* Libera a barra de rolagem da página */
+    }
+
     /* === PALETA DE CORES === */
     :root {
         --color-surface-dark: #17182c;
@@ -15,11 +23,12 @@
         --radius-std: 12px;
     }
 
-    /* Layout */
+    /* === LAYOUT SEM LIMITES DE ALTURA TRAVADOS === */
     .layout {
         display: flex;
         min-height: 100vh;
         width: 100%;
+        position: relative;
     }
 
     .sidebar {
@@ -33,29 +42,34 @@
         z-index: 1000;
     }
 
-    /* CORREÇÃO DO SCROLL AQUI */
     .main {
         margin-left: 280px;
         flex: 1;
-        padding: 30px;
-        background: #f8fafc;
+        padding: 35px 40px 100px 40px; /* Margem inferior generosa para você rolar até o fim sem cortar nada */
         min-height: 100vh;
-        overflow-y: auto; /* Permite rolar para baixo para ver todas as fotos */
+        height: auto !important; /* Garante que cresce conforme o número de linhas */
+        background: #f8fafc;
     }
 
     body.dark .main {
         background: linear-gradient(135deg, #17182c 0%, #131b4f 100%);
     }
 
-    /* Topbar */
+    .content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* === TOPBAR === */
     .topbar {
         margin-bottom: 25px;
     }
 
     .topbar h1 {
-        font-size: 32px;
+        font-size: 28px;
+        font-weight: 700;
         color: #0f172a;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
     }
 
     body.dark .topbar h1 {
@@ -64,152 +78,92 @@
 
     .topbar p {
         color: #64748b;
-        font-size: 15px;
+        font-size: 14px;
     }
 
     body.dark .topbar p {
         color: #8592ad;
     }
 
-    /* === BARRA DE AÇÕES (BUSCA + FILTRO + BOTÃO ADICIONAR) === */
-    .top-actions {
+    /* === BARRA DE AÇÕES (BOTÃO + PESQUISA) === */
+    .top-actions-bar {
         display: flex;
+        justify-content: space-between;
         align-items: center;
         gap: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         flex-wrap: wrap;
-    }
-
-    .search-box {
-        flex: 1;
-        min-width: 260px;
-        display: flex;
-        align-items: center;
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 0 16px;
-        height: 45px;
-        transition: all 0.3s ease;
-    }
-
-    body.dark .search-box {
-        background: #131b4f;
-        border-color: #2662d9;
-    }
-
-    .search-box:focus-within {
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgba(30, 107, 231, 0.15);
-    }
-
-    .search-box i {
-        color: #64748b;
-        margin-right: 10px;
-    }
-
-    body.dark .search-box i {
-        color: #8592ad;
-    }
-
-    .search-box input {
-        border: none;
-        background: transparent;
-        outline: none;
-        color: #0f172a;
-        width: 100%;
-        font-size: 14px;
-    }
-
-    body.dark .search-box input {
-        color: #d4e0f7;
-    }
-
-    .action-buttons {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    /* Select de Filtro Estilizado */
-    .filter-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .filter-wrapper i.fa-filter {
-        position: absolute;
-        left: 14px;
-        color: white;
-        pointer-events: none;
-        font-size: 13px;
-        z-index: 1;
-    }
-
-    .btn-filter {
-        height: 45px;
-        padding: 0 32px 0 36px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 14px;
-        background-color: var(--color-primary);
-        color: white;
-        border: none;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-filter:hover {
-        background-color: var(--color-primary-dark);
-    }
-
-    .btn-filter option {
-        background: white;
-        color: #0f172a;
-    }
-
-    body.dark .btn-filter option {
-        background: #131b4f;
-        color: #d4e0f7;
     }
 
     .btn-add {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        height: 45px;
         background: linear-gradient(135deg, var(--color-primary), var(--color-primary-accent));
         color: white;
-        padding: 0 20px;
+        padding: 12px 20px;
         border-radius: 10px;
         text-decoration: none;
         font-weight: 600;
         font-size: 14px;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(30, 107, 231, 0.2);
     }
 
     .btn-add:hover {
         background: var(--color-primary-dark);
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(30, 107, 231, 0.3);
+        box-shadow: 0 4px 15px rgba(30, 107, 231, 0.35);
     }
 
-    /* Card da tabela */
+    /* Input de Pesquisa */
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 380px;
+        min-width: 250px;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 14px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 16px 12px 40px;
+        font-size: 14px;
+        color: #0f172a;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    body.dark .search-input {
+        background-color: #1e293b;
+        border-color: #334155;
+        color: #f1f5f9;
+    }
+
+    .search-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(30, 107, 231, 0.15);
+    }
+
+    /* === CARD DA TABELA (SEM OVERFLOW HIDDEN) === */
     .card {
         background: white;
         border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         border: 1px solid #e2e8f0;
-        overflow: hidden;
-        margin-bottom: 40px; /* Margem para dar respiro na rolagem do final da página */
+        /* Removido o overflow: hidden que impedia o scroll */
     }
 
     body.dark .card {
@@ -218,7 +172,6 @@
         box-shadow: none;
     }
 
-    /* Tabela */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -240,7 +193,14 @@
         color: white;
         font-weight: 600;
         border: none;
-        vertical-align: middle;
+    }
+
+    /* Bordas arredondadas no topo da tabela sem usar overflow hidden */
+    thead tr th:first-child {
+        border-top-left-radius: 16px;
+    }
+    thead tr th:last-child {
+        border-top-right-radius: 16px;
     }
 
     td {
@@ -264,27 +224,19 @@
         color: #d4e0f7;
     }
 
-    td span {
-        color: #64748b;
-    }
-
-    body.dark td span {
-        color: #8592ad;
-    }
-
-    /* CÉLULAS E FOTOS */
+    /* Células e Fotos */
     .cell-img {
-        width: 140px;
+        width: 120px;
         text-align: center;
     }
 
     .sensor-img {
-        width: 120px;
-        height: 120px;
-        border-radius: 16px;
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
         object-fit: cover;
-        border: 3px solid #e2e8f0;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         transition: transform 0.2s ease;
     }
 
@@ -302,7 +254,9 @@
 
     .cell-descricao {
         min-width: 200px;
-        max-width: 300px;
+        max-width: 320px;
+        white-space: normal;
+        line-height: 1.4;
     }
 
     .cell-circuito {
@@ -310,20 +264,16 @@
     }
 
     .cell-acoes {
-        width: 220px;
+        width: 200px;
         text-align: center;
     }
 
     /* Botões de Ação */
     .actions-btns {
         display: flex;
+        gap: 8px;
         justify-content: center;
         align-items: center;
-        width: 100%;
-    }
-
-    .actions-btns > div {
-        width: 100%;
     }
 
     .btn-edit, .btn-delete {
@@ -331,34 +281,39 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
-        padding: 10px 14px !important;
-        font-size: 13px !important;
+        padding: 9px 14px;
         border-radius: 8px;
         text-decoration: none;
         font-weight: 600;
-        transition: opacity 0.2s;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: white;
     }
 
-    .btn-edit:hover, .btn-delete:hover {
-        opacity: 0.9;
+    .btn-edit {
+        background-color: #f59e0b;
+    }
+
+    .btn-edit:hover {
+        background-color: #d97706;
+    }
+
+    .btn-delete {
+        background-color: #ef4444;
+    }
+
+    .btn-delete:hover {
+        background-color: #dc2626;
     }
 
     tbody tr:hover {
-        background: rgba(37, 99, 235, 0.06);
+        background: rgba(37, 99, 235, 0.04);
     }
 
     body.dark tbody tr:hover {
         background: rgba(38, 98, 217, 0.1);
-    }
-
-    .no-results {
-        text-align: center;
-        padding: 25px !important;
-        color: #64748b;
-    }
-
-    body.dark .no-results {
-        color: #8592ad;
     }
 
     /* Responsivo */
@@ -368,18 +323,27 @@
             height: auto;
             position: relative;
         }
-
+        
         .main {
             margin-left: 0;
-            padding: 15px;
+            padding: 20px;
         }
-
+        
         .card {
             overflow-x: auto;
         }
-
+        
         table {
-            min-width: 900px;
+            min-width: 800px;
+        }
+
+        .top-actions-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-wrapper {
+            max-width: 100%;
         }
     }
 </style>
@@ -392,39 +356,32 @@
 
             <div class="topbar">
                 <h1>Sensores</h1>
-                <p>Gerencie os sensores cadastrados no sistema. <strong id="totalCount">(<?= count($sensores) ?> encontrados)</strong></p>
+                <p>Gerencie os sensores cadastrados no sistema.</p>
             </div>
 
             <?= view('sistema/layout/_flash') ?>
 
-            <!-- BARRA DE AÇÕES COM LUPA E FILTRO -->
-            <div class="top-actions">
-                <div class="search-box">
+            <!-- BARRA DE AÇÕES (BOTÃO E PESQUISA LADO A LADO) -->
+            <div class="top-actions-bar">
+                <a href="<?= base_url('/admin/sensor/novo') ?>" class="btn-add">
+                    <i class="fa-solid fa-plus"></i> Novo sensor
+                </a>
+
+                <div class="search-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" onkeyup="filtrarSensores()" placeholder="Buscar por nome ou descrição...">
-                </div>
-
-                <div class="action-buttons">
-                    <div class="filter-wrapper">
-                        <i class="fa-solid fa-filter"></i>
-                        <select id="filterCircuito" onchange="filtrarSensores()" class="btn-filter">
-                            <option value="">Todos os Circuitos</option>
-                            <option value="com_circuito">Com Circuito</option>
-                            <option value="sem_circuito">Sem Circuito</option>
-                        </select>
-                    </div>
-
-                    <a href="<?= base_url('/admin/sensor/novo') ?>" class="btn-add">
-                        <i class="fa-solid fa-plus"></i> Novo sensor
-                    </a>
+                    <input type="text" 
+                           id="searchInput" 
+                           placeholder="Pesquisar por nome, ID..." 
+                           class="search-input" 
+                           maxlength="100">
                 </div>
             </div>
 
             <section class="card">
-                <table id="tabelaSensores">
+                <table id="tableSensores">
                     <thead>
                         <tr>
-                            <th style="width: 70px; text-align: center;">ID</th>
+                            <th style="width: 60px;">ID</th>
                             <th class="cell-img">Foto</th>
                             <th class="cell-nome">Nome</th>
                             <th class="cell-descricao">Descrição</th>
@@ -434,55 +391,54 @@
                     </thead>
                     <tbody>
                         <?php if (empty($sensores)): ?>
-                            <tr>
-                                <td colspan="6" class="no-results">
+                            <tr class="no-data">
+                                <td colspan="6" style="text-align:center; padding:30px; color:#64748b;">
                                     Nenhum sensor cadastrado. <a href="<?= base_url('/admin/sensor/novo') ?>">Cadastre o primeiro!</a>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($sensores as $s): ?>
-                                <tr>
-                                    <td style="text-align: center; font-weight: 600;"><?= esc($s['ID_SENSOR']) ?></td>
+                                <tr class="sensor-row">
+                                    <td><strong>#<?= esc($s['ID_SENSOR']) ?></strong></td>
                                     <td class="cell-img">
                                         <?php if (!empty($s['FOTO'])): ?>
                                             <img src="<?= base_url($s['FOTO']) ?>" alt="Foto" class="sensor-img" onerror="this.src='<?= base_url('assets/images/placeholder.png') ?>'">
                                         <?php else: ?>
-                                            <span>—</span>
+                                            <span style="color: #94a3b8;">—</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="cell-nome"><strong><?= esc($s['NOME']) ?></strong></td>
-                                    <td class="cell-descricao" style="white-space: normal; line-height: 1.4;"><?= esc($s['DESCRICAO']) ?></td>
-                                    <td class="cell-circuito"><?= esc($s['CIRCUITO'] ?: '—') ?></td>
+                                    <td class="cell-nome">
+                                        <strong><?= esc($s['NOME']) ?></strong>
+                                    </td>
+                                    <td class="cell-descricao">
+                                        <?= esc($s['DESCRICAO']) ?>
+                                    </td>
+                                    <td class="cell-circuito">
+                                        <?= esc($s['CIRCUITO'] ?: '—') ?>
+                                    </td>
                                     <td class="cell-acoes">
                                         <div class="actions-btns">
-                                            <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
-                                                <a href="<?= base_url('/admin/sensor/editar/' . $s['ID_SENSOR']) ?>" class="btn-edit"
-                                                style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 8px; font-weight: 600; color: white; background-color: #F6A316; text-decoration: none; text-align: center;">
-                                                    <i class="fa-solid fa-pen"></i> Editar
-                                                </a>
+                                            <a href="<?= base_url('/admin/sensor/editar/' . $s['ID_SENSOR']) ?>" class="btn-edit" title="Editar">
+                                                <i class="fa-solid fa-pen"></i> Editar
+                                            </a>
 
-                                                <form action="<?= base_url('/admin/sensor/excluir/' . $s['ID_SENSOR']) ?>"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Excluir o sensor <?= esc($s['NOME']) ?>?')"
-                                                    style="flex: 1; margin: 0;">
-                                                    <?= csrf_field() ?>
-                                                    <button type="submit" class="btn-delete"
-                                                            style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: none; cursor: pointer; padding: 10px 14px; border-radius: 8px; font-weight: 600; color: white; background-color: #E84C4C;">
-                                                        <i class="fa-solid fa-trash"></i> Excluir
-                                                    </button>
-                                                </form>
-                                            </div>
+                                            <form action="<?= base_url('/admin/sensor/excluir/' . $s['ID_SENSOR']) ?>"
+                                                  method="POST"
+                                                  onsubmit="return confirm('Tem certeza que deseja excluir o sensor <?= esc($s['NOME']) ?>?')"
+                                                  style="margin: 0;">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn-delete" title="Excluir">
+                                                    <i class="fa-solid fa-trash"></i> Excluir
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
-
-                        <!-- Linha para quando a busca não encontrar resultados -->
                         <tr id="noResultsRow" style="display: none;">
-                            <td colspan="6" class="no-results">
-                                <i class="fa-solid fa-circle-exclamation" style="font-size: 18px; margin-bottom: 6px; display: block;"></i>
-                                Nenhum sensor encontrado para a pesquisa selecionada.
+                            <td colspan="6" style="text-align:center; padding: 25px; color:#64748b;">
+                                <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i> Nenhum sensor encontrado para a sua pesquisa.
                             </td>
                         </tr>
                     </tbody>
@@ -494,45 +450,33 @@
 </div><!-- /.layout -->
 
 <script>
-function filtrarSensores() {
-    const searchInput = document.getElementById("searchInput").value.toLowerCase();
-    const filterCircuito = document.getElementById("filterCircuito").value;
-    const rows = document.querySelectorAll("#tabelaSensores tbody tr:not(#noResultsRow)");
-    const noResultsRow = document.getElementById("noResultsRow");
-    const totalCount = document.getElementById("totalCount");
+    // === SCRIPT DE PESQUISA EM TEMPO REAL ===
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const rows = document.querySelectorAll('.sensor-row');
+        const noResultsRow = document.getElementById('noResultsRow');
 
-    let visiveis = 0;
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase().trim();
+                let hasMatch = false;
 
-    rows.forEach(row => {
-        const nome = row.children[2]?.textContent.toLowerCase() || '';
-        const descricao = row.children[3]?.textContent.toLowerCase() || '';
-        const circuito = row.children[4]?.textContent.trim() || '';
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    if (text.includes(term)) {
+                        row.style.display = '';
+                        hasMatch = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
 
-        const bateuBusca = nome.includes(searchInput) || descricao.includes(searchInput);
-        
-        let bateuCircuito = true;
-        if (filterCircuito === 'com_circuito') {
-            bateuCircuito = circuito !== '' && circuito !== '—';
-        } else if (filterCircuito === 'sem_circuito') {
-            bateuCircuito = circuito === '' || circuito === '—';
-        }
-
-        if (bateuBusca && bateuCircuito) {
-            row.style.display = "";
-            visiveis++;
-        } else {
-            row.style.display = "none";
+                if (noResultsRow) {
+                    noResultsRow.style.display = (hasMatch || rows.length === 0) ? 'none' : '';
+                }
+            });
         }
     });
-
-    if (noResultsRow) {
-        noResultsRow.style.display = (visiveis === 0 && rows.length > 0) ? "" : "none";
-    }
-
-    if (totalCount) {
-        totalCount.textContent = `(${visiveis} encontrado${visiveis !== 1 ? 's' : ''})`;
-    }
-}
 </script>
 
 <?= view('sistema/layout/footer_adm') ?>

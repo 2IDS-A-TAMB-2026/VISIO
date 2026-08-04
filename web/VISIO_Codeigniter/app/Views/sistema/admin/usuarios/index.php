@@ -179,7 +179,7 @@ body.dark tbody tr:hover { background: rgba(38, 98, 217, 0.1); }
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" 
                id="searchInput" 
-               placeholder="Pesquisar por nome, CPF, e-mail, telefone ou cartão IoT..." 
+               placeholder="Pesquisar por nome..." 
                class="search-input" 
                maxlength="100">
       </div>
