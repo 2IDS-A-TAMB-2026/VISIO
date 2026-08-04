@@ -56,7 +56,7 @@
                     <div class="team-member">
                         <img src="assets/images/Grupo/isabela.png" alt="Foto de Isabela Tessarin">
                         <p class="nome">Isabela Tessarin</p>
-                        <span class="funcao">Desenvolvedora Full-Stack &amp; Product Owner</span><br>
+                        <span class="funcao">Desenvolvedora Full-Stack </span><br>
                         <span> <a href="https://github.com/isinhaT" style="color: #0084f7;"><i
                                     class="fa-brands fa-github"></i></a></span>
                     </div>
@@ -79,7 +79,7 @@
                     <div class="team-member">
                         <img src="assets/images/Grupo/emily.png" alt="Foto de Emily Maiara">
                         <p class="nome">Emily Maiara</p>
-                        <span class="funcao">Programadora Back-End &amp; Scrum Master</span> <br>
+                        <span class="funcao">Programadora Back-End </span> <br>
                         <span> <a href="https://github.com/maiaraemily" style="color: #0084f7;"><i
                                     class="fa-brands fa-github"></i></a></span>
                     </div>
@@ -96,14 +96,14 @@
                     <div class="team-member">
                         <img src="assets/images/Grupo/lorrana.png" alt="Foto de Lorrana Generoso">
                         <p class="nome">Lorrana Generoso</p>
-                        <span class="funcao">Analista de sistema e designer</span> <br>
+                        <span class="funcao">Analista de sistema e designer &amp; Product Owner</span> <br>
                         <span> <a href="https://github.com/LorranaG" style="color: #0084f7;"><i
                                     class="fa-brands fa-github"></i></a></span>
                     </div>
                     <div class="team-member">
                         <img src="assets/images/Grupo/sophia.png" alt="Foto de Sophia Peron">
                         <p class="nome">Sophia Peron</p>
-                        <span class="funcao">Analista de sistema e designer</span> <br>
+                        <span class="funcao">Analista de sistema e designer &amp; Scrum Master</span> <br>
                         <span> <a href="https://github.com/SosoPeron" style="color: #0084f7;"><i
                                     class="fa-brands fa-github"></i></a></span>
                     </div>
