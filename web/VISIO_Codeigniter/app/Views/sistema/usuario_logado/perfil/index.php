@@ -246,7 +246,6 @@
     color: #0f172a;
     border-color: #cbd5e1;
   }
-
 </style>
 
 <main class="perfil-page">

@@ -29,6 +29,11 @@ $routes->get('/login/admin',  'AuthController::loginAdminForm');
 $routes->post('/login/admin', 'AuthController::loginAdmin');
 $routes->get('/logout',       'AuthController::logout');
 
+// ----------------------------------------------------
+// ENDPOINTS DE API (TESTES / RETORNO JSON)
+// ----------------------------------------------------
+$routes->get('/api/usuarios', 'AuthController::listarUsuarios'); // <-- NOVA ROTA AQUI!
+
 $routes->get('/usuario/cadastro',         'UsuarioController::cadastroForm');
 $routes->post('/usuario/cadastro',        'UsuarioController::cadastrar');
 
@@ -55,7 +60,7 @@ $routes->group('', ['filter' => 'userAuth'], function ($routes) {
     $routes->post('perfil', 'UsuarioController::atualizarPerfil');
 
     // Histórico de respostas
-    $routes->get('historico',                      'RespostaController::historico');
+    $routes->get('historico',                  'RespostaController::historico');
     $routes->post('resposta/excluir/(:num)',        'RespostaController::excluir/$1');
 
     // Quiz
@@ -70,7 +75,7 @@ $routes->group('', ['filter' => 'userAuth'], function ($routes) {
 // ÁREA RESTRITA: PAINEL ADMINISTRATIVO
 // Filtro 'adminAuth' garante acesso apenas a administradores
 // ----------------------------------------------------
- $routes->group('admin', ['filter' => 'adminAuth'], function ($routes) { 
+$routes->group('admin', ['filter' => 'adminAuth'], function ($routes) { 
 
     // Dashboard
     $routes->get('dashboard', 'AdminController::dashboard');

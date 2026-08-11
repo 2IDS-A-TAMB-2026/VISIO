@@ -16,7 +16,7 @@
                 <span class="erro" id="erroDataNascimento"></span>
                 <input type="tel" name="telefone" id="telefone" placeholder="Telefone">
                 <span class="erro" id="erroTelefone"></span>
-                <input type="text" name="cartao" id="cartao" placeholder="Número do cartão IoT" maxlength="25">
+                <input type="text" name="cartao" id="cartao" placeholder="Número do cartão" maxlength="25">
                 <span class="erro" id="erroCartao"></span>
                 <input type="password" name="senha" id="senha" placeholder="Senha">
                 <span class="erro" id="erroSenha"></span>

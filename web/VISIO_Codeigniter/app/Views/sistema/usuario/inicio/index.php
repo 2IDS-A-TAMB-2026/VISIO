@@ -310,7 +310,7 @@
     }
 
     .visio-hero .hero-title .highlight {
-        background: linear-gradient(135deg, #13386e, #2b2eff);
+        background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;

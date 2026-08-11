@@ -23,6 +23,7 @@
                     <i class="fa-solid fa-right-to-bracket"></i> Entrar como ADM
                 </button>
                 <br><br>
+                <p> <a href="<?= base_url('/admin/esqueceu_senha') ?>" style="color: #0084f7;">Esqueceu senha?</a></p>
             </form>
         </div>
         <div class="login-image">

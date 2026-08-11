@@ -22,6 +22,42 @@ class AuthController extends BaseController
 
     public function loginUsuario()
     {
+        // Trata requisições enviadas por JSON/AJAX via Fetch
+        if ($this->request->isAJAX() || str_contains($this->request->getHeaderLine('Content-Type'), 'json')) {
+            $json = $this->request->getJSON();
+            $email = $json->email ?? null;
+            $senha = $json->senha ?? null;
+
+            if (empty($email) || empty($senha)) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'E-mail e senha são obrigatórios.'
+                ]);
+            }
+
+            $model = new UsuarioModel();
+            $usuario = $model->buscarPorEmail($email);
+
+            if (!$usuario || !password_verify($senha, $usuario['SENHA'])) {
+                return $this->response->setStatusCode(401)->setJSON([
+                    'message' => 'E-mail ou senha incorretos.'
+                ]);
+            }
+
+            // Define a sessão igual ao padrão da sua aplicação
+            session()->set([
+                'usuario_logado' => true,
+                'usuario_cpf'    => $usuario['CPF'],
+                'usuario_email'  => $usuario['EMAIL'],
+                'tipo'           => 'usuario',
+            ]);
+
+            return $this->response->setJSON([
+                'status'  => 200,
+                'message' => 'Login realizado com sucesso!'
+            ]);
+        }
+
+        // Fallback: requisição via FORM tradicional (Sem JavaScript)
         $email = $this->request->getPost('email');
         $senha = $this->request->getPost('senha');
 
@@ -40,9 +76,9 @@ class AuthController extends BaseController
 
         session()->set([
             'usuario_logado' => true,
-            'usuario_cpf' => $usuario['CPF'],
-            'usuario_email' => $usuario['EMAIL'],
-            'tipo' => 'usuario',
+            'usuario_cpf'    => $usuario['CPF'],
+            'usuario_email'  => $usuario['EMAIL'],
+            'tipo'           => 'usuario',
         ]);
 
         return redirect()->to('/perfil');
@@ -99,5 +135,19 @@ class AuthController extends BaseController
     {
         session()->destroy();
         return redirect()->to('/login');
+    }
+
+    // ---------------------------------------------------------------
+    // ENDPOINT API: RETORNAR TODOS OS USUÁRIOS (JSON)
+    // ---------------------------------------------------------------
+    public function listarUsuarios()
+    {
+        $model = new UsuarioModel();
+        
+        // Busca todos os usuários do banco de dados
+        $usuarios = $model->findAll(); 
+
+        // Retorna a resposta crua em formato JSON para o navegador
+        return $this->response->setJSON($usuarios);
     }
 }
