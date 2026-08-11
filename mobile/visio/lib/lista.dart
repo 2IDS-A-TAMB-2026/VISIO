@@ -216,6 +216,9 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   Widget _userCard(Map<String, String> u) {
+    final email = u['email'] ?? '';
+    final inicial = email.isNotEmpty ? email[0].toUpperCase() : '?';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -232,7 +235,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                 radius: 20,
                 backgroundColor: AppColors.primary.withOpacity(0.1),
                 child: Text(
-                  (u['email'] ?? '-')[0].toUpperCase(),
+                  inicial,
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
@@ -245,7 +248,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      u['email'] ?? '-',
+                      email.isNotEmpty ? email : '-',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,

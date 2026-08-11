@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'login.dart';
 import 'sensores.dart';
 import 'questoes.dart';
 import 'identificador.dart';
 import 'sobre.dart';
+import 'appcolor.dart';
+import 'controllers/theme_controller.dart';
+import 'controllers/font_scale_controller.dart';
+import 'services/tts_service.dart';
+import 'theme/app_theme.dart';
+import 'widgets/accessibility_panel.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,23 +21,16 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ),
   );
-  runApp(const MyApp());
-}
-
-class AppColors {
-  static const Color bgBase = Color(0xFF000000);
-  static const Color bgCardDark = Color(0xFF020321);
-  static const Color bgCardAlt = Color(0xFF121212);
-  static const Color surfaceDark = Color(0xFF17182C);
-  static const Color primary = Color(0xFF1E6BE7);
-  static const Color primaryLight = Color(0xFF47CDFD);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textMuted = Color(0xFFBBBBBB);
-  static const Color textSoft = Color(0xFFCFD8E3);
-  static const Color border = Color(0xFF2A2A2A);
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color danger = Color(0xFFEF4444);
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeController()),
+        ChangeNotifierProvider(create: (_) => FontScaleController()),
+        ChangeNotifierProvider.value(value: TtsService.instance),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -38,121 +38,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = context.watch<ThemeController>();
+    final fontScale = context.watch<FontScaleController>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'VISIO',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColors.bgBase,
-        primaryColor: AppColors.primary,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primary,
-          surface: AppColors.surfaceDark,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.surfaceDark,
-          elevation: 0,
-          centerTitle: false,
-          titleTextStyle: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeController.themeMode,
+      builder: (context, child) {
+       
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(fontScale.scale),
           ),
-          iconTheme: IconThemeData(color: AppColors.textPrimary),
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.surfaceDark,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
-          type: BottomNavigationBarType.fixed,
-          elevation: 12,
-          selectedLabelStyle: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
-          unselectedLabelStyle: TextStyle(fontSize: 11),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: AppColors.bgCardAlt,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.danger),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: AppColors.danger, width: 2),
-          ),
-          labelStyle: const TextStyle(color: AppColors.textMuted),
-          hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textPrimary,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-            ),
-            elevation: 0,
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: AppColors.primary),
-            foregroundColor: AppColors.primary,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        cardTheme: CardThemeData(
-          color: AppColors.bgCardAlt,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: AppColors.border, width: 0.5),
-          ),
-          elevation: 0,
-          margin: EdgeInsets.zero,
-        ),
-        dividerTheme: const DividerThemeData(
-          color: AppColors.border,
-          thickness: 0.5,
-        ),
-        snackBarTheme: SnackBarThemeData(
-          backgroundColor: AppColors.surfaceDark,
-          contentTextStyle: const TextStyle(color: AppColors.textPrimary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      ),
+          child: child!,
+        );
+      },
       home: const MainShell(),
     );
   }
@@ -168,18 +71,24 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomePage(),
-    SensoresPage(),
-    IdentificadorPage(),
-    QuizPage(),
-    AboutPage(),
-  ];
+
+  List<Widget> _buildScreens() => [
+        const HomePage(),
+        const SensoresPage(),
+        IdentificadorPage(isActive: _currentIndex == 2),
+        const QuizPage(),
+        const AboutPage(),
+      ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: Stack(
+        children: [
+          IndexedStack(index: _currentIndex, children: _buildScreens()),
+          const AccessibilityPanel(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
@@ -224,7 +133,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             SizedBox(width: 8),
           ],
         ),
@@ -263,7 +172,7 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.bgBase, AppColors.bgCardDark],
+          colors: [Color.fromARGB(234, 0, 0, 0), Color.fromARGB(234, 0, 0, 33)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -271,8 +180,11 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(22),
-            child: Image.asset('assets/images/LogoDark.png', height: 250),
+            padding: const EdgeInsets.all(2),
+            child: Image.asset(
+              'assets/images/logos/Logo/LogoDarkD.png',
+              height: 350,
+            ),
           ),
           const SizedBox(height: 14),
           const Text(
@@ -482,13 +394,19 @@ class HomePage extends StatelessWidget {
   Widget _buildPortfolio() {
     final items = [
       (
-        'assets/images/identificacao.automatica.png',
+        'assets/images/Aplicacoes/identificacao.automatica.png',
         '1- Identificação Automática',
       ),
-      ('assets/images/aplicacao.educacional.png', '2- Aplicação Educacional'),
-      ('assets/images/gestaoeorganizacao.png', '3- Gestão e Organização'),
       (
-        'assets/images/interfaceegerenciamento.png',
+        'assets/images/Aplicacoes/aplicacao.educacional.png',
+        '2- Aplicação Educacional',
+      ),
+      (
+        'assets/images/Aplicacoes/gestaoeorganizacao.png',
+        '3- Gestão e Organização',
+      ),
+      (
+        'assets/images/Aplicacoes/interfaceegerenciamento.png',
         '4- Interface de Gerenciamento',
       ),
     ];
@@ -564,7 +482,7 @@ class HomePage extends StatelessWidget {
       color: AppColors.surfaceDark,
       child: Column(
         children: [
-          Image.asset('assets/images/LogoDark.png', height: 60),
+          Image.asset('assets/images/logos/Logo/LogoDark.png', height: 60),
           SizedBox(height: 10),
           SizedBox(height: 6),
           Text(

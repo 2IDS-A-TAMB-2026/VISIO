@@ -4,10 +4,19 @@ import 'contato.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
-  Future<void> _openLink(String url) async {
+  Future<void> _openLink(BuildContext context, String url) async {
     final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Não foi possível abrir $url');
+    bool ok = false;
+    try {
+      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      ok = false;
+    }
+
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível abrir o link: $url')),
+      );
     }
   }
 
@@ -19,8 +28,8 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
-            SizedBox(width: 8),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
+         
             Text('Sobre Nós'),
           ],
         ),
@@ -47,7 +56,7 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/images/LogoDark.png',
+                      'assets/images/logos/Simbolo/SimboloDark2.png',
                       width: 350,
                       height: 350,
                     ),
@@ -170,7 +179,7 @@ class AboutPage extends StatelessWidget {
 
               _sectionTitle('Equipe'),
               const SizedBox(height: 16),
-              _teamGrid(),
+              _teamGrid(context),
 
               const SizedBox(height: 28),
 
@@ -294,7 +303,7 @@ class AboutPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
+        color: const Color.fromARGB(255, 15, 14, 14),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border),
       ),
@@ -305,54 +314,54 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _teamGrid() {
+  Widget _teamGrid(BuildContext context) {
     final membros = [
       (
         'Isabela Tessarin',
         'Full-Stack',
-        'assets/images/isabela.png',
+        'assets/images/Grupo/isabela.png',
         'https://github.com/isinhaT',
         'https://linkedin.com/in/isabela',
       ),
       (
         'Matheus Neri',
         'Full-Stack',
-        'assets/images/matheus.png',
+        'assets/images/Grupo/matheus.png',
         'https://github.com/NeriMH',
         'https://linkedin.com/in/matheusneri',
       ),
       (
         'Fernanda Amaral',
         'Back-End',
-        'assets/images/fernanda.png',
+        'assets/images/Grupo/fernanda.png',
         'https://github.com/fernandaamaral',
         'https://linkedin.com/in/fernandaamaral',
       ),
       (
         'Emily Maiara',
         'Back-End',
-        'assets/images/emily.png',
+        'assets/images/Grupo/emily.png',
         'https://github.com/maiaraemily',
         'https://linkedin.com/in/emilymaiara',
       ),
       (
         'Sophia Peron',
         'Designer',
-        'assets/images/sophia.png',
+        'assets/images/Grupo/sophia.png',
         'https://github.com/SosoPeron',
         'https://linkedin.com/in/sophia-peron',
       ),
       (
         'Lorrana Generoso',
         'Designer',
-        'assets/images/lorrana.png',
+        'assets/images/Grupo/lorrana.png',
         'https://github.com/LorranaG',
         'https://linkedin.com/in/lorrana',
       ),
       (
         'Guilherme Staconi',
         'Designer',
-        'assets/images/guilherme.png',
+        'assets/images/Grupo/guilherme.png',
         'https://github.com/guizim-GitFF',
         'https://linkedin.com/in/guilhermestaconi',
       ),
@@ -364,14 +373,15 @@ class AboutPage extends StatelessWidget {
       crossAxisCount: 2,
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
-      childAspectRatio: 0.9,
+      childAspectRatio: 0.5,
       children: membros
-          .map((m) => _memberCard(m.$1, m.$2, m.$3, m.$4, m.$5))
+          .map((m) => _memberCard(context, m.$1, m.$2, m.$3, m.$4, m.$5))
           .toList(),
     );
   }
 
   Widget _memberCard(
+    BuildContext context,
     String nome,
     String cargo,
     String imagePath,
@@ -441,13 +451,13 @@ class AboutPage extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.code, size: 18),
                       color: cor,
-                      onPressed: () => _openLink(github),
+                      onPressed: () => _openLink(context, github),
                       tooltip: 'GitHub',
                     ),
                     IconButton(
                       icon: const Icon(Icons.business, size: 18),
                       color: cor,
-                      onPressed: () => _openLink(linkedin),
+                      onPressed: () => _openLink(context, linkedin),
                       tooltip: 'LinkedIn',
                     ),
                   ],

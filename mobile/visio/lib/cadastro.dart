@@ -66,7 +66,7 @@ class _CadastroPageState extends State<CadastroPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             const SizedBox(width: 8),
             const Text('Criar Conta'),
           ],
@@ -99,12 +99,22 @@ class _CadastroPageState extends State<CadastroPage> {
                       Icons.badge_outlined,
                       keyboard: TextInputType.number,
                       inputFormatters: [cpfMask],
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Campo obrigatório';
+                        if (!_cpfValido(v)) return 'CPF inválido';
+                        return null;
+                      },
                     ),
                     _field(
                       emailCtrl,
                       'E-mail',
                       Icons.email_outlined,
                       keyboard: TextInputType.emailAddress,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Campo obrigatório';
+                        if (!_emailValido(v)) return 'E-mail inválido';
+                        return null;
+                      },
                     ),
                     _field(
                       dataNascCtrl,
@@ -182,6 +192,7 @@ class _CadastroPageState extends State<CadastroPage> {
     String? hint,
     bool required = true,
     List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -194,11 +205,40 @@ class _CadastroPageState extends State<CadastroPage> {
           hintText: hint,
           prefixIcon: Icon(icon, size: 20),
         ),
-        validator: required
-            ? (v) => v!.isEmpty ? 'Campo obrigatório' : null
-            : null,
+        validator: validator ??
+            (required
+                ? (v) => v!.isEmpty ? 'Campo obrigatório' : null
+                : null),
       ),
     );
+  }
+
+  /// Valida um e-mail com uma checagem simples de formato.
+  bool _emailValido(String email) {
+    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
+  }
+
+  /// Valida um CPF (com ou sem máscara) pelo algoritmo oficial de dígitos
+  /// verificadores — mesma lógica usada no backend web (UsuarioController).
+  /// Também rejeita sequências de dígitos repetidos (ex.: 111.111.111-11).
+  bool _cpfValido(String cpfComMascara) {
+    final cpf = cpfComMascara.replaceAll(RegExp(r'\D'), '');
+
+    if (cpf.length != 11) return false;
+    if (RegExp(r'^(\d)\1{10}$').hasMatch(cpf)) return false;
+
+    for (var posicaoDigito = 9; posicaoDigito <= 10; posicaoDigito++) {
+      var soma = 0;
+      for (var i = 0; i < posicaoDigito; i++) {
+        soma += int.parse(cpf[i]) * ((posicaoDigito + 1) - i);
+      }
+      final resto = soma % 11;
+      final digitoEsperado = (resto < 2) ? 0 : 11 - resto;
+
+      if (int.parse(cpf[posicaoDigito]) != digitoEsperado) return false;
+    }
+
+    return true;
   }
 
   Widget _passwordField(

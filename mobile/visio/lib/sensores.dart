@@ -19,7 +19,7 @@ class _SensoresPageState extends State<SensoresPage> {
           'Identifica variações de calor ou frio em um ambiente ou objeto.',
       'usos': 'Monitoramento climático, geladeiras industriais, sistemas HVAC',
       'cor': Color(0xFFEF4444),
-      'imagem': 'assets/images/sensor_temperatura.jpg',
+      'imagem': 'assets/images/Sensores/sensor_temperatura.png',
     },
     {
       'titulo': 'Proximidade',
@@ -27,7 +27,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Detecta quando um objeto está próximo sem contato físico.',
       'usos': 'Automação de portas, segurança, robótica',
       'cor': Color(0xFF8B5CF6),
-      'imagem': 'assets/images/sensor_proximidade.jpg',
+      'imagem': 'assets/images/Sensores/sensor_proximidade.png',
     },
     {
       'titulo': 'Umidade',
@@ -35,7 +35,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Mede a quantidade de vapor de água presente no ar.',
       'usos': 'Meteorologia, agricultura, controle de ambientes',
       'cor': Color(0xFF1E6BE7),
-      'imagem': 'assets/images/sensor_umidade.jpg',
+      'imagem': 'assets/images/Sensores/sensor_umidade.png',
     },
     {
       'titulo': 'Luz',
@@ -43,7 +43,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Mede a intensidade luminosa do ambiente.',
       'usos': 'Iluminação automática, painéis solares, fotografia',
       'cor': Color(0xFFF59E0B),
-      'imagem': 'assets/images/sensor_luz.jpg.jpeg',
+      'imagem': 'assets/images/Sensores/sensor_luz.png',
     },
     {
       'titulo': 'Movimento',
@@ -52,7 +52,7 @@ class _SensoresPageState extends State<SensoresPage> {
           'Detecta presença através da variação de calor corporal (PIR).',
       'usos': 'Segurança, automação residencial, câmeras',
       'cor': Color(0xFF22C55E),
-      'imagem': 'assets/images/sensor_movimento.jpg.jpeg',
+      'imagem': 'assets/images/Sensores/sensor_movimento.png',
     },
     {
       'titulo': 'Ultrassônico',
@@ -60,7 +60,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Calcula distância usando pulsos de ondas sonoras.',
       'usos': 'Mapeamento, robótica, estacionamento',
       'cor': Color(0xFF06B6D4),
-      'imagem': 'assets/images/sensor_ultrassonico.jpg',
+      'imagem': 'assets/images/Sensores/sensor_ultrassonico.png',
     },
     {
       'titulo': 'Gás / Fumaça',
@@ -68,7 +68,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Identifica gases inflamáveis ou fumaça no ambiente.',
       'usos': 'Alarmes de incêndio, monitoramento industrial',
       'cor': Color(0xFFFF7043),
-      'imagem': 'assets/images/sensor_gas.jpg.jpeg',
+      'imagem': 'assets/images/Sensores/sensor_gas.png',
     },
     {
       'titulo': 'Pressão',
@@ -76,7 +76,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Mede a pressão atmosférica para indicar clima ou altitude.',
       'usos': 'Meteorologia, drones, dispositivos wearable',
       'cor': Color(0xFF7C3AED),
-      'imagem': 'assets/images/sensor_pressao.jpg.jpeg',
+      'imagem': 'assets/images/Sensores/sensor_pressao.png',
     },
     {
       'titulo': 'Toque',
@@ -84,7 +84,7 @@ class _SensoresPageState extends State<SensoresPage> {
       'descricao': 'Reconhece o contato físico direto na superfície.',
       'usos': 'Interfaces, botões capacitivos, eletrônicos',
       'cor': Color(0xFFEC4899),
-      'imagem': 'assets/images/sensor_toque.jpg.jpeg',
+      'imagem': 'assets/images/Sensores/sensor_toque.png',
     },
   ];
 
@@ -98,8 +98,8 @@ class _SensoresPageState extends State<SensoresPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
-            Text('        Sensores IoT'),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
+            Text('Sensores IoT'),
           ],
         ),
       ),
@@ -168,7 +168,7 @@ class _SensoresPageState extends State<SensoresPage> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
-                            childAspectRatio: 0.8,
+                            childAspectRatio: 0.5,
                           ),
                       itemCount: _filtrados.length,
                       itemBuilder: (_, i) => _sensorCard(_filtrados[i]),

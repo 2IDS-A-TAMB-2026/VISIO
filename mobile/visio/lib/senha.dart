@@ -27,7 +27,7 @@ class _ForgotPageState extends State<ForgotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
+      backgroundColor: const Color.fromARGB(234, 16, 16, 16),
       appBar: AppBar(
         title: const Row(
           children: [
@@ -54,7 +54,7 @@ class _ForgotPageState extends State<ForgotPage> {
           padding: const EdgeInsets.all(1),
           
           child: Image.asset(
-            'assets/images/LogoDark.png',
+            'assets/images/logos/Logo/LogoDark.png',
             width: 350,
             height: 350,
           ),

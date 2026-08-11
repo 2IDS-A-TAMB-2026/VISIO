@@ -3,6 +3,8 @@ import 'appcolor.dart';
 import 'cadastro.dart';
 import 'senha.dart';
 import 'login_adm.dart';
+import 'services/auth_service.dart';
+import 'widgets/demo_mode_banner.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,18 +46,28 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      // Simular chamada à API
-      await Future.delayed(const Duration(milliseconds: 800));
+      final resultado = await AuthService.instance.loginUsuario(
+        email: _emailCtrl.text,
+        senha: _senhaCtrl.text,
+      );
 
       // ✓ Verificar mounted ANTES de usar context
       if (!mounted) return;
 
       setState(() => _loading = false);
 
-      // ✓ Verificar mounted novamente antes de mostrar snackbar
-      if (mounted) {
+      if (!mounted) return;
+
+      if (resultado.sucesso) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login realizado com sucesso!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(resultado.mensagemErro ?? 'Não foi possível entrar.'),
+            backgroundColor: AppColors.danger,
+          ),
         );
       }
     } catch (e) {
@@ -79,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             const SizedBox(width: 8),
             const Text('Login'),
           ],
@@ -91,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               Image.asset(
-                'assets/images/LogoDark.png',
+                'assets/images/logos/Logo/LogoDark.png',
                 width: 350,
                 height: 350,
               ),
@@ -129,9 +141,11 @@ class _LoginPageState extends State<LoginPage> {
                           color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
-                      // ✓ Email field com validação melhorada
+                      if (AuthService.isDemoMode) const DemoModeBanner(),
+
+                      // ✓ Email field com validação de formato de verdade
                       TextFormField(
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
@@ -139,10 +153,17 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: 'E-mail',
                           prefixIcon: Icon(Icons.email_outlined, size: 20),
                         ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Campo obrigatório';
+                          if (!AuthService.instance.emailValido(v)) {
+                            return 'E-mail inválido';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 14),
 
-                      // ✓ Senha field com validação melhorada
+                      // ✓ Senha field com validação de verdade
                       TextFormField(
                         controller: _senhaCtrl,
                         obscureText: _obscure,
@@ -160,6 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                                 setState(() => _obscure = !_obscure),
                           ),
                         ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Campo obrigatório';
+                          if (v.length < 6) return 'Mínimo 6 caracteres';
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 8),
                       Align(

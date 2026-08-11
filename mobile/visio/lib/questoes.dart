@@ -15,6 +15,12 @@ class _QuizPageState extends State<QuizPage> {
   int _acertos = 0;
   bool _finalizado = false;
 
+  /// Guarda, na mesma ordem das perguntas respondidas, se cada uma foi
+  /// acertada ou não — usado no resumo final. Antes o resumo marcava as
+  /// primeiras `_acertos` perguntas como certas por posição, o que não
+  /// refletia quais perguntas foram de fato acertadas.
+  final List<bool> _respostasCorretas = [];
+
   final List<Map<String, dynamic>> questoes = const [
     {
       'nivel': 'Fácil',
@@ -93,259 +99,6 @@ class _QuizPageState extends State<QuizPage> {
       ],
       'correta': 2,
     },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'Como funciona um ESP32?',
-      'opcoes': [
-        'Executa firmware e integra Wi-Fi/Bluetooth em um SoC',
-        'Opera exclusivamente como sensor analógico',
-        'Funciona apenas como interface de entrada',
-        'Atua somente como conversor de sinal',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é protocolo MQTT?',
-      'opcoes': [
-        'Protocolo leve baseado em publish/subscribe',
-        'Barramento físico de alta velocidade',
-        'Sistema de arquivos distribuído',
-        'Interface gráfica embarcada',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'Diferença entre Arduino e Raspberry Pi?',
-      'opcoes': [
-        'Arduino é microcontrolador, Raspberry Pi é SBC',
-        'Arduino roda Linux nativamente',
-        'Raspberry Pi não executa código',
-        'Ambos são apenas sensores programáveis',
-      ],
-      'correta': 1,
-    },
-    {
-      'nivel': 'Fácil',
-      'pergunta': 'O que é um sensor DHT11?',
-      'opcoes': [
-        'Sensor digital de temperatura e umidade',
-        'Sensor de pressão atmosférica',
-        'Módulo de comunicação Wi-Fi',
-        'Conversor analógico-digital',
-      ],
-      'correta': 2,
-    },
-    {
-      'nivel': 'Fácil',
-      'pergunta': 'O que mede um sensor de temperatura?',
-      'opcoes': [
-        'Variação térmica do ambiente',
-        'Intensidade de corrente elétrica',
-        'Pressão do ar',
-        'Velocidade angular',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Fácil',
-      'pergunta': 'O que é um atuador?',
-      'opcoes': [
-        'Dispositivo que converte sinal em ação física',
-        'Sensor de entrada analógica',
-        'Fonte de alimentação regulada',
-        'Elemento de armazenamento de dados',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Fácil',
-      'pergunta': 'Para que serve um relé?',
-      'opcoes': [
-        'Comutar circuitos usando sinal de controle',
-        'Medir resistência elétrica',
-        'Armazenar energia elétrica',
-        'Converter sinais digitais',
-      ],
-      'correta': 1,
-    },
-    {
-      'nivel': 'Fácil',
-      'pergunta': 'O que é corrente elétrica?',
-      'opcoes': [
-        'Fluxo de cargas elétricas em um condutor',
-        'Diferença de potencial entre dois pontos',
-        'Energia armazenada em campo elétrico',
-        'Resistência ao fluxo de elétrons',
-      ],
-      'correta': 2,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é um microcontrolador?',
-      'opcoes': [
-        'Sistema integrado com CPU, memória e I/O',
-        'Dispositivo exclusivo para armazenamento',
-        'Sensor digital programável',
-        'Fonte de alimentação inteligente',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é um circuito integrado?',
-      'opcoes': [
-        'Conjunto de componentes eletrônicos em um chip',
-        'Placa com múltiplos sensores discretos',
-        'Sistema operacional embarcado',
-        'Barramento de comunicação serial',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'Como funciona um sensor de gás?',
-      'opcoes': [
-        'Altera propriedades elétricas na presença de gases',
-        'Mede variação de luz refletida',
-        'Detecta campo magnético',
-        'Converte som em sinal digital',
-      ],
-      'correta': 1,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é comunicação serial?',
-      'opcoes': [
-        'Transmissão sequencial de bits por um canal',
-        'Envio simultâneo de múltiplos bits',
-        'Conversão de sinais analógicos',
-        'Processamento paralelo de dados',
-      ],
-      'correta': 2,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é I2C?',
-      'opcoes': [
-        'Barramento serial síncrono com múltiplos dispositivos',
-        'Protocolo de rede sem fio',
-        'Interface gráfica embarcada',
-        'Conversor digital dedicado',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é SPI?',
-      'opcoes': [
-        'Interface serial síncrona de alta velocidade',
-        'Protocolo analógico de comunicação',
-        'Sistema de arquivos embarcado',
-        'Sensor digital programável',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Médio',
-      'pergunta': 'O que é tensão elétrica?',
-      'opcoes': [
-        'Diferença de potencial entre dois pontos',
-        'Fluxo de elétrons em movimento',
-        'Resistência de um material',
-        'Potência dissipada em circuito',
-      ],
-      'correta': 1,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é ADC (Conversor Analógico-Digital)?',
-      'opcoes': [
-        'Transforma sinal contínuo em representação digital',
-        'Amplifica sinais elétricos',
-        'Armazena dados binários',
-        'Gera sinais analógicos',
-      ],
-      'correta': 2,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é DAC (Conversor Digital-Analógico)?',
-      'opcoes': [
-        'Converte dados digitais em sinal analógico',
-        'Filtra ruído de sinais digitais',
-        'Armazena sinais contínuos',
-        'Amplifica sinais digitais',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é interrupção em microcontroladores?',
-      'opcoes': [
-        'Evento que desvia a execução para uma rotina específica',
-        'Erro crítico de hardware',
-        'Reinicialização automática do sistema',
-        'Atraso intencional no código',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é debounce em botões?',
-      'opcoes': [
-        'Tratamento de ruído em sinais mecânicos',
-        'Aumento de frequência de clock',
-        'Conversão de sinal analógico',
-        'Sincronização de barramento',
-      ],
-      'correta': 1,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é consumo de corrente em stand-by?',
-      'opcoes': [
-        'Corrente consumida em estado inativo',
-        'Consumo máximo sob carga',
-        'Perda de energia em transmissão',
-        'Corrente de curto-circuito',
-      ],
-      'correta': 2,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é watchdog timer?',
-      'opcoes': [
-        'Mecanismo que reinicia o sistema em falhas',
-        'Contador de eventos externos',
-        'Sensor de tempo real',
-        'Clock de alta precisão',
-      ],
-      'correta': 3,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é overclock?',
-      'opcoes': [
-        'Operar acima da frequência nominal',
-        'Reduzir consumo energético',
-        'Desativar núcleos do processador',
-        'Aumentar memória cache',
-      ],
-      'correta': 0,
-    },
-    {
-      'nivel': 'Difícil',
-      'pergunta': 'O que é firmware?',
-      'opcoes': [
-        'Software embarcado em hardware',
-        'Sistema operacional completo',
-        'Aplicação de usuário',
-        'Driver de dispositivo externo',
-      ],
-      'correta': 1,
-    },
   ];
 
   Color _nivelCor(String nivel) {
@@ -363,10 +116,12 @@ class _QuizPageState extends State<QuizPage> {
 
   void _selecionar(int opcao) {
     if (_respondido) return;
+    final acertou = opcao == questoes[_questaoAtual]['correta'];
     setState(() {
       _opcaoSelecionada = opcao;
       _respondido = true;
-      if (opcao == questoes[_questaoAtual]['correta']) _acertos++;
+      if (acertou) _acertos++;
+      _respostasCorretas.add(acertou);
     });
   }
 
@@ -389,6 +144,7 @@ class _QuizPageState extends State<QuizPage> {
       _respondido = false;
       _acertos = 0;
       _finalizado = false;
+      _respostasCorretas.clear();
     });
   }
 
@@ -398,8 +154,8 @@ class _QuizPageState extends State<QuizPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
-            SizedBox(width: 8),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
+       
             Text('Quiz IoT'),
           ],
         ),
@@ -482,7 +238,7 @@ class _QuizPageState extends State<QuizPage> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.bgCardAlt,
+              color: const Color.fromARGB(255, 29, 27, 27),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.border),
             ),
@@ -572,7 +328,7 @@ class _QuizPageState extends State<QuizPage> {
 
   Widget _opcaoWidget(int index, String texto, int correta) {
     Color borderColor = AppColors.border;
-    Color bgColor = AppColors.bgCardAlt;
+    Color bgColor = const Color.fromARGB(241, 26, 24, 24);
     IconData? trailingIcon;
 
     if (_respondido) {
@@ -701,7 +457,9 @@ class _QuizPageState extends State<QuizPage> {
                   Icon(
                     Icons.circle,
                     size: 10,
-                    color: i < _acertos ? AppColors.success : AppColors.danger,
+                    color: (i < _respostasCorretas.length && _respostasCorretas[i])
+                        ? AppColors.success
+                        : AppColors.danger,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

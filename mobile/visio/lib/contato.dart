@@ -33,7 +33,7 @@ class _ContactPageState extends State<ContactPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             SizedBox(width: 8),
             Text('Contato'),
           ],

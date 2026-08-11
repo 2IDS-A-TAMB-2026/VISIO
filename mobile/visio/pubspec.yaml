@@ -1,6 +1,7 @@
 name: visio
 description: "VISIO — Plataforma de Identificação e Gestão de Sensores IoT"
 publish_to: "none"
+
 version: 0.2.0+2
 
 environment:
@@ -9,56 +10,82 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.2.2
+
   camera: ^0.11.0+2
-  permission_handler: ^11.3.1
-  image_picker_for_web: ^3.0.4
+  flutter_tts: ^4.2.0
   image_picker: ^1.1.2
-  url_launcher: ^6.2.6
+  image_picker_for_web: ^3.0.4
+  mask_text_input_formatter: ^2.7.0
   path_provider: ^2.1.2
-  provider: ^6.0.5
+  permission_handler: ^11.3.1
+  provider: ^6.1.2
+  shared_preferences: ^2.3.3
+  url_launcher: ^6.2.6
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  mask_text_input_formatter: ^2.7.0
-
 
 flutter:
   uses-material-design: true
+
   assets:
-    - assets/images/acelerometro.jpg.jpeg
-    - assets/images/aplicacao.educacional.png
-    - assets/images/aprender.png
-    - assets/images/educacao.png
-    - assets/images/emily.png
-    - assets/images/fernanda.png
-    - assets/images/foto_adm_perfil.jpeg
-    - assets/images/fun_video.mp4
-    - assets/images/gestaoeorganizacao.png
-    - assets/images/guilherme.png
-    - assets/images/identificacao.automatica.png
-    - assets/images/identifique.png
-    - assets/images/interfaceegerenciamento.png
-    - assets/images/isabela.png
-    - assets/images/LogoDark.png
-    - assets/images/LogoLight.png
-    - assets/images/logo-VISIO.ico
-    - assets/images/lorrana.png
-    - assets/images/matheus.png
-    - assets/images/registroerastreamento.png
-    - assets/images/segurancaeautenticacao.png
-    - assets/images/sensor_gas.jpg.jpeg
-    - assets/images/sensor_luz.jpg.jpeg
-    - assets/images/sensor_movimento.jpg.jpeg
-    - assets/images/sensor_pressao.jpg.jpeg
-    - assets/images/sensor_pressao.jpg.jpeg
-    - assets/images/sensor_proximidade.jpg
-    - assets/images/sensor_temperatura.jpg
-    - assets/images/sensor_toque.jpg.jpeg
-    - assets/images/sensor_ultrassonico.jpg
-    - assets/images/sensor_umidade.jpg
-    - assets/images/sophia.png
-    - assets/images/SquareDark.png
-    - assets/images/SquareLight.png
+    - assets/images/Aplicacoes/aplicacao.educacional.png
+    - assets/images/Aplicacoes/gestaoeorganizacao.png
+    - assets/images/Aplicacoes/identificacao.automatica.png
+    - assets/images/Aplicacoes/interfaceegerenciamento.png
+    - assets/images/Aplicacoes/registroerastreamento.png
+    - assets/images/Aplicacoes/segurancaeautenticacao.png
+
+    - assets/images/Carrossel/aprender.png
+    - assets/images/Carrossel/aprender2.png
+    - assets/images/Carrossel/educacao.png
+    - assets/images/Carrossel/educacao2.png
+    - assets/images/Carrossel/identifique.png
+    - assets/images/Carrossel/identifique2.png
+
+    - assets/images/Grupo/emily.png
+    - assets/images/Grupo/fernanda.png
+    - assets/images/Grupo/guilherme.png
+    - assets/images/Grupo/isabela.png
+    - assets/images/Grupo/lorrana.png
+    - assets/images/Grupo/matheus.png
+    - assets/images/Grupo/sophia.png
+
+    - assets/images/logos/Icone/IconeDark.png
+    - assets/images/logos/Icone/IconeDark2.png
+    - assets/images/logos/Icone/IconeLight.png
+    - assets/images/logos/Icone/IconeLight2.png
+
+    - assets/images/logos/Logo/LogoDark.png
+    - assets/images/logos/Logo/LogoDark2.png
+    - assets/images/logos/Logo/LogoDark3.png
+    - assets/images/logos/Logo/LogoDark4.png
+    - assets/images/logos/Logo/LogoLight.png
+    - assets/images/logos/Logo/LogoLight2.png
+    - assets/images/logos/Logo/LogoLight3.png
+    - assets/images/logos/Logo/LogoLight4.png
+    - assets/images/logos/Logo/LogoDarkD.png
+
+    - assets/images/logos/Simbolo/SimboloDark.png
+    - assets/images/logos/Simbolo/SimboloDark2.png
+    - assets/images/logos/Simbolo/SimboloLight.png
+    - assets/images/logos/Simbolo/SimboloLight2.png
+
+    - assets/images/Sensores/acelerometro.png
+    - assets/images/Sensores/sensor_gas.png
+    - assets/images/Sensores/sensor_luz.png
+    - assets/images/Sensores/sensor_movimento.png
+    - assets/images/Sensores/sensor_pressao.png
+    - assets/images/Sensores/sensor_proximidade.png
+    - assets/images/Sensores/sensor_temperatura.png
+    - assets/images/Sensores/sensor_toque.png
+    - assets/images/Sensores/sensor_ultrassonico.png
+    - assets/images/Sensores/sensor_umidade.png
+
+    - assets/images/Videos/fun_video.mp4
+    - assets/images/Videos/video_black.mp4
+    - assets/images/Videos/video_white.mp4
+    - assets/images/Videos/VISIO.mp4

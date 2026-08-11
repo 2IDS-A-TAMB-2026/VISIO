@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'inicio_adm.dart';
+import 'services/auth_service.dart';
+import 'widgets/demo_mode_banner.dart';
 
 class LoginAdminPage extends StatefulWidget {
   const LoginAdminPage({super.key});
@@ -18,13 +20,29 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_loading) return;
+
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 900));
+
+    final resultado = await AuthService.instance.loginAdmin(
+      email: emailCtrl.text,
+      senha: senhaCtrl.text,
+    );
+
+    if (!mounted) return;
     setState(() => _loading = false);
-    if (mounted) {
+
+    if (resultado.sucesso) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const AdminShell()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(resultado.mensagemErro ?? 'Não foi possível entrar.'),
+          backgroundColor: AppColors.danger,
+        ),
       );
     }
   }
@@ -36,7 +54,7 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             SizedBox(width: 8),
             Text('Administrador'),
           ],
@@ -79,11 +97,7 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                   ],
                 ),
               ),
-              Image.asset(
-                'assets/images/LogoDark.png',
-                width: 350,
-                height: 350,
-              ),
+               const SizedBox(height: 32),
               const Text(
                 'VISIO Admin',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -107,6 +121,13 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      if (AuthService.isDemoMode)
+                        const DemoModeBanner(
+                          mensagem:
+                              'Modo demonstração: este login não verifica '
+                              'credenciais reais e concede acesso ao painel '
+                              'administrativo apenas para fins de protótipo.',
+                        ),
                       TextFormField(
                         controller: emailCtrl,
                         keyboardType: TextInputType.emailAddress,
@@ -114,8 +135,13 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                           labelText: 'E-mail do administrador',
                           prefixIcon: Icon(Icons.email_outlined, size: 20),
                         ),
-                        validator: (v) =>
-                            v!.isEmpty ? 'Informe o e-mail' : null,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Informe o e-mail';
+                          if (!AuthService.instance.emailValido(v)) {
+                            return 'E-mail inválido';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -135,7 +161,11 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                                 setState(() => _obscure = !_obscure),
                           ),
                         ),
-                        validator: (v) => v!.isEmpty ? 'Informe a senha' : null,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Informe a senha';
+                          if (v.length < 6) return 'Mínimo 6 caracteres';
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 8),
                       SizedBox(

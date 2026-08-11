@@ -9,7 +9,13 @@ class QuestoesAdminPage extends StatefulWidget {
 }
 
 class _QuestoesAdminPageState extends State<QuestoesAdminPage> {
-  final List<Map<String, dynamic>> questoes = [
+  // Dados de exemplo no MESMO formato usado em questoes.dart (a tela pública
+  // do quiz): 'pergunta'/'opcoes'/'correta'. São convertidos, em initState(),
+  // para o formato que este admin de fato usa para exibir/editar
+  // ('descricao'/'alternativas'/'id') — antes dessa conversão, nenhuma das
+  // 23 perguntas abaixo aparecia na tela, pois _questaoCard() procurava por
+  // chaves que não existiam neste mapa.
+  final List<Map<String, dynamic>> _seedQuestoesBrutas = [
     {
       'nivel': 'Fácil',
       'pergunta': 'O que mede um sensor LDR?',
@@ -341,6 +347,31 @@ class _QuestoesAdminPageState extends State<QuestoesAdminPage> {
       'correta': 1,
     },
   ];
+
+  /// Lista de fato usada pela UI (formato descricao/alternativas/id).
+  /// Populada a partir de [_seedQuestoesBrutas] em [initState].
+  late final List<Map<String, dynamic>> questoes;
+
+  @override
+  void initState() {
+    super.initState();
+    questoes = _seedQuestoesBrutas.asMap().entries.map((entry) {
+      final indice = entry.key;
+      final bruta = entry.value;
+      final opcoes = (bruta['opcoes'] as List).cast<String>();
+      final corretaIdx = bruta['correta'] as int;
+
+      return <String, dynamic>{
+        'id': indice + 1,
+        'descricao': bruta['pergunta'],
+        'nivel': bruta['nivel'],
+        'alternativas': List.generate(
+          opcoes.length,
+          (i) => {'texto': opcoes[i], 'correta': i == corretaIdx},
+        ),
+      };
+    }).toList();
+  }
 
   Color _nivelCor(String nivel) {
     switch (nivel) {

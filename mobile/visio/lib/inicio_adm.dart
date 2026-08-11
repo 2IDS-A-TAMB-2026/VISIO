@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
 import 'lista.dart';
 import 'cadastro_questao.dart';
 import 'cadastro_sensor.dart';
 import 'perfil_adm.dart';
+import 'appcolor.dart';
+import 'widgets/accessibility_panel.dart';
 
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
@@ -26,10 +27,16 @@ class _AdminShellState extends State<AdminShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _index, children: _screens),
+      body: Stack(
+        children: [
+          IndexedStack(index: _index, children: _screens),
+          const AccessibilityPanel(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
@@ -72,7 +79,7 @@ class DashboardPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Image.asset('assets/images/LogoDark.png', height: 60),
+            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
             SizedBox(width: 8),
             Text('Admin'),
           ],
@@ -233,7 +240,7 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 24),
             ],
           ),
@@ -292,5 +299,4 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
-
 }

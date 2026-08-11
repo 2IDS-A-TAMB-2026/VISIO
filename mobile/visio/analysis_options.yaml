@@ -1,1 +1,11 @@
 include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Mantém as regras padrão do flutter_lints. Ajuste/adicione regras do
+    # projeto aqui conforme necessário.
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
