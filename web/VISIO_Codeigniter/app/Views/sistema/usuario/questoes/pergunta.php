@@ -1,16 +1,22 @@
 <?= view('sistema/layout/header') ?>
 
 <style>
+    /* Estilo Base - Gradiente azul mantido para todos os temas */
     body {
-        background-color: #121212;
+        background-color: #000000 !important; /* Fundo escuro (padrão) */
+        background-image: 
+            radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+            radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
+        background-attachment: fixed !important;
         color: #ffffff;
         font-family: sans-serif;
-        transition: background-color 0.3s, color 0.3s;
+        min-height: 100vh;
+        margin: 0;
     }
 
-    /* Tema Claro - Ativado quando o header adiciona a classe .light no body */
+    /* Tema Claro - Altera a cor base para branco mantendo o degradê azul por cima */
     body.light {
-        background-color: #f8fafc;
+        background-color: #ffffff !important;
         color: #0f172a;
     }
 
@@ -200,76 +206,76 @@
     }
 </style>
 
-    <main class="questoes-page" style="margin-top: 5%;">
-        <div class="questoes-container questoes-layout">
-            <div class="questao-box">
+<main class="questoes-page">
+    <div class="questoes-container questoes-layout">
+        <div class="questao-box">
 
-                <?php if (session()->getFlashdata('erro')): ?>
-                    <p style="color: #ef4444; margin-bottom: 1rem; font-weight: bold;"><?= session()->getFlashdata('erro') ?></p>
-                <?php endif; ?>
+            <?php if (session()->getFlashdata('erro')): ?>
+                <p style="color: #ef4444; margin-bottom: 1rem; font-weight: bold;"><?= session()->getFlashdata('erro') ?></p>
+            <?php endif; ?>
 
-                <p class="questoes-progresso">Pergunta <?= $indice ?> de <?= $total ?></p>
-                <h1 class="questoes-titulo"><?= esc($pergunta['DESCRICAO']) ?></h1>
+            <p class="questoes-progresso">Pergunta <?= $indice ?> de <?= $total ?></p>
+            <h1 class="questoes-titulo"><?= esc($pergunta['DESCRICAO']) ?></h1>
 
-                <?php if ($feedback): ?>
+            <?php if ($feedback): ?>
 
-                    <?php if ($feedback['acertou']): ?>
-                        <div class="feedback-banner acertou">
-                            <i class="fa-solid fa-circle-check"></i> Resposta correta!
-                        </div>
-                    <?php else: ?>
-                        <div class="feedback-banner errou">
-                            <i class="fa-solid fa-circle-xmark"></i> Resposta incorreta.
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="alternativas-form">
-                        <?php foreach ($pergunta['alternativas'] as $alt): ?>
-                            <?php
-                                $idAlt = (int) $alt['ID_ALTERNATIVA'];
-                                $classe = '';
-                                $icone  = '';
-                                if ($idAlt === (int) $feedback['correta_id']) {
-                                    $classe = 'correta';
-                                    $icone  = '<i class="fa-solid fa-circle-check feedback-icon"></i>';
-                                } elseif ($idAlt === (int) $feedback['escolhida']) {
-                                    $classe = 'incorreta';
-                                    $icone  = '<i class="fa-solid fa-circle-xmark feedback-icon"></i>';
-                                }
-                            ?>
-                            <label class="alternativa-item desabilitada <?= $classe ?>">
-                                <input type="radio" disabled
-                                       <?= $idAlt === (int) $feedback['escolhida'] ? 'checked' : '' ?>>
-                                <?= esc($alt['DESCRICAO']) ?>
-                                <?= $icone ?>
-                            </label>
-                        <?php endforeach; ?>
+                <?php if ($feedback['acertou']): ?>
+                    <div class="feedback-banner acertou">
+                        <i class="fa-solid fa-circle-check"></i> Resposta correta!
                     </div>
-
-                    <form action="<?= base_url('/quiz/avancar') ?>" method="post" class="alternativas-form">
-                        <?= csrf_field() ?>
-                        <button type="submit">
-                            <?= $ultima ? 'Ver resultado' : 'Próxima pergunta' ?>
-                        </button>
-                    </form>
-
                 <?php else: ?>
-
-                    <form action="<?= base_url('/quiz/responder') ?>" method="post" class="alternativas-form">
-                        <?= csrf_field() ?>
-                        <?php foreach ($pergunta['alternativas'] as $alt): ?>
-                            <label class="alternativa-item">
-                                <input type="radio" name="id_alternativa" value="<?= $alt['ID_ALTERNATIVA'] ?>" required>
-                                <?= esc($alt['DESCRICAO']) ?>
-                            </label>
-                        <?php endforeach; ?>
-                        <button type="submit">Responder</button>
-                    </form>
-
+                    <div class="feedback-banner errou">
+                        <i class="fa-solid fa-circle-xmark"></i> Resposta incorreta.
+                    </div>
                 <?php endif; ?>
 
-            </div>
+                <div class="alternativas-form">
+                    <?php foreach ($pergunta['alternativas'] as $alt): ?>
+                        <?php
+                            $idAlt = (int) $alt['ID_ALTERNATIVA'];
+                            $classe = '';
+                            $icone  = '';
+                            if ($idAlt === (int) $feedback['correta_id']) {
+                                $classe = 'correta';
+                                $icone  = '<i class="fa-solid fa-circle-check feedback-icon"></i>';
+                            } elseif ($idAlt === (int) $feedback['escolhida']) {
+                                $classe = 'incorreta';
+                                $icone  = '<i class="fa-solid fa-circle-xmark feedback-icon"></i>';
+                            }
+                        ?>
+                        <label class="alternativa-item desabilitada <?= $classe ?>">
+                            <input type="radio" disabled
+                                   <?= $idAlt === (int) $feedback['escolhida'] ? 'checked' : '' ?>>
+                            <?= esc($alt['DESCRICAO']) ?>
+                            <?= $icone ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <form action="<?= base_url('/quiz/avancar') ?>" method="post" class="alternativas-form">
+                    <?= csrf_field() ?>
+                    <button type="submit">
+                        <?= $ultima ? 'Ver resultado' : 'Próxima pergunta' ?>
+                    </button>
+                </form>
+
+            <?php else: ?>
+
+                <form action="<?= base_url('/quiz/responder') ?>" method="post" class="alternativas-form">
+                    <?= csrf_field() ?>
+                    <?php foreach ($pergunta['alternativas'] as $alt): ?>
+                        <label class="alternativa-item">
+                            <input type="radio" name="id_alternativa" value="<?= $alt['ID_ALTERNATIVA'] ?>" required>
+                            <?= esc($alt['DESCRICAO']) ?>
+                        </label>
+                    <?php endforeach; ?>
+                    <button type="submit">Responder</button>
+                </form>
+
+            <?php endif; ?>
+
         </div>
-    </main>
+    </div>
+</main>
 
 <?= view('sistema/layout/footer') ?>

@@ -51,7 +51,7 @@
         <li>
           <button id="accessibility-btn" aria-label="Abrir menu de acessibilidade" aria-expanded="false"
             aria-controls="accessibility-panel" style="width:40px;height:40px;border:none;border-radius:12px;
-                       background:#2563eb;color:white;font-size:18px;cursor:pointer;">
+                       background:transparent;color:white;font-size:18px;cursor:pointer;">
             <i class="fa-solid fa-gear"></i>
           </button>
         </li>

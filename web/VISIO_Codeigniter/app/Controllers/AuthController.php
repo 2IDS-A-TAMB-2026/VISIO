@@ -7,12 +7,24 @@ use App\Models\UsuarioModel;
 
 /**
  * AuthController
- * Gerencia login e logout de usuários e administradores integrados ao banco de dados MySQL.
+ * Gerencia login, logout e API de listagem de usuários.
  */
 class AuthController extends BaseController
 {
     // ---------------------------------------------------------------
-    // LOGIN DO USUÁRIO COMUM
+    // ENDPOINT API (RETORNO JSON)
+    // ---------------------------------------------------------------
+
+    public function listarUsuarios()
+    {
+        $model = new UsuarioModel();
+        $usuarios = $model->findAll();
+
+        return $this->response->setJSON($usuarios);
+    }
+
+    // ---------------------------------------------------------------
+    // LOGIN DO USUÁRIO COMUM (WEB)
     // ---------------------------------------------------------------
 
     public function index(): string
@@ -43,7 +55,6 @@ class AuthController extends BaseController
                 ]);
             }
 
-            // Define a sessão igual ao padrão da sua aplicação
             session()->set([
                 'usuario_logado' => true,
                 'usuario_cpf'    => $usuario['CPF'],
@@ -57,7 +68,7 @@ class AuthController extends BaseController
             ]);
         }
 
-        // Fallback: requisição via FORM tradicional (Sem JavaScript)
+        // Fallback: requisição via FORM tradicional
         $email = $this->request->getPost('email');
         $senha = $this->request->getPost('senha');
 
@@ -85,7 +96,7 @@ class AuthController extends BaseController
     }
 
     // ---------------------------------------------------------------
-    // LOGIN DO ADMINISTRADOR — CORRIGIDO: autentica via banco de dados
+    // LOGIN DO ADMINISTRADOR
     // ---------------------------------------------------------------
 
     public function loginAdminForm(): string
@@ -111,7 +122,6 @@ class AuthController extends BaseController
         $model = new AdminModel();
         $admin = $model->buscarPorEmail($email);
 
-        // Verifica se o admin existe e valida o hash da senha
         if (!$admin || !password_verify($senha, $admin['SENHA'])) {
             return redirect()->to('/login/admin')
                 ->with('erro', 'E-mail ou senha incorretos.');
@@ -135,19 +145,5 @@ class AuthController extends BaseController
     {
         session()->destroy();
         return redirect()->to('/login');
-    }
-
-    // ---------------------------------------------------------------
-    // ENDPOINT API: RETORNAR TODOS OS USUÁRIOS (JSON)
-    // ---------------------------------------------------------------
-    public function listarUsuarios()
-    {
-        $model = new UsuarioModel();
-        
-        // Busca todos os usuários do banco de dados
-        $usuarios = $model->findAll(); 
-
-        // Retorna a resposta crua em formato JSON para o navegador
-        return $this->response->setJSON($usuarios);
     }
 }

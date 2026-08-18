@@ -1,5 +1,30 @@
 <?= view('sistema/layout/header') ?>
 
+<style>
+/* Estilo Base - Gradiente azul mantido para todos os temas */
+body {
+    background-color: #000000 !important;
+    background-image: 
+        radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+        radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
+    background-attachment: fixed !important;
+    color: #ffffff;
+    font-family: sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Tema Claro - Fundo branco mantendo o degradê azul por cima */
+body.light {
+    background-color: #ffffff !important;
+    color: #0f172a;
+}
+
+.swal-popup  { border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.20); }
+.swal-titulo { text-align: center; font-size: 26px; font-weight: bold; color: #3a86ff; }
+.cardi       { cursor: pointer; }
+</style>
+
 <main class="sensores-page-main">
     <br><br><br>
     <h1 class="sensores-page-title">Catálogo de Sensores IoT</h1>
@@ -52,12 +77,6 @@
     }
     </script>
 
-    <style>
-    .swal-popup  { border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.20); }
-    .swal-titulo { text-align: center; font-size: 26px; font-weight: bold; color: #3a86ff; }
-    .cardi       { cursor: pointer; }
-    </style>
-
     <?php if (empty($sensores)): ?>
         <div style="text-align:center;padding:3rem;color:var(--color-text-secondary);">
             <i class="fa-solid fa-microchip" style="font-size:48px;margin-bottom:1rem;display:block;opacity:.3;"></i>
@@ -95,6 +114,5 @@
         </div>
     <?php endif; ?>
 </main>
-
 
 <?= view('sistema/layout/footer') ?>

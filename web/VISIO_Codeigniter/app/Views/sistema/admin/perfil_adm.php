@@ -1,53 +1,128 @@
 <?= view('sistema/layout/header_adm') ?>
 
 <style>
-/* Tema claro é o padrão, herdado do header_adm.php (:root com vars claras) */
-/* body.dark também é herdado do header_adm.php — não sobrescrever aqui,    */
-/* para manter o fundo idêntico ao resto do sistema.                       */
+/* Estilo Base - Gradiente azul mantido para todos os temas */
 body {
+    background-color: #000000 !important;
+    background-image: 
+        radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+        radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
+    background-attachment: fixed !important;
+    color: #ffffff;
     font-family: sans-serif;
+    min-height: 100vh;
     margin: 0;
 }
 
-/* ── 3. LAYOUT E ESTRUTURA (Funciona em ambos os temas através das variáveis) ── */
-.layout { display: flex; }
+/* Tema Claro - Fundo branco mantendo o degradê azul */
+body.light {
+    background-color: #ffffff !important;
+    color: #0f172a;
+}
+
+/* ── LAYOUT E ESTRUTURA ── */
+.layout { 
+    display: flex; 
+}
 
 .sidebar {
     width: 280px;
     height: 100vh;
     position: fixed;
-    left: 0; top: 0;
+    left: 0; 
+    top: 0;
     padding: 25px;
-    background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
+    background: linear-gradient(180deg, var(--sidebar, #0d1117), var(--sidebar2, #161b22));
     overflow-y: auto;
     z-index: 1000;
 }
 
-.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
-.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
-.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
-.menu { list-style: none; padding: 0; }
-.menu li { margin-bottom: 10px; }
-.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
-.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
+.logo-area { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    margin-bottom: 40px; 
+}
 
-.main { width: calc(100% - 280px); margin-left: 280px; min-height: 100vh; transition: background 0.3s; }
-.content { padding: 30px; }
+.logo-area h2 { 
+    color: #ffffff; 
+    font-size: 28px; 
+    font-weight: 700; 
+}
 
-.perfil-header { margin-bottom: 30px; }
-.perfil-header h1 { font-size: 30px; color: var(--text); }
-.perfil-sub { color: var(--text2); margin-top: 8px; }
+.menu-title { 
+    color: #64748b; 
+    text-transform: uppercase; 
+    font-size: 12px; 
+    margin-bottom: 15px; 
+    letter-spacing: 1px; 
+}
 
-.container-perfil { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+.menu { 
+    list-style: none; 
+    padding: 0; 
+}
+
+.menu li { 
+    margin-bottom: 10px; 
+}
+
+.menu a { 
+    display: flex; 
+    align-items: center; 
+    gap: 14px; 
+    padding: 15px; 
+    border-radius: 14px; 
+    text-decoration: none; 
+    color: #e2e8f0; 
+    font-weight: 500; 
+    transition: .3s; 
+}
+
+.menu a:hover, .menu a.active { 
+    background: rgba(37,99,235,.2); 
+}
+
+.main { 
+    width: calc(100% - 280px); 
+    margin-left: 280px; 
+    min-height: 100vh; 
+    transition: background 0.3s; 
+}
+
+.content { 
+    padding: 30px; 
+}
+
+.perfil-header { 
+    margin-bottom: 30px; 
+}
+
+.perfil-header h1 { 
+    font-size: 30px; 
+    color: var(--text, #ffffff); 
+}
+
+.perfil-sub { 
+    color: var(--text2, #94a3b8); 
+    margin-top: 8px; 
+}
+
+.container-perfil { 
+    display: flex; 
+    gap: 30px; 
+    flex-wrap: wrap; 
+    align-items: flex-start; 
+}
 
 /* Lateral (Avatar) */
 .perfil-lateral {
     width: 280px;
-    background: var(--card);
+    background: var(--card, #1a1a24);
     border-radius: 24px;
     padding: 30px 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow, 0 10px 30px rgba(0,0,0,0.2));
+    border: 1px solid var(--border, rgba(255,255,255,.08));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -55,85 +130,181 @@ body {
     flex-shrink: 0;
     transition: background 0.3s, border-color 0.3s;
 }
+
 .perfil-lateral img {
-    width: 160px; height: 160px;
-    border-radius: 50%; object-fit: cover;
-    border: 5px solid var(--primary);
+    width: 160px; 
+    height: 160px;
+    border-radius: 50%; 
+    object-fit: cover;
+    border: 5px solid var(--primary, #2563eb);
     box-shadow: 0 10px 30px rgba(37,99,235,.2);
     margin-bottom: 15px;
 }
-.perfil-lateral h3 { font-size: 18px; margin-bottom: 4px; color: var(--text); }
-.perfil-lateral span { color: var(--text2); font-size: 13px; }
+
+.perfil-lateral h3 { 
+    font-size: 18px; 
+    margin-bottom: 4px; 
+    color: var(--text, #ffffff); 
+}
+
+.perfil-lateral span { 
+    color: var(--text2, #94a3b8); 
+    font-size: 13px; 
+}
 
 .btn-foto {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px;
     margin-top: 18px;
-    background: var(--primary); 
-    padding: 10px 16px; border-radius: 12px;
-    font-weight: 600; color: #fff !important;
-    cursor: pointer; width: 100%; box-sizing: border-box;
+    background: var(--primary, #2563eb); 
+    padding: 10px 16px; 
+    border-radius: 12px;
+    font-weight: 600; 
+    color: #ffffff !important;
+    cursor: pointer; 
+    width: 100%; 
+    box-sizing: border-box;
     transition: background .2s;
 }
-.btn-foto:hover { background: #1d4ed8; }
+
+.btn-foto:hover { 
+    background: #1d4ed8; 
+}
 
 /* Formulário */
 .card-form {
-    flex: 1; min-width: 360px;
-    background: var(--card);
+    flex: 1; 
+    min-width: 360px;
+    background: var(--card, #1a1a24);
     padding: 35px;
     border-radius: 24px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow, 0 10px 30px rgba(0,0,0,0.2));
+    border: 1px solid var(--border, rgba(255,255,255,.08));
     transition: background 0.3s, border-color 0.3s;
 }
-.card-form h2 { font-size: 20px; margin-bottom: 24px; color: var(--text); }
 
-.campo { margin-bottom: 18px; }
-.campo label { display: block; margin-bottom: 7px; font-weight: 600; color: var(--text); }
+.card-form h2 { 
+    font-size: 20px; 
+    margin-bottom: 24px; 
+    color: var(--text, #ffffff); 
+}
+
+.campo { 
+    margin-bottom: 18px; 
+}
+
+.campo label { 
+    display: block; 
+    margin-bottom: 7px; 
+    font-weight: 600; 
+    color: var(--text, #ffffff); 
+}
+
 .campo input {
-    width: 100%; height: 52px;
+    width: 100%; 
+    height: 52px;
     padding: 0 16px;
-    border: 2px solid var(--border);
+    border: 2px solid var(--border, rgba(255,255,255,.12));
     border-radius: 14px;
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg, #0e0e16);
+    color: var(--text, #ffffff);
     box-sizing: border-box;
     transition: border-color .2s, background 0.3s, color 0.3s;
 }
-.campo input:focus { outline: none; border-color: var(--primary); }
-.campo input[readonly] { opacity: .55; cursor: not-allowed; }
 
-.senha-wrap { position: relative; }
-.senha-wrap input { padding-right: 48px; }
-.btn-ver {
-    position: absolute; right: 14px; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--text2); padding: 0;
+.campo input:focus { 
+    outline: none; 
+    border-color: var(--primary, #2563eb); 
 }
-.btn-ver:hover { color: var(--text); }
-.campo small { display: block; margin-top: 5px; font-size: 12px; color: var(--text2); }
+
+.campo input[readonly] { 
+    opacity: .55; 
+    cursor: not-allowed; 
+}
+
+.senha-wrap { 
+    position: relative; 
+}
+
+.senha-wrap input { 
+    padding-right: 48px; 
+}
+
+.btn-ver {
+    position: absolute; 
+    right: 14px; 
+    top: 50%;
+    transform: translateY(-50%);
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    color: var(--text2, #94a3b8); 
+    padding: 0;
+}
+
+.btn-ver:hover { 
+    color: var(--text, #ffffff); 
+}
+
+.campo small { 
+    display: block; 
+    margin-top: 5px; 
+    font-size: 12px; 
+    color: var(--text2, #94a3b8); 
+}
 
 .btn-salvar {
-    width: 100%; height: 52px;
-    border: none; border-radius: 14px;
-    background: var(--primary); color: white;
+    width: 100%; 
+    height: 52px;
+    border: none; 
+    border-radius: 14px;
+    background: var(--primary, #2563eb); 
+    color: #ffffff;
     font-weight: 600;
-    cursor: pointer; margin-top: 8px;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
+    cursor: pointer; 
+    margin-top: 8px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px;
     transition: background .2s;
 }
-.btn-salvar:hover { background: #1d4ed8; }
 
-/* ── 4. ALTO CONTRASTE ── */
+.btn-salvar:hover { 
+    background: #1d4ed8; 
+}
+
+/* Ajustes Tema Claro */
+body.light .perfil-lateral,
+body.light .card-form {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+body.light .campo input {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+body.light .perfil-header h1,
+body.light .perfil-lateral h3,
+body.light .card-form h2,
+body.light .campo label {
+    color: #0f172a;
+}
+
+/* ── ALTO CONTRASTE ── */
 body.high-contrast .perfil-lateral,
-body.high-contrast .card-form      { background: #000 !important; border-color: #ff0 !important; }
-body.high-contrast .campo input    { background: #000 !important; color: #ff0 !important; border-color: #ff0 !important; }
+body.high-contrast .card-form      { background: #000000 !important; border-color: #ffff00 !important; }
+body.high-contrast .campo input    { background: #000000 !important; color: #ffff00 !important; border-color: #ffff00 !important; }
 body.high-contrast .campo label,
 body.high-contrast .card-form h2,
-body.high-contrast .perfil-header h1 { color: #ff0 !important; }
-body.high-contrast .btn-salvar     { background: #ff0 !important; color: #000 !important; }
-body.high-contrast .btn-foto       { background: #ff0 !important; color: #000 !important; }
+body.high-contrast .perfil-header h1 { color: #ffff00 !important; }
+body.high-contrast .btn-salvar     { background: #ffff00 !important; color: #000000 !important; }
+body.high-contrast .btn-foto       { background: #ffff00 !important; color: #000000 !important; }
 </style>
 
 <div class="layout">
@@ -159,7 +330,7 @@ body.high-contrast .btn-foto       { background: #ff0 !important; color: #000 !i
                     <label for="foto_adm_input" class="btn-foto">
                         <i class="fa-solid fa-camera"></i> Alterar Foto
                     </label>
-                    <small style="margin-top:10px;font-size:11px;color:var(--text2);">
+                    <small style="margin-top:10px;font-size:11px;color:var(--text2, #94a3b8);">
                         PNG, JPG ou WEBP, até 2MB.
                     </small>
                 </div>
@@ -233,7 +404,7 @@ function toggleSenha() {
     i.className = c.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
 }
 
-/* Preview de foto (será enviada ao servidor no submit do form) */
+/* Preview de foto */
 const fotoInput   = document.getElementById('foto_adm_input');
 const fotoPreview = document.getElementById('preview_foto');
 

@@ -1,6 +1,25 @@
 <?= view('sistema/layout/header') ?>
 
 <style>
+    /* Estilo Base - Gradiente azul mantido para todos os temas */
+    body {
+        background-color: #000000 !important;
+        background-image: 
+            radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+            radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
+        background-attachment: fixed !important;
+        color: #ffffff;
+        font-family: sans-serif;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    /* Tema Claro - Fundo branco mantendo o degradê azul por cima */
+    body.light {
+        background-color: #ffffff !important;
+        color: #0f172a;
+    }
+
     /* === PALETA DE CORES === */
     :root {
         --color-surface-dark: #17182c;
@@ -45,8 +64,7 @@
     }
 
     .identificador-main h1 {
-
-        color: #1e293b;
+        color: inherit;
         text-align: center;
         margin: 0;
     }
@@ -84,6 +102,7 @@
         cursor: pointer;
         transition: all 0.3s ease;
         border: none;
+        background: var(--color-primary);
         color: #ffffff;
         box-shadow: 0 4px 20px rgba(30, 107, 231, 0.3);
     }
@@ -97,17 +116,19 @@
     #result {
         width: 100%;
         max-width: 700px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+        background: var(--color-surface-card);
         border-radius: 16px;
         padding: 30px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         text-align: center;
-        color: #475569;
+        color: inherit;
         font-size: 1rem;
+        box-sizing: border-box;
     }
 
     #result h3 {
-        color: var(--color-primary);
+        color: var(--color-accent-adm);
         font-size: 1.5rem;
         margin: 0 0 15px 0;
     }
@@ -118,65 +139,24 @@
     }
 
     #result strong {
-        color: #1e293b;
+        color: inherit;
     }
 
     #result img {
         border-radius: 12px;
         margin-top: 15px;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--color-primary-dark);
     }
 
-    @media (prefers-color-scheme: dark) {
-        .identificador-main::before {
-            background-image:
-                linear-gradient(rgba(30, 107, 231, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(30, 107, 231, 0.08) 1px, transparent 1px);
-        }
+    /* Ajustes Tema Claro */
+    body.light #result {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
 
-        .identificador-main h1 {
-            color: var(--color-btn-grad-text);
-        }
-
-        #camera-container {
-            box-shadow:
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                0 20px 50px rgba(0, 0, 0, 0.5),
-                0 0 80px rgba(30, 107, 231, 0.2);
-        }
-
-        .identificador-btn {
-            color: var(--color-btn-grad-text);
-            border: 1px solid var(--color-primary);
-        }
-
-        .identificador-btn:hover {
-            background: var(--color-surface-btn);
-            border-color: var(--color-primary-hover);
-        }
-
-        #result {
-            background: var(--color-surface-card);
-            border: 1px solid var(--color-primary-dark);
-            box-shadow: none;
-            color: var(--color-btn-grad-before);
-        }
-
-        #result h3 {
-            color: var(--color-primary-hover);
-        }
-
-        #result p {
-            color: var(--color-btn-grad-before);
-        }
-
-        #result strong {
-            color: var(--color-btn-grad-text);
-        }
-
-        #result img {
-            border-color: var(--color-primary-dark);
-        }
+    body.light .identificador-main h1 {
+        color: #1e293b;
     }
 
     @media (max-width: 768px) {
@@ -195,139 +175,137 @@
     }
 </style>
 
-<body class="body_identificador">
+<main class="identificador-main">
+    <br><br>
+    <h1>Identificação de dispositivos via câmera</h1>
 
-    <main class="identificador-main">
-        <br><br>
-        <h1>Identificação de dispositivos via câmera</h1>
+    <section id="camera-container">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+    </section>
 
-        <section id="camera-container">
-            <video id="video" autoplay muted playsinline></video>
-            <canvas id="canvas" style="display:none;"></canvas>
-        </section>
+    <button id="btn-identificar" class="identificador-btn">
+        <i class="fa-solid fa-camera"></i> Identificar
+    </button>
 
-        <button id="btn-identificar" class="identificador-btn">
-            <i class="fa-solid fa-camera"></i> Identificar
-        </button>
+    <section id="result">
+        Aguardando...
+    </section>
+</main>
 
-        <section id="result">
-            Aguardando...
-        </section>
-    </main>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script>
-        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/G7gJB1a1F/";
-        const BASE_URL = "<?= base_url() ?>";
+<script>
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/G7gJB1a1F/";
+    const BASE_URL = "<?= base_url() ?>";
 
-        let model;
-        const video = document.getElementById("video");
-        const canvas = document.getElementById("canvas");
-        const result = document.getElementById("result");
+    let model;
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const result = document.getElementById("result");
 
-        async function startCamera() {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            await new Promise(resolve => {
-                video.onloadedmetadata = () => { video.play(); resolve(); };
+    async function startCamera() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        await new Promise(resolve => {
+            video.onloadedmetadata = () => { video.play(); resolve(); };
+        });
+    }
+
+    async function loadModel() {
+        model = await tmImage.load(
+            MODEL_URL + "model.json",
+            MODEL_URL + "metadata.json"
+        );
+    }
+
+    async function identificar() {
+        if (!model) {
+            result.textContent = "Modelo não carregado";
+            return;
+        }
+
+        result.textContent = "Analisando...";
+
+        console.log("videoWidth:", video.videoWidth, "videoHeight:", video.videoHeight);
+
+        canvas.width = video.videoWidth || 224;
+        canvas.height = video.videoHeight || 224;
+        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        let prediction;
+        try {
+            prediction = await model.predict(canvas);
+            console.log("prediction:", prediction);
+        } catch (err) {
+            console.error("Erro no predict:", err);
+            result.textContent = "Erro no predict: " + err.message;
+            return;
+        }
+
+        let best = prediction[0];
+        for (let i = 1; i < prediction.length; i++) {
+            if (prediction[i].probability > best.probability) {
+                best = prediction[i];
+            }
+        }
+
+        console.log("Melhor classe:", best.className, "Confiança:", best.probability);
+
+        if (best.probability < 0.7) {
+            result.textContent = "Não reconhecido com confiança suficiente";
+            return;
+        }
+
+        try {
+            const response = await fetch("<?= base_url('identificador/buscar-sensor') ?>", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ nome: best.className.toLowerCase().trim() })
             });
-        }
 
-        async function loadModel() {
-            model = await tmImage.load(
-                MODEL_URL + "model.json",
-                MODEL_URL + "metadata.json"
-            );
-        }
+            console.log("Status do fetch:", response.status);
+            const data = await response.json();
+            console.log("Resposta do banco:", data);
 
-        async function identificar() {
-            if (!model) {
-                result.textContent = "Modelo não carregado";
-                return;
-            }
-
-            result.textContent = "Analisando...";
-
-            console.log("videoWidth:", video.videoWidth, "videoHeight:", video.videoHeight);
-
-            canvas.width = video.videoWidth || 224;
-            canvas.height = video.videoHeight || 224;
-            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            let prediction;
-            try {
-                prediction = await model.predict(canvas);
-                console.log("prediction:", prediction);
-            } catch (err) {
-                console.error("Erro no predict:", err);
-                result.textContent = "Erro no predict: " + err.message;
-                return;
-            }
-
-            let best = prediction[0];
-            for (let i = 1; i < prediction.length; i++) {
-                if (prediction[i].probability > best.probability) {
-                    best = prediction[i];
-                }
-            }
-
-            console.log("Melhor classe:", best.className, "Confiança:", best.probability);
-
-            if (best.probability < 0.7) {
-                result.textContent = "Não reconhecido com confiança suficiente";
-                return;
-            }
-
-            try {
-                const response = await fetch("<?= base_url('identificador/buscar-sensor') ?>", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: new URLSearchParams({ nome: best.className.toLowerCase().trim() })
-                });
-
-                console.log("Status do fetch:", response.status);
-                const data = await response.json();
-                console.log("Resposta do banco:", data);
-
-                if (!data.success) {
-                    result.innerHTML = `
-                <strong>${best.className}</strong><br>
-                Confiança: ${(best.probability * 100).toFixed(1)}%<br><br>
-                Sensor identificado, mas não encontrado no banco.
-            `;
-                    return;
-                }
-
-                const s = data.sensor;
+            if (!data.success) {
                 result.innerHTML = `
-            <h3>${s.NOME}</h3>
-            <p><strong>Confiança:</strong> ${(best.probability * 100).toFixed(1)}%</p>
-            <p><strong>Descrição:</strong><br>${s.DESCRICAO}</p>
-            <p><strong>Circuito:</strong><br>${s.CIRCUITO}</p>
-            ${s.FOTO ? `<img src="${BASE_URL}${s.FOTO}" alt="${s.NOME}" style="max-width:300px;">` : ''}
-        `;
-
-            } catch (err) {
-                console.error("Erro no fetch:", err);
-                result.textContent = "Erro ao consultar o banco de dados.";
+                    <strong>${best.className}</strong><br>
+                    Confiança: ${(best.probability * 100).toFixed(1)}%<br><br>
+                    Sensor identificado, mas não encontrado no banco.
+                `;
+                return;
             }
+
+            const s = data.sensor;
+            result.innerHTML = `
+                <h3>${s.NOME}</h3>
+                <p><strong>Confiança:</strong> ${(best.probability * 100).toFixed(1)}%</p>
+                <p><strong>Descrição:</strong><br>${s.DESCRICAO}</p>
+                <p><strong>Circuito:</strong><br>${s.CIRCUITO}</p>
+                ${s.FOTO ? `<img src="${BASE_URL}${s.FOTO}" alt="${s.NOME}" style="max-width:300px;">` : ''}
+            `;
+
+        } catch (err) {
+            console.error("Erro no fetch:", err);
+            result.textContent = "Erro ao consultar o banco de dados.";
         }
+    }
 
-        document.getElementById("btn-identificar").addEventListener("click", identificar);
+    document.getElementById("btn-identificar").addEventListener("click", identificar);
 
-        async function init() {
-            try {
-                await startCamera();
-                await loadModel();
-            } catch (err) {
-                console.error(err);
-                result.textContent = `Erro: ${err.name} - ${err.message}`;
-            }
+    async function init() {
+        try {
+            await startCamera();
+            await loadModel();
+        } catch (err) {
+            console.error(err);
+            result.textContent = `Erro: ${err.name} - ${err.message}`;
         }
+    }
 
-        init();
-    </script>
+    init();
+</script>
 
-    <?= view('sistema/layout/footer') ?>
+<?= view('sistema/layout/footer') ?>

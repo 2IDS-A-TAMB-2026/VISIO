@@ -1,11 +1,8 @@
 <?= view('sistema/layout/header') ?>
-<main class="about-page">
+<main class="about-page"   style="background: 
+    radial-gradient(circle at top right, #0055ff6f 0%, transparent 60%),
+    radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 60%)">
     <section class="about-cards">
-        <video autoplay muted loop playsinline class="video-bg-sobre theme-video"
-            src="<?= base_url('assets/images/Videos/video_black.mp4') ?>"
-            data-light="<?= base_url('assets/images/Videos/video_white.mp4') ?>"
-            data-dark="<?= base_url('assets/images/Videos/video_black.mp4') ?>">
-        </video>
         <article class="about-card">
             <h2 class="titulo_sobre" style="color: #0084f7;">Missão</h2>
             <p>Desenvolvemos uma solução interativa de identificação de sensores IoT que simplifica conceitos

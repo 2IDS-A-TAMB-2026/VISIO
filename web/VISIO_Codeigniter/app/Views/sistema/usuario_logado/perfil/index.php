@@ -1,6 +1,25 @@
 <?= view('sistema/layout/header') ?>
 
 <style>
+  /* Estilo Base - Gradiente azul mantido para todos os temas */
+  body {
+    background-color: #000000 !important;
+    background-image: 
+        radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+        radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
+    background-attachment: fixed !important;
+    color: #ffffff;
+    font-family: sans-serif;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  /* Tema Claro - Fundo branco mantendo o degradê azul */
+  body.light {
+    background-color: #ffffff !important;
+    color: #0f172a;
+  }
+
   .perfil-page {
     min-height: 80vh;
     padding: 40px 20px;
@@ -268,26 +287,25 @@
         <span class="perfil-cpf-badge">CPF: <?= esc($usuario['CPF'] ?? '') ?></span>
       </div>
 
-
-<!--CARD COM OS DADOS DE ACEETO E ERRO, EMBAIXO DA FOTO-->
+      <!--CARD COM OS DADOS DE ACERTO E ERRO, EMBAIXO DA FOTO-->
       <div class="perfil-lateral">
-    <div class="card-desempenho">
-        <h3 class="titulo-desempenho">Seu desempenho</h3>
-        
-        <p class="texto-desempenho">
-            Você acertou <strong><?= $acertos ?></strong> de <strong><?= $total ?></strong> questões.
-        </p>
-        
-        <div class="bloco-percentual">
-            <span class="percentual-desempenho"><?= $percentual ?>%</span>
-            <span class="legenda-desempenho">de aproveitamento</span>
+        <div class="card-desempenho">
+            <h3 class="titulo-desempenho">Seu desempenho</h3>
+            
+            <p class="texto-desempenho">
+                Você acertou <strong><?= $acertos ?></strong> de <strong><?= $total ?></strong> questões.
+            </p>
+            
+            <div class="bloco-percentual">
+                <span class="percentual-desempenho"><?= $percentual ?>%</span>
+                <span class="legenda-desempenho">de aproveitamento</span>
+            </div>
         </div>
-    </div>
-</div>
+      </div>
 
-
-
-    </div> <div class="perfil-card">
+    </div> 
+    
+    <div class="perfil-card">
       <h2><i class="fa-solid fa-user-pen"></i> Dados da conta</h2>
 
       <?php if (session()->getFlashdata('sucesso')): ?>
@@ -330,14 +348,12 @@
                  id="campo_telefone">
         </div>
 
-
         <div class="campo-grupo">
           <label>Data de nascimento</label>
           <input type="date" id="dataLimite" name="data_nascimento" value="<?= esc($usuario['DATA_NASCIMENTO'] ?? '') ?>">
         </div>
 
       <script>
-        // O seu script do JavaScript que bloqueia datas futuras continua aqui embaixo igualzinho
         const hoje = new Date();
         const ano = hoje.getFullYear();
         const mes = String(hoje.getMonth() + 1).padStart(2, '0');
@@ -345,7 +361,6 @@
         const dataFormatada = `${ano}-${mes}-${dia}`;
         document.getElementById('dataLimite').max = dataFormatada;
       </script>
-
 
         <div class="campo-grupo">
           <label>Número do cartão IoT</label>

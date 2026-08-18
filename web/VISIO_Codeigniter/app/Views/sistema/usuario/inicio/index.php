@@ -1,10 +1,9 @@
 <?= view('sistema/layout/header') ?>
 
 <p id="index-login-msg" class="contato-feedback index-banner" hidden></p>
-<main class="hero">
-
-
-
+<main class="hero"  style="background: 
+    radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+    radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%)">
     <section class="intro">
         <h1>Identificação Inteligente de Sensores IoT</h1>
         <p>
@@ -23,13 +22,14 @@
         </a>
     </section>
 
-    <div class="container-geral">
+    <div class="container-geral" >
         <div class="carrossel">
             <div class="carrossel-interno">
-                <div class="item">
-                    <img class="theme-img" src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                        data-light="<?= base_url('assets/images/logos/Logo/LogoLight.png') ?>"
-                        data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>" alt="Logo">
+
+            <div class="item">
+                    <img class="theme-img" src="<?= base_url('assets/images/Carrossel/logoP.png') ?>"
+                        data-light="<?= base_url('assets/images/Carrossel/logoB.png') ?>"
+                        data-dark="<?= base_url('assets/images/Carrossel/logoP.png') ?>" alt="logo">
                 </div>
 
                 <div class="item">
@@ -50,10 +50,10 @@
                         data-dark="<?= base_url('assets/images/Carrossel/educacao.png') ?>" alt="Educação">
                 </div>
 
-                <div class="item">
-                    <img class="theme-img" src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                        data-light="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-                        data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>" alt="Logo">
+               <div class="item">
+                    <img class="theme-img" src="<?= base_url('assets/images/Carrossel/logoP.png') ?>"
+                        data-light="<?= base_url('assets/images/Carrossel/logoB.png') ?>"
+                        data-dark="<?= base_url('assets/images/Carrossel/logoP.png') ?>" alt="logo">
                 </div>
             </div>
         </div>
@@ -67,14 +67,9 @@
 
 </main>
 
-<section class="services">
-
-    <video autoplay muted loop playsinline class="video-bg theme-video"
-        src="<?= base_url('assets/images/Videos/video_black.mp4') ?>"
-        data-light="<?= base_url('assets/images/Videos/video_white.mp4') ?>"
-        data-dark="<?= base_url('assets/images/Videos/video_black.mp4') ?>">
-    </video>
-
+<section class="services"  style="background: 
+    radial-gradient(circle at top left, #0055ff9d 0%, transparent 40%),
+    radial-gradient(circle at bottom right, #0055ff9d 0%, transparent 40%)">
     <div class="container">
         <h2 class="title" style="color: #FFF">Funcionalidades do Sistema</h2>
         <div class="grid">
@@ -159,11 +154,11 @@
         <div class="glow glow-2"></div>
     </div>
 
-    <div class="hero-content">
+    <div class="hero-content" >
         
         <!-- Título principal -->
         <div class="hero-title">
-            <h1>Conheça a Plataforma <span class="highlight">VISIO</span></h1>
+            <h1>Conheça a Plataforma VISIO</span></h1>
             <p class="subtitle">Tecnologia inteligente para identificação de sensores IoT</p>
         </div>
 
@@ -507,7 +502,9 @@
 <hr>
 
 
-<section class="portfolio">
+<section class="portfolio"   style="background: 
+    radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
+    radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%)">
     <div class="container">
         <h2 class="title">Aplicações do Sistema</h2>
         <div class="grid">
