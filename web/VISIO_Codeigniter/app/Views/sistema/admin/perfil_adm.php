@@ -3,7 +3,6 @@
 <style>
 /* Estilo Base - Gradiente azul mantido para todos os temas */
 body {
-    background-color: #000000 !important;
     background-image: 
         radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
         radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
@@ -387,13 +386,24 @@ body.high-contrast .btn-foto       { background: #ffff00 !important; color: #000
 </div>
 
 <script>
-/* Máscara telefone */
+/* Máscara e Validação de telefone */
 document.getElementById('campo_tel').addEventListener('input', function () {
-    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    let raw = this.value.replace(/\D/g, '').slice(0, 11);
+    let v = raw;
+
+    // Aplicação da máscara
     if      (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
     else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/,        '($1) $2');
     else if (v.length > 0) v = v.replace(/^(\d{0,2})/,               '($1');
+    
     this.value = v;
+
+    // Validação de quantidade de dígitos
+    if (raw.length > 0 && raw.length < 10) {
+        this.setCustomValidity('Informe o DDD e o telefone completo (mínimo 10 dígitos).');
+    } else {
+        this.setCustomValidity(''); // Limpa a mensagem e valida o campo
+    }
 });
 
 /* Mostrar/ocultar senha */

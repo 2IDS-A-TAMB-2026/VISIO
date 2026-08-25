@@ -34,7 +34,11 @@ class Cors extends BaseConfig
          *   - ['http://localhost:8080']
          *   - ['https://www.example.com']
          */
-        'allowedOrigins' => [],
+        // Origem real do Flutter Web, confirmada pelo comando usado para
+        // rodar o app: `flutter run -d web-server --web-hostname 192.168.0.6
+        // --web-port 5000`. Mesmo host do backend, porta diferente — ainda
+        // conta como cross-origin para o navegador (origem = esquema+host+porta).
+        'allowedOrigins' => ['http://192.168.0.6:5000'],
 
         /**
          * Origin regex patterns for the `Access-Control-Allow-Origin` header.
@@ -57,7 +61,11 @@ class Cors extends BaseConfig
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
          */
-        'supportsCredentials' => false,
+        // Obrigatório: o Flutter Web usa withCredentials=true (BrowserClient,
+        // ver http_client_provider_web.dart) pra receber/reenviar o cookie de
+        // sessão PHPSESSID. Com false aqui, o navegador descarta o cookie de
+        // qualquer resposta cross-origin mesmo com allowedOrigins correto.
+        'supportsCredentials' => true,
 
         /**
          * Set headers to allow.
@@ -68,7 +76,11 @@ class Cors extends BaseConfig
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
          */
-        'allowedHeaders' => [],
+        // Únicos headers customizados que o app manda hoje (ver api_client.dart
+        // e auth_service.dart: Accept sempre; Content-Type em postJson/postForm
+        // e nos dois logins). Se o app passar a mandar mais headers custom no
+        // futuro, precisam ser adicionados aqui também.
+        'allowedHeaders' => ['Content-Type', 'Accept'],
 
         /**
          * Set headers to expose.
@@ -93,7 +105,10 @@ class Cors extends BaseConfig
          *
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
          */
-        'allowedMethods' => [],
+        // ApiClient só implementa GET e POST (get/postJson/postForm/postMultipart);
+        // OPTIONS é sempre necessário para o preflight. Sem PUT/DELETE porque
+        // nada no app os usa hoje — adicionar aqui se algo passar a precisar.
+        'allowedMethods' => ['GET', 'POST', 'OPTIONS'],
 
         /**
          * Set how many seconds the results of a preflight request can be cached.

@@ -67,9 +67,9 @@
 
   .login-branding .logo-img {
     width: auto; 
-    max-width: 150px; 
+    max-width: 250px; 
     height: auto; 
-    max-height: 70px; 
+    max-height: 700px; 
     object-fit: contain; 
     margin-bottom: 24px;
   }
@@ -78,12 +78,12 @@
     font-size: 2.5rem !important; 
     font-weight: 700 !important; 
     margin-bottom: 12px; 
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   .login-branding p {
     font-size: 0.95rem; 
-    color: rgba(255, 255, 255, 0.8) !important; 
+    color: rgba(255, 255, 255, 0.8); 
     line-height: 1.6;
     max-width: 320px;
   }
@@ -204,7 +204,7 @@
   }
 
   .text-no-account {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
   }
 
@@ -219,88 +219,195 @@
   }
 
   .login-link-secondary {
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     display: inline-block;
     margin-top: 8px;
   }
 
   .login-link-secondary:hover {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   /* --- MODO CLARO (Fundo Azul Transparente) --- */
   [data-theme="light"] .login-container,
   body.light-theme .login-container,
   body.light .login-container {
-    background: linear-gradient(135deg, rgba(224, 242, 254, 0.65) 0%, rgba(186, 230, 253, 0.55) 50%, rgba(125, 211, 252, 0.45) 100%) !important;
-    border-color: rgba(56, 189, 248, 0.5) !important;
-    box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12) !important;
+    background: linear-gradient(135deg, rgba(224, 242, 254, 0.65) 0%, rgba(186, 230, 253, 0.55) 50%, rgba(125, 211, 252, 0.45) 100%);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12);
   }
 
   [data-theme="light"] .login-branding h2,
   body.light-theme .login-branding h2,
   body.light .login-branding h2 {
-    color: #0369a1 !important;
+    color: #0369a1;
   }
 
   [data-theme="light"] .login-branding p,
   body.light-theme .login-branding p,
   body.light .login-branding p {
-    color: #0c4a6e !important;
+    color: #0c4a6e;
   }
 
   [data-theme="light"] .login-card-glass,
   body.light-theme .login-card-glass,
   body.light .login-card-glass {
-    background: rgba(255, 255, 255, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 15px 30px rgba(3, 105, 161, 0.15) !important;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 15px 30px rgba(3, 105, 161, 0.15);
   }
 
   [data-theme="light"] .login-card-title,
   body.light-theme .login-card-title,
   body.light .login-card-title {
-    color: #0369a1 !important;
+    color: #0369a1;
   }
 
   [data-theme="light"] .input-group label,
   body.light-theme .input-group label,
   body.light .input-group label {
-    color: #0284c7 !important;
+    color: #0284c7;
   }
 
   [data-theme="light"] .login-input,
   body.light-theme .login-input,
   body.light .login-input {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid #7dd3fc !important;
-    color: #0c4a6e !important;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #7dd3fc;
+    color: #0c4a6e;
   }
 
   [data-theme="light"] .login-input::placeholder,
   body.light-theme .login-input::placeholder,
   body.light .login-input::placeholder {
-    color: #0284c7 !important;
+    color: #0284c7;
     opacity: 0.6;
   }
 
   [data-theme="light"] .text-no-account,
   body.light-theme .text-no-account,
   body.light .text-no-account {
-    color: #0369a1 !important;
+    color: #0369a1;
   }
 
   [data-theme="light"] .login-link,
   body.light-theme .login-link,
   body.light .login-link {
-    color: #0284c7 !important;
+    color: #0284c7;
   }
 
   [data-theme="light"] .login-link-secondary,
   body.light-theme .login-link-secondary,
   body.light .login-link-secondary {
-    color: #0369a1 !important;
+    color: #0369a1;
+  }
+
+  /* REGRAS DE ALTO CONTRASTE */
+  html.high-contrast,
+  body.high-contrast,
+  .high-contrast .login-page,
+  [data-theme="light"].high-contrast .login-container,
+  body.light-theme.high-contrast .login-container,
+  body.light.high-contrast .login-container {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .login-container,
+  .high-contrast .login-card-glass,
+  .high-contrast .login-branding,
+  [data-theme="light"].high-contrast .login-card-glass,
+  body.light-theme.high-contrast .login-card-glass {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .high-contrast .login-container::before,
+  .high-contrast .login-container::after {
+    display: none !important;
+  }
+
+  .high-contrast .login-container {
+    border: 3px solid #ffff00 !important;
+  }
+
+  .high-contrast .login-card-glass {
+    border: 2px solid #ffffff !important;
+  }
+
+  .high-contrast .login-card-title,
+  .high-contrast .login-branding h2,
+  [data-theme="light"].high-contrast .login-card-title,
+  [data-theme="light"].high-contrast .login-branding h2,
+  body.light-theme.high-contrast .login-card-title,
+  body.light-theme.high-contrast .login-branding h2 {
+    color: #ffff00 !important;
+    background: transparent !important;
+  }
+
+  .high-contrast .login-card-title::after {
+    background: #ffff00 !important;
+  }
+
+  .high-contrast .login-branding p,
+  .high-contrast .text-no-account,
+  .high-contrast .login-footer-links *,
+  [data-theme="light"].high-contrast .login-branding p,
+  [data-theme="light"].high-contrast .text-no-account {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .input-group label,
+  .high-contrast .input-group label i {
+    color: #ffff00 !important;
+  }
+
+  .high-contrast .login-input,
+  [data-theme="light"].high-contrast .login-input {
+    background-color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .login-input:focus {
+    border-color: #ffff00 !important;
+    box-shadow: 0 0 0 2px #ffff00 !important;
+  }
+
+  .high-contrast .login-input::placeholder {
+    color: #aaaaaa !important;
+  }
+
+  .high-contrast .login-btn {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  .high-contrast .login-btn * {
+    color: #000000 !important;
+  }
+
+  .high-contrast .login-link,
+  .high-contrast .login-link-secondary,
+  [data-theme="light"].high-contrast .login-link,
+  [data-theme="light"].high-contrast .login-link-secondary {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+  }
+
+  .high-contrast .login-branding .logo-img {
+    background: transparent !important;
+    filter: invert(1) grayscale(100%) !important;
+    -webkit-filter: invert(1) grayscale(100%) !important;
   }
 
   @media (max-width: 768px) {
@@ -382,6 +489,11 @@
         <button type="submit" class="login-btn">
           <i class="fa-solid fa-right-to-bracket"></i> Entrar
         </button>
+
+        <button type="button" id="btnCartao" class="login-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Entrar com cartão
+        </button>
+
       </form>
 
       <div class="login-footer-links">
@@ -401,6 +513,7 @@
   const loginForm = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const senhaInput = document.getElementById('senha');
+  const btnCartao = document.getElementById('btnCartao');
 
   [emailInput, senhaInput].forEach(input => {
     input.addEventListener('input', function() {
@@ -410,6 +523,38 @@
     });
   });
 
+  // Evento de clique exclusivo para o botão de cartão (encadeia alertas e redireciona)
+  btnCartao.addEventListener('click', function() {
+    let timerInterval;
+    Swal.fire({
+      title: "Aguardando aproximação",
+      html: "Aguarde por <b></b> segundos.",
+      timer: 2000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+        const timer = Swal.getPopup().querySelector("b");
+        timerInterval = setInterval(() => {
+          timer.textContent = `${Swal.getTimerLeft()}`;
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    }).then(() => {
+      // 2º Alerta exibido imediatamente após o término do timer
+      Swal.fire({
+        title: "Erro na leitura do cartão",
+        icon: "error",
+        confirmButtonColor: '#2563eb'
+      }).then(() => {
+        // Redireciona para a página /perfil ao fechar o alerta
+        window.location.href = "<?= base_url('perfil') ?>";
+      });
+    });
+  });
+
+  // Validação apenas do envio do formulário padrão
   loginForm.addEventListener('submit', function(e) {
     e.preventDefault();
 

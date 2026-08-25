@@ -200,7 +200,7 @@
     color: #60a5fa;
   }
 
-  /* DIREITA: Branding com Logo sem Hover */
+  /* DIREITA: Branding */
   .login-branding {
     flex: 1;
     z-index: 2;
@@ -225,13 +225,13 @@
     font-size: 2.2rem !important; 
     font-weight: 700 !important; 
     margin-bottom: 12px; 
-    color: #ffffff !important;
+    color: #ffffff;
     letter-spacing: -0.5px;
   }
 
   .login-branding p {
     font-size: 0.95rem; 
-    color: #94a3b8 !important; 
+    color: #94a3b8; 
     line-height: 1.6;
     max-width: 320px;
   }
@@ -240,67 +240,176 @@
   [data-theme="light"] .login-container,
   body.light-theme .login-container,
   body.light .login-container {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(224, 242, 254, 0.7) 100%) !important;
-    border-color: rgba(56, 189, 248, 0.4) !important;
-    box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.15) !important;
+    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(224, 242, 254, 0.7) 100%);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.15);
   }
 
   [data-theme="light"] .login-branding h2,
   body.light-theme .login-branding h2,
   body.light .login-branding h2 {
-    color: #0f172a !important;
+    color: #0f172a;
   }
 
   [data-theme="light"] .login-branding p,
   body.light-theme .login-branding p,
   body.light .login-branding p {
-    color: #475569 !important;
+    color: #475569;
   }
 
   [data-theme="light"] .login-card-glass,
   body.light-theme .login-card-glass,
   body.light .login-card-glass {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12) !important;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12);
   }
 
   [data-theme="light"] .login-card-title,
   body.light-theme .login-card-title,
   body.light .login-card-title {
-    color: #0f172a !important;
+    color: #0f172a;
   }
 
   [data-theme="light"] .login-subtitle,
   body.light-theme .login-subtitle,
   body.light .login-subtitle {
-    color: #64748b !important;
+    color: #64748b;
   }
 
   [data-theme="light"] .input-group label,
   body.light-theme .input-group label,
   body.light .input-group label {
-    color: #334155 !important;
+    color: #334155;
   }
 
   [data-theme="light"] .login-input,
   body.light-theme .login-input,
   body.light .login-input {
-    background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    color: #0f172a !important;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
   }
 
   [data-theme="light"] .login-input::placeholder,
   body.light-theme .login-input::placeholder,
   body.light .login-input::placeholder {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   [data-theme="light"] .link-esqueceu,
   body.light-theme .link-esqueceu,
   body.light .link-esqueceu {
-    color: #0284c7 !important;
+    color: #0284c7;
+  }
+
+  /* ============================================================
+     REGRAS DE ALTO CONTRASTE (PRIORIDADE ABSOLUTA)
+     ============================================================ */
+
+  html.high-contrast,
+  body.high-contrast,
+  .high-contrast .login-page,
+  [data-theme="light"].high-contrast .login-container,
+  body.light-theme.high-contrast .login-container,
+  body.light.high-contrast .login-container {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .login-container,
+  .high-contrast .login-card-glass,
+  .high-contrast .login-branding,
+  [data-theme="light"].high-contrast .login-card-glass,
+  body.light-theme.high-contrast .login-card-glass {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .high-contrast .login-container::before,
+  .high-contrast .login-container::after {
+    display: none !important;
+  }
+
+  .high-contrast .login-container {
+    border: 3px solid #ffff00 !important;
+  }
+
+  .high-contrast .login-card-glass {
+    border: 2px solid #ffffff !important;
+  }
+
+  .high-contrast .login-card-title,
+  .high-contrast .login-branding h2,
+  [data-theme="light"].high-contrast .login-card-title,
+  [data-theme="light"].high-contrast .login-branding h2,
+  body.light-theme.high-contrast .login-card-title,
+  body.light-theme.high-contrast .login-branding h2 {
+    color: #ffff00 !important;
+    background: transparent !important;
+  }
+
+  .high-contrast .login-card-title::after {
+    background: #ffff00 !important;
+  }
+
+  .high-contrast .login-subtitle,
+  .high-contrast .login-branding p,
+  .high-contrast .login-footer *,
+  [data-theme="light"].high-contrast .login-subtitle,
+  [data-theme="light"].high-contrast .login-branding p {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .input-group label,
+  .high-contrast .input-group label i {
+    color: #ffff00 !important;
+  }
+
+  .high-contrast .login-input,
+  [data-theme="light"].high-contrast .login-input {
+    background-color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .login-input:focus {
+    border-color: #ffff00 !important;
+    box-shadow: 0 0 0 2px #ffff00 !important;
+  }
+
+  .high-contrast .login-input::placeholder {
+    color: #aaaaaa !important;
+  }
+
+  .high-contrast .btn-login-adm {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  .high-contrast .btn-login-adm * {
+    color: #000000 !important;
+  }
+
+  .high-contrast .link-esqueceu,
+  [data-theme="light"].high-contrast .link-esqueceu {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+  }
+
+  /* LOGO CORRIGIDA (SEM BLOCO BRANCO) */
+  .high-contrast .login-branding .logo {
+    background: transparent !important;
+    filter: invert(1) grayscale(100%) !important;
+    -webkit-filter: invert(1) grayscale(100%) !important;
   }
 
   @media (max-width: 850px) {

@@ -1,9 +1,11 @@
 <?= view('sistema/layout/header') ?>
 
 <p id="index-login-msg" class="contato-feedback index-banner" hidden></p>
-<main class="hero"  style="background: 
-    radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
-    radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%)">
+
+<!-- ============================================================
+     SEÇÃO HERO / INTRODUÇÃO
+     ============================================================ -->
+<main class="hero hero-section-bg">
     <section class="intro">
         <h1>Identificação Inteligente de Sensores IoT</h1>
         <p>
@@ -22,11 +24,10 @@
         </a>
     </section>
 
-    <div class="container-geral" >
+    <div class="container-geral">
         <div class="carrossel">
             <div class="carrossel-interno">
-
-            <div class="item">
+                <div class="item">
                     <img class="theme-img" src="<?= base_url('assets/images/Carrossel/logoP.png') ?>"
                         data-light="<?= base_url('assets/images/Carrossel/logoB.png') ?>"
                         data-dark="<?= base_url('assets/images/Carrossel/logoP.png') ?>" alt="logo">
@@ -50,7 +51,7 @@
                         data-dark="<?= base_url('assets/images/Carrossel/educacao.png') ?>" alt="Educação">
                 </div>
 
-               <div class="item">
+                <div class="item">
                     <img class="theme-img" src="<?= base_url('assets/images/Carrossel/logoP.png') ?>"
                         data-light="<?= base_url('assets/images/Carrossel/logoB.png') ?>"
                         data-dark="<?= base_url('assets/images/Carrossel/logoP.png') ?>" alt="logo">
@@ -64,105 +65,79 @@
             <span class="bolinha b4"></span>
         </div>
     </div>
-
 </main>
 
-<section class="services"  style="background: 
-    radial-gradient(circle at top left, #0055ff9d 0%, transparent 40%),
-    radial-gradient(circle at bottom right, #0055ff9d 0%, transparent 40%)">
+<!-- ============================================================
+     SEÇÃO DE FUNCIONALIDADES / SERVIÇOS
+     ============================================================ -->
+<section class="services services-section-bg">
     <div class="container">
-        <h2 class="title" style="color: #FFF">Funcionalidades do Sistema</h2>
+        <h2 class="title services-title-color">Funcionalidades do Sistema</h2>
         <div class="grid">
 
             <section class="emp-section">
                 <div class="emp-grid-top">
 
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            📷
-                        </div>
+                        <div class="emp-icon">📷</div>
                         <h3>Identificação por Visão Computacional</h3>
-                        <p>Reconhecimento automático de sensores por meio de captura de imagem e
-                            processamento com
-                            modelos de
-                            Inteligência Artificial treinados para classificação de dispositivos.</p>
+                        <p>Reconhecimento automático de sensores por meio de captura de imagem e processamento com modelos de Inteligência Artificial treinados para classificação de dispositivos.</p>
                     </div>
+
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            🏢
-                        </div>
+                        <div class="emp-icon">🏢</div>
                         <h3>Gestão de Sensores IoT</h3>
-                        <p>Registro, consulta e acompanhamento do status dos sensores em ambiente
-                            digital
-                            centralizado, permitindo
-                            organização e rastreabilidade.</p>
+                        <p>Registro, consulta e acompanhamento do status dos sensores em ambiente digital centralizado, permitindo organização e rastreabilidade.</p>
                     </div>
 
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            📖
-                        </div>
+                        <div class="emp-icon">📖</div>
                         <h3>Apoio Educacional</h3>
-                        <p>Ferramenta didática voltada ao aprendizado prático de Internet das
-                            Coisas, automação e
-                            identificação de
-                            componentes eletrônicos.</p>
+                        <p>Ferramenta didática voltada ao aprendizado prático de Internet das Coisas, automação e identificação de componentes eletrônicos.</p>
                     </div>
 
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            ✏️
-                        </div>
+                        <div class="emp-icon">✏️</div>
                         <h3>Aplicação</h3>
-                        <p>Organização e controle de sensores utilizados em atividades práticas,
-                            experimentos e
-                            projetos acadêmicos.</p>
+                        <p>Organização e controle de sensores utilizados em atividades práticas, experimentos e projetos acadêmicos.</p>
                     </div>
 
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            🔐
-                        </div>
+                        <div class="emp-icon">🔐</div>
                         <h3>Autenticação e Segurança</h3>
-                        <p>Implementação de identificação digital única por sensor e proteção das
-                            informações
-                            registradas no
-                            sistema.</p>
+                        <p>Implementação de identificação digital única por sensor e proteção das informações registradas no sistema.</p>
                     </div>
 
                     <div class="emp-card">
-                        <div class="emp-icon">
-                            📱
-                        </div>
+                        <div class="emp-icon">📱</div>
                         <h3>Web e Mobile</h3>
                         <p>Acesso via navegador e aplicativo mobile multiplataforma.</p>
                     </div>
+
                 </div>
+            </section>
         </div>
+    </div>
 </section>
-</div>
-</div>
-</section>
+
 <hr>
 
+<!-- ============================================================
+     SEÇÃO PLATAFORMA VISIO
+     ============================================================ -->
 <section class="visio-hero">
-    
-    <!-- Fundo com elementos tecnológicos -->
     <div class="hero-bg">
         <div class="grid-lines"></div>
         <div class="glow glow-1"></div>
         <div class="glow glow-2"></div>
     </div>
 
-    <div class="hero-content" >
-        
-        <!-- Título principal -->
+    <div class="hero-content">
         <div class="hero-title">
-            <h1>Conheça a Plataforma VISIO</span></h1>
+            <h1>Conheça a Plataforma VISIO</h1>
             <p class="subtitle">Tecnologia inteligente para identificação de sensores IoT</p>
         </div>
 
-        <!-- Container do vídeo -->
         <div class="video-wrapper">
             <div class="video-card">
                 <div class="video-glow"></div>
@@ -175,376 +150,496 @@
             </div>
         </div>
 
-        <!-- Card de descrição -->
         <div class="description-card">
             <div class="card-content">
                 <h3 style="text-align: center">Inteligência Artificial aplicada</h3>
                 <p style="text-align: center">
                     A plataforma VISIO utiliza visão computacional avançada e tecnologias de IA 
                     para identificação inteligente de sensores IoT, tornando a automação industrial 
-                    mais eficiente e precisos.
+                    mais eficiente e precisa.
                 </p>
             </div>
             <ul class="features-list">
-    <li><i class="fa-solid fa-check"></i> Detecção em tempo real</li>
-    <li><i class="fa-solid fa-check"></i> Integração com sistemas IoT</li>
-    <li><i class="fa-solid fa-check"></i> Análise de dados inteligente</li>
-</ul>
+                <li><i class="fa-solid fa-check"></i> Detecção em tempo real</li>
+                <li><i class="fa-solid fa-check"></i> Integração com sistemas IoT</li>
+                <li><i class="fa-solid fa-check"></i> Análise de dados inteligente</li>
+            </ul>
         </div>
-
     </div>
 </section>
 
+<hr>
+
+<!-- ============================================================
+     SEÇÃO DE APLICAÇÕES DO SISTEMA (TEMA CLARO BRANCO + AZUL NEON)
+     ============================================================ -->
+<section class="portfolio portfolio-section-bg">
+    <div class="container">
+        <h2 class="title">Aplicações do Sistema</h2>
+        
+        <div class="tech-grid">
+            
+            <!-- Card 1 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/identificacao.automatica.png') ?>" alt="Identificação de Sensor">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Identificação Automática de Sensores</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-microchip"></i> TECNOLOGIA IA</span>
+                            <h4>Identificação por Visão</h4>
+                            <p>O algoritmo lê a morfologia do sensor, analisa componentes visíveis e classifica o modelo em tempo real com alta precisão.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-bolt"></i> Processamento Instantâneo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/aplicacao.educacional.png') ?>" alt="Aplicação Educacional">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Aplicação Educacional</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-graduation-cap"></i> ENSINO PRÁTICO</span>
+                            <h4>Apoio ao Aprendizado</h4>
+                            <p>Ideal para laboratórios acadêmicos e alunos de robótica, facilitando o reconhecimento de pinagens e especificações elétricas.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-book-open"></i> Foco na Prática</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/gestaoeorganizacao.png') ?>" alt="Gestão de Sensores IoT">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Gestão e Organização</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-boxes-stacked"></i> ORGANIZAÇÃO</span>
+                            <h4>Controle de Inventário</h4>
+                            <p>Mantém a contagem precisa da quantidade de sensores disponíveis, estado de conservação e localização física nas bancadas.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-database"></i> Estoque Mapeado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/interfaceegerenciamento.png') ?>" alt="Aplicação Industrial">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Interface de Gerenciamento</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-chart-line"></i> DASHBOARD</span>
+                            <h4>Painel Intuitivo</h4>
+                            <p>Acompanhe métricas, gráficos de identificações recentes e gerencie acessos de usuários em um ambiente dinâmico.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-gauge-high"></i> Controle Total</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/registroerastreamento.png') ?>" alt="Plataforma Web e Mobile">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Registro e Rastreamento</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-clock-rotate-left"></i> RASTREABILIDADE</span>
+                            <h4>Histórico Digital</h4>
+                            <p>Gera um diário de utilização por dispositivo, rastreando quem utilizou cada sensor e em qual projeto foi aplicado.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-timeline"></i> Auditável e Seguro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="tech-card">
+                <div class="tech-card-inner">
+                    <div class="card-front">
+                        <div class="tech-img-wrapper">
+                            <img src="<?= base_url('assets/images/Aplicacoes/segurancaeautenticacao.png') ?>" alt="Segurança e Autenticação">
+                            <div class="tech-img-overlay"></div>
+                        </div>
+                        <div class="tech-card-content">
+                            <h3>Segurança e Autenticação</h3>
+                            <div class="tech-card-line"></div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="hud-corners"><span></span><span></span><span></span><span></span></div>
+                        <div class="back-content">
+                            <span class="back-tag"><i class="fa-solid fa-shield-halved"></i> PROTEÇÃO</span>
+                            <h4>Autenticação Digital</h4>
+                            <p>Verificação por ID único criptografado, garantindo que apenas módulos autorizados enviem dados à plataforma.</p>
+                            <div class="back-footer">
+                                <span><i class="fa-solid fa-lock"></i> Criptografia Avançada</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     ESTILOS CSS GERAIS E ADAPTATIVOS
+     ============================================================ -->
 <style>
-    .features-list{
-    text-align: center;
-    list-style: none;
-    padding: 0;
-}
-    /* === PALETA DE CORES === */
     :root {
-        /* Superfícies */
-        --color-surface-dark: #17182c;
-        --color-surface-card: #131b4f;
-        --color-surface-btn: #2a3472;
-        --color-surface-btn-hover: #515b99;
+        --color-surface-dark: #0a0e1a;
+        --color-surface-card: #0d152d;
+        --color-surface-btn: #122147;
+        --color-surface-btn-hover: #1e3a7a;
+        
+        /* AZUL NEON ELÉTRICO */
+        --color-primary: #00d8ff;
+        --color-primary-hover: #00f0ff;
+        --color-primary-dark: #0077ff;
+        --color-primary-accent: #00e1ff;
 
-        /* Azul */
-        --color-primary: #1e6be7;
-        --color-primary-hover: #47cdfd;
-        --color-primary-dark: #1557c0;
-        --color-primary-accent: #2662d9;
-        --color-accent-adm: #3a86ff;
-
-        /* Botão */
-        --color-btn-grad-a: #0b1b3d;
-        --color-btn-grad-b: #08142b;
-        --color-btn-grad-text: #d4e0f7;
-        --color-btn-grad-before: #8592ad;
+        /* Variáveis padrão de tema (Escuro) */
+        --neon-card-bg: rgba(13, 21, 45, 0.9);
+        --neon-card-border: rgba(0, 216, 255, 0.6);
+        --neon-card-glow: rgba(0, 216, 255, 0.4);
+        --neon-text-main: #ffffff;
+        --neon-text-muted: #e0e6ed;
     }
 
-    /* Fundo principal */
-    .visio-hero {
+    /* TEMA CLARO: Fundo dos cards BRANCO + Borda e Glow AZUL NEON ELÉTRICO */
+    body.light-theme, html[data-theme="light"] body, body.theme-light {
+        --color-primary: #0066ff; /* Azul Neon mais visível para textos claros */
+        --neon-card-bg: #ffffff; /* Fundo do card BRANCO PURO */
+        --neon-card-border: #00d8ff; /* Borda Azul Neon vibrante */
+        --neon-card-glow: rgba(0, 216, 255, 0.35); /* Brilho Neon Azul */
+        --neon-text-main: #0f172a; /* Texto escuro bem legível */
+        --neon-text-muted: #334155; /* Texto secundário escuro */
+    }
+
+    /* ESTILOS DA SEÇÃO VISIO */
+    .features-list { text-align: center; list-style: none; padding: 0; }
+    .visio-hero { position: relative; width: 100%; min-height: auto; background: linear-gradient(135deg, var(--color-surface-dark) 0%, var(--color-surface-card) 100%); padding: 80px 20px 100px; overflow: hidden; transition: background 0.4s ease; }
+    .visio-hero .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .visio-hero .grid-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 216, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 216, 255, 0.08) 1px, transparent 1px); background-size: 60px 60px; }
+    .visio-hero .glow { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; }
+    .visio-hero .glow-1 { width: 500px; height: 500px; background: #00d8ff; top: -200px; right: -100px; }
+    .visio-hero .glow-2 { width: 400px; height: 400px; background: #0077ff; bottom: -100px; left: -100px; }
+    .visio-hero .hero-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 40px; }
+    .visio-hero .hero-title { text-align: center; }
+    .visio-hero .hero-title h1 { font-size: 2.5rem; margin: 0 0 12px 0; line-height: 1.2; }
+    .visio-hero .hero-title .subtitle { font-size: 1.25rem; margin: 0; }
+    .visio-hero .video-wrapper { width: 100%; max-width: 1000px; }
+    .visio-hero .video-card { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 216, 255, 0.4), 0 20px 50px rgba(0,0,0,0.2); border: 2px solid #00d8ff; }
+    .visio-hero .video-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 60%; background: radial-gradient(ellipse, rgba(0, 216, 255, 0.35), transparent 70%); pointer-events: none; }
+    .visio-hero .video { width: 100%; height: 100%; object-fit: cover; }
+    .visio-hero .video-overlay { position: absolute; top: 20px; left: 20px; }
+    .visio-hero .badge { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; font-size: 0.875rem; color: #0f172a; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(0, 216, 255, 0.5); }
+    .visio-hero .description-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 30px; max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 15px rgba(0, 216, 255, 0.15); }
+    .visio-hero .card-content h3 { font-weight: 700; color: #0f172a; margin: 0 0 10px 0; }
+    .visio-hero .card-content p { font-size: 1rem; color: #334155; line-height: 1.7; margin: 0; }
+    .visio-hero .features-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 20px; }
+    .visio-hero .features-list li { display: flex; align-items: center; gap: 8px; color: #334155; font-size: 0.9375rem; }
+    .visio-hero .features-list li i { color: #00d8ff; filter: drop-shadow(0 0 5px #00d8ff); }
+
+    /* BACKGROUNDS PADRÃO */
+    .hero-section-bg {
+        background: radial-gradient(circle at top right, rgba(0, 216, 255, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(0, 119, 255, 0.15) 0%, transparent 40%);
+    }
+
+    .services-section-bg {
+        background: radial-gradient(circle at top left, rgba(0, 216, 255, 0.18) 0%, transparent 40%),
+                    radial-gradient(circle at bottom right, rgba(0, 119, 255, 0.18) 0%, transparent 40%);
+    }
+
+    .services-title-color { color: inherit; }
+
+    .portfolio-section-bg {
+        padding: 60px 0;
+    }
+
+    /* GRID & CARDS ESTRUTURA DA SEÇÃO APLICAÇÕES (COM EFEITO NEON 3D) */
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 35px;
+        margin-top: 40px;
+        perspective: 1200px;
+    }
+
+    .tech-card {
+        position: relative;
+        border-radius: 16px;
+        height: 285px;
+        opacity: 0;
+        transform: translateY(-100px) scale(0.9);
+        transition: opacity 1.8s cubic-bezier(0.25, 1, 0.5, 1), 
+                    transform 1.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .tech-card.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    .tech-card-inner {
         position: relative;
         width: 100%;
-        min-height: auto;
-        background: linear-gradient(135deg, var(--color-surface-dark) 0%, var(--color-surface-card) 100%);
-        padding: 80px 20px 100px;
+        height: 100%;
+        border-radius: 16px;
+        transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transform-style: preserve-3d;
+    }
+
+    .tech-card:hover .tech-card-inner {
+        transform: rotateY(180deg);
+    }
+
+    /* ESTILO NEON FRENTE E VERSO */
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        backface-visibility: hidden;
         overflow: hidden;
+        padding: 0;
+        box-sizing: border-box;
+        background: var(--neon-card-bg);
+        border: 2px solid var(--neon-card-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 0 20px var(--neon-card-glow);
+        backdrop-filter: blur(10px);
+        transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
-    /* Grid de linhas tecnológicas */
-    .visio-hero .hero-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
+    .tech-card:hover .card-front, 
+    .tech-card:hover .card-back {
+        border-color: #00f0ff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 30px rgba(0, 240, 255, 0.6);
     }
 
-    .visio-hero .grid-lines {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            linear-gradient(rgba(30, 107, 231, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(30, 107, 231, 0.05) 1px, transparent 1px);
-        background-size: 60px 60px;
-    }
-
-    /* Brilhos suaves */
-    .visio-hero .glow {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        opacity: 0.3;
-    }
-
-    .visio-hero .glow-1 {
-        width: 500px;
-        height: 500px;
-        background: var(--color-primary);
-        top: -200px;
-        right: -100px;
-    }
-
-    .visio-hero .glow-2 {
-        width: 400px;
-        height: 400px;
-        background: var(--color-primary-hover);
-        bottom: -100px;
-        left: -100px;
-    }
-
-    /* Conteúdo principal */
-    .visio-hero .hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 1100px;
-        margin: 0 auto;
+    .card-front {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 40px;
     }
 
-    /* Título */
-    .visio-hero .hero-title {
-        text-align: center;
+    .card-back {
+        transform: rotateY(180deg);
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
-    .visio-hero .hero-title h1 {
-        font-size: 2.5rem;
-       
-        margin: 0 0 12px 0;
-        line-height: 1.2;
-    }
-
-    .visio-hero .hero-title .highlight {
-        background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .visio-hero .hero-title .subtitle {
-        font-size: 1.25rem;
-        margin: 0;
-    }
-
-    /* Vídeo maior */
-    .visio-hero .video-wrapper {
-        width: 100%;
-        max-width: 1000px;
-    }
-
-    .visio-hero .video-card {
+    .tech-img-wrapper {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 9;
-        border-radius: 16px;
+        height: 185px;
         overflow: hidden;
-        box-shadow: 
-            0 0 0 1px rgba(0,0,0,0.1),
-            0 20px 50px rgba(0,0,0,0.15),
-            0 0 100px rgba(30, 107, 231, 0.15);
-        border: 1px solid var(--color-primary-accent);
     }
 
-    .visio-hero .video-glow {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 60%;
-        height: 60%;
-        background: radial-gradient(ellipse, rgba(30, 107, 231, 0.3), transparent 70%);
-        pointer-events: none;
-    }
-
-    .visio-hero .video {
+    .tech-img-wrapper img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .visio-hero .video-overlay {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-    }
-
-    .visio-hero .badge {
-        background: rgba(255,255,255,0.9);
-        backdrop-filter: blur(10px);
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        color: #1e293b;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(0,0,0,0.1);
-    }
-
-    /* Card de descrição */
-    .visio-hero .description-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 30px;
-        max-width: 800px;
-        width: 100%;
+    .tech-card-content {
+        padding: 15px 20px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-  
-
-    .visio-hero .card-icon i {
-        color: #ffffff;
+        justify-content: center;
+        flex-grow: 1;
     }
 
-    .visio-hero .card-content h3 {
-        font-weight: 700;
-        color: #1e293b;
-        margin: 0 0 10px 0;
-    }
-
-    .visio-hero .card-content p {
-        font-size: 1rem;
-        color: #475569;
-        line-height: 1.7;
+    .tech-card-content h3 {
+        color: var(--neon-text-main);
+        font-size: 1.1rem;
+        font-weight: 600;
         margin: 0;
+        text-align: center;
     }
 
-    .visio-hero .features-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+    .tech-card-line {
+        height: 3px;
+        width: 35%;
+        background: #00d8ff;
+        margin: 10px auto 0;
+        box-shadow: 0 0 12px #00d8ff, 0 0 5px #00f0ff;
+        transition: width 0.8s ease;
+        border-radius: 2px;
+    }
+
+    .tech-card:hover .tech-card-line {
+        width: 85%;
+        background: #00f0ff;
+        box-shadow: 0 0 18px #00f0ff, 0 0 8px #ffffff;
+    }
+
+    /* DETALHES HUD FUTURISTAS NEON */
+    .hud-corners span {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-color: #00d8ff;
+        border-style: solid;
+        opacity: 0.9;
+        filter: drop-shadow(0 0 4px #00d8ff);
+    }
+    .hud-corners span:nth-child(1) { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+    .hud-corners span:nth-child(2) { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+    .hud-corners span:nth-child(3) { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+    .hud-corners span:nth-child(4) { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+    .back-content {
         display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+        z-index: 2;
     }
 
-    .visio-hero .features-list li {
+    .back-tag {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        color: #0066ff;
         display: flex;
         align-items: center;
         gap: 8px;
-        color: #475569;
-        font-size: 0.9375rem;
     }
 
-    .visio-hero .features-list li i {
-        color: var(--color-primary);
+    body.dark-theme .back-tag, html[data-theme="dark"] .back-tag {
+        color: #00d8ff;
+        text-shadow: 0 0 8px rgba(0, 216, 255, 0.6);
     }
 
-    /* Botões de ação */
-    .visio-hero .cta-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 16px;
+    .back-content h4 {
+        color: var(--neon-text-main);
+        font-size: 1.25rem;
+        margin: 6px 0;
+        font-weight: 700;
     }
 
-    .visio-hero .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 28px;
-        border-radius: 10px;
-        font-size: 1rem;
+    .back-content p {
+        color: var(--neon-text-muted);
+        font-size: 0.88rem;
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    .back-footer {
+        border-top: 1px dashed rgba(0, 216, 255, 0.4);
+        padding-top: 12px;
+        font-size: 0.8rem;
+        color: #0066ff;
         font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
-    .visio-hero .btn-primary {
-        background: linear-gradient(135deg, var(--color-primary), var(--color-primary-accent));
-        color: #ffffff;
-        border: none;
-        box-shadow: 0 4px 15px rgba(30, 107, 231, 0.3);
+    body.dark-theme .back-footer, html[data-theme="dark"] .back-footer {
+        color: #00d8ff;
+        text-shadow: 0 0 6px rgba(0, 216, 255, 0.5);
     }
 
-    .visio-hero .btn-primary:hover {
-        background: var(--color-primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(30, 107, 231, 0.4);
-    }
-
-    .visio-hero .btn-secondary {
-        background: #f1f5f9;
-        color: #1e293b;
-        border: 1px solid #e2e8f0;
-    }
-
-    .visio-hero .btn-secondary:hover {
-        background: #e2e8f0;
-    }
-
-    .visio-hero .btn-outline {
-        background: transparent;
-        color: var(--color-primary);
-        border: 2px solid var(--color-primary);
-    }
-
-    .visio-hero .btn-outline:hover {
-        background: var(--color-primary);
-        color: #ffffff;
-    }
-
-    /* Responsivo */
     @media (max-width: 768px) {
-        .visio-hero .hero-title h1 {
-            font-size: 2rem;
-        }
-        
-        .visio-hero .hero-title .subtitle {
-            font-size: 1rem;
-        }
-        
-        .visio-hero .cta-buttons {
-            flex-direction: column;
-            width: 100%;
-        }
-        
-        .visio-hero .btn {
-            width: 100%;
-            justify-content: center;
-        }
+        .visio-hero .hero-title h1 { font-size: 2rem; }
+        .visio-hero .hero-title .subtitle { font-size: 1rem; }
     }
 </style>
-<hr>
 
+<!-- SCRIPT DE INTERSEÇÃO DAS ANIMAÇÕES -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll(".tech-card");
 
-<section class="portfolio"   style="background: 
-    radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
-    radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%)">
-    <div class="container">
-        <h2 class="title">Aplicações do Sistema</h2>
-        <div class="grid">
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/identificacao.automatica.png') ?>"
-                    alt="Identificação de Sensor">
-                <h3 style="text-align: center;">Identificação Automatica de Sensores</h3>
-            </div>
+    const observerOptions = {
+        root: null,
+        threshold: 0.1
+    };
 
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/aplicacao.educacional.png') ?>"
-                    alt="Aplicação Educacional">
-                <h3 style="text-align: center;">Aplicação Educacional</h3>
-            </div>
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const index = Array.from(cards).indexOf(entry.target);
+                setTimeout(() => {
+                    entry.target.classList.add("show");
+                }, index * 220);
 
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/gestaoeorganizacao.png') ?>"
-                    alt="Gestão de Sensores IoT">
-                <h3 style="text-align: center;">Gestão e Organização</h3>
-            </div>
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
 
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/interfaceegerenciamento.png') ?>"
-                    alt="Aplicação Industrial">
-                <h3 style="text-align: center;">Interface de Gerenciamento</h3>
-            </div>
-
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/registroerastreamento.png') ?>"
-                    alt="Plataforma Web e Mobile">
-                <h3 style="text-align: center;">Registro e Rastreamento</h3>
-            </div>
-
-            <div class="card1">
-                <img src="<?= base_url('assets/images/Aplicacoes/segurancaeautenticacao.png') ?>"
-                    alt="Segurança e Autenticação">
-                <h3 style="text-align: center;">Segurança e Autenticação</h3>
-            </div>
-        </div>
-    </div>
-</section>
+    cards.forEach((card) => {
+        observer.observe(card);
+    });
+});
+</script>
 
 <?= view('sistema/layout/footer') ?>

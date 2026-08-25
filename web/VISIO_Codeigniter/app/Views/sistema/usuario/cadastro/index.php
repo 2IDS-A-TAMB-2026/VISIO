@@ -1,6 +1,29 @@
 <?= view('sistema/layout/header') ?>
 <br><br>
 
+<?php
+// Se o formulário for enviado (clicou no botão de cadastrar)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Pega os dados digitados
+    $cpf = $_POST['cpf'] ?? '';
+    $nome = $_POST['nome'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = password_hash($_POST['senha'] ?? '', PASSWORD_BCRYPT);
+    $cartao = $_POST['cartao'] ?? ''; // <--- PEGA O NÚMERO GERADO NA TELA
+    $dataNascimento = $_POST['data_nascimento'] ?? '';
+    $telefone = $_POST['telefone'] ?? '';
+
+    // Salva no banco de dados BD_VISIO
+    $sql = "INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    
+    if ($stmt->execute([$cpf, $nome, $email, $senha, $cartao, $dataNascimento, $telefone])) {
+        echo "<script>alert('Usuário e Cartão cadastrados com sucesso!');</script>";
+    }
+}
+?>
+
 <!-- SweetAlert & FontAwesome -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -144,11 +167,17 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .signup-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: rgba(15, 23, 42, 0.3);
+  }
+
   .signup-input::placeholder {
     color: #64748b;
   }
 
-  .signup-input:focus {
+  .signup-input:focus:not(:disabled) {
     border-color: #38bdf8;
     background-color: rgba(15, 23, 42, 0.85);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
@@ -213,7 +242,7 @@
     transform: translateX(-3px);
   }
 
-  /* DIREITA: Branding com Logo Ampliada (sem hover) */
+  /* DIREITA: Branding */
   .signup-branding {
     flex: 1;
     z-index: 2;
@@ -238,13 +267,13 @@
     font-size: 2.2rem !important; 
     font-weight: 700 !important; 
     margin-bottom: 12px; 
-    color: #ffffff !important;
+    color: #ffffff;
     letter-spacing: -0.5px;
   }
 
   .signup-branding p {
     font-size: 0.95rem; 
-    color: #94a3b8 !important; 
+    color: #94a3b8; 
     line-height: 1.6;
     max-width: 320px;
   }
@@ -253,67 +282,194 @@
   [data-theme="light"] .signup-container,
   body.light-theme .signup-container,
   body.light .signup-container {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(224, 242, 254, 0.7) 100%) !important;
-    border-color: rgba(56, 189, 248, 0.4) !important;
-    box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.15) !important;
+    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(224, 242, 254, 0.7) 100%);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.15);
   }
 
   [data-theme="light"] .signup-branding h2,
   body.light-theme .signup-branding h2,
   body.light .signup-branding h2 {
-    color: #0f172a !important;
+    color: #0f172a;
   }
 
   [data-theme="light"] .signup-branding p,
   body.light-theme .signup-branding p,
   body.light .signup-branding p {
-    color: #475569 !important;
+    color: #475569;
   }
 
   [data-theme="light"] .signup-card-glass,
   body.light-theme .signup-card-glass,
   body.light .signup-card-glass {
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12) !important;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12);
   }
 
   [data-theme="light"] .signup-card-title,
   body.light-theme .signup-card-title,
   body.light .signup-card-title {
-    color: #0f172a !important;
+    color: #0f172a;
   }
 
   [data-theme="light"] .signup-subtitle,
   body.light-theme .signup-subtitle,
   body.light .signup-subtitle {
-    color: #64748b !important;
+    color: #64748b;
   }
 
   [data-theme="light"] .input-group label,
   body.light-theme .input-group label,
   body.light .input-group label {
-    color: #334155 !important;
+    color: #334155;
   }
 
   [data-theme="light"] .signup-input,
   body.light-theme .signup-input,
   body.light .signup-input {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+  }
+
+  /* Mantém o fundo branco ao focar no modo claro */
+  [data-theme="light"] .signup-input:focus:not(:disabled),
+  body.light-theme .signup-input:focus:not(:disabled),
+  body.light .signup-input:focus:not(:disabled) {
     background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    color: #0f172a !important;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+  }
+
+  [data-theme="light"] .signup-input:disabled {
+    background-color: #e2e8f0;
   }
 
   [data-theme="light"] .signup-input::placeholder,
   body.light-theme .signup-input::placeholder,
   body.light .signup-input::placeholder {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   [data-theme="light"] .link-voltar-login,
   body.light-theme .link-voltar-login,
   body.light .link-voltar-login {
-    color: #475569 !important;
+    color: #475569;
+  }
+
+  /* ============================================================
+     REGRAS DE ALTO CONTRASTE (PRIORIDADE ABSOLUTA)
+     ============================================================ */
+
+  html.high-contrast,
+  body.high-contrast,
+  .high-contrast .signup-page,
+  [data-theme="light"].high-contrast .signup-container,
+  body.light-theme.high-contrast .signup-container,
+  body.light.high-contrast .signup-container {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .signup-container,
+  .high-contrast .signup-card-glass,
+  .high-contrast .signup-branding,
+  [data-theme="light"].high-contrast .signup-card-glass,
+  body.light-theme.high-contrast .signup-card-glass {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .high-contrast .signup-container::before,
+  .high-contrast .signup-container::after {
+    display: none !important;
+  }
+
+  .high-contrast .signup-container {
+    border: 3px solid #ffff00 !important;
+  }
+
+  .high-contrast .signup-card-glass {
+    border: 2px solid #ffffff !important;
+  }
+
+  .high-contrast .signup-card-title,
+  .high-contrast .signup-branding h2,
+  [data-theme="light"].high-contrast .signup-card-title,
+  [data-theme="light"].high-contrast .signup-branding h2,
+  body.light-theme.high-contrast .signup-card-title,
+  body.light-theme.high-contrast .signup-branding h2 {
+    color: #ffff00 !important;
+    background: transparent !important;
+  }
+
+  .high-contrast .signup-card-title::after {
+    background: #ffff00 !important;
+  }
+
+  .high-contrast .signup-subtitle,
+  .high-contrast .signup-branding p,
+  .high-contrast .signup-footer *,
+  [data-theme="light"].high-contrast .signup-subtitle,
+  [data-theme="light"].high-contrast .signup-branding p {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .input-group label,
+  .high-contrast .input-group label i {
+    color: #ffff00 !important;
+  }
+
+  .high-contrast .signup-input,
+  [data-theme="light"].high-contrast .signup-input {
+    background-color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+  }
+
+  .high-contrast .signup-input:disabled {
+    border-color: #666666 !important;
+    color: #888888 !important;
+  }
+
+  .high-contrast .signup-input:focus:not(:disabled) {
+    border-color: #ffff00 !important;
+    box-shadow: 0 0 0 2px #ffff00 !important;
+  }
+
+  .high-contrast .signup-input::placeholder {
+    color: #aaaaaa !important;
+  }
+
+  .high-contrast .signup-btn {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  .high-contrast .signup-btn * {
+    color: #000000 !important;
+  }
+
+  .high-contrast .link-voltar-login,
+  [data-theme="light"].high-contrast .link-voltar-login {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+  }
+
+  /* LOGO CORRIGIDA (SEM BLOCO BRANCO) */
+  .high-contrast .signup-branding .logo {
+    background: transparent !important;
+    filter: invert(1) grayscale(100%) !important;
+    -webkit-filter: invert(1) grayscale(100%) !important;
   }
 
   @media (max-width: 850px) {
@@ -397,9 +553,16 @@
 
           <div class="input-group">
             <label for="cartao"><i class="fa-regular fa-credit-card"></i> Nº do Cartão</label>
-            <input type="text" name="cartao" id="cartao" placeholder="0000 0000 0000 0000" maxlength="25" class="signup-input">
+            <input type="text" name="cartao" id="cartao" placeholder="0000 0000 0000 0000" maxlength="25" class="signup-input" readonly>
             <span class="erro" id="erroCartao"></span>
           </div>
+
+          <script>
+            window.addEventListener('DOMContentLoaded', function() {
+              const b = () => Math.floor(1000 + Math.random() * 9000);
+              document.getElementById('cartao').value = `${b()} ${b()} ${b()} ${b()}`;
+            });
+          </script>
 
           <div class="input-group form-group-full">
             <label for="senha"><i class="fa-solid fa-lock"></i> Senha</label>
@@ -482,11 +645,13 @@
   });
 
   // Credit Card Mask
-  cartaoInput.addEventListener('input', function(e) {
-    let v = e.target.value.replace(/\D/g, '');
-    v = v.replace(/(.{4})/g, '$1 ').trim();
-    e.target.value = v;
-  });
+  if (cartaoInput && !cartaoInput.disabled) {
+    cartaoInput.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '');
+      v = v.replace(/(.{4})/g, '$1 ').trim();
+      e.target.value = v;
+    });
+  }
 
   // Validation
   form.addEventListener('submit', function(e) {

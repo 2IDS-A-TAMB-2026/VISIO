@@ -20,6 +20,18 @@ use App\Models\RespondeModel;
  */
 class QuizController extends BaseController
 {
+    // CORRIGIDO: nenhum dos 5 métodos respondia JSON — só redirect()/view().
+    // A correção do baseUrl (feita antes) já fazia o app acertar as rotas
+    // certas, mas o quiz continuava quebrando porque a resposta nunca vinha
+    // no formato que questoes.dart espera. Mesma receita usada em
+    // Auth/Usuario/SensorController: um branch antes de cada retorno.
+    private function querJson(): bool
+    {
+        return $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+    }
+
     // ---------------------------------------------------------------
     // INICIAR QUIZ
     // ---------------------------------------------------------------
@@ -30,6 +42,11 @@ class QuizController extends BaseController
         $perguntas = $model->listarAleatorio(10);
 
         if (empty($perguntas)) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Ainda não há perguntas suficientes cadastradas para iniciar o quiz.',
+                ]);
+            }
             return redirect()->to('/inicio')
                 ->with('erro', 'Ainda não há perguntas suficientes cadastradas para iniciar o quiz.');
         }
@@ -42,6 +59,14 @@ class QuizController extends BaseController
             'quiz_acertos' => 0,
             'quiz_total'   => count($ids),
         ]);
+
+        if ($this->querJson()) {
+            return $this->response->setJSON([
+                'status'  => 200,
+                'message' => 'Quiz iniciado.',
+                'total'   => count($ids),
+            ]);
+        }
 
         return redirect()->to('/quiz/pergunta');
     }
@@ -56,6 +81,11 @@ class QuizController extends BaseController
         $indice = session()->get('quiz_indice') ?? 0;
 
         if (empty($ids) || $indice >= count($ids)) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Quiz não iniciado ou já finalizado. Inicie o quiz novamente.',
+                ]);
+            }
             return redirect()->to('/quiz/resultado');
         }
 
@@ -64,6 +94,11 @@ class QuizController extends BaseController
         $pergunta = $model->buscarComAlternativas($idAtual);
 
         if (!$pergunta) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Pergunta não encontrada.',
+                ]);
+            }
             return redirect()->to('/quiz/resultado');
         }
 
@@ -73,13 +108,19 @@ class QuizController extends BaseController
             $feedback = null;
         }
 
-        return view('sistema/usuario/questoes/pergunta', [
+        $dados = [
             'pergunta' => $pergunta,
             'indice'   => $indice + 1,
             'total'    => session()->get('quiz_total'),
             'feedback' => $feedback,
             'ultima'   => ($indice + 1) >= session()->get('quiz_total'),
-        ]);
+        ];
+
+        if ($this->querJson()) {
+            return $this->response->setJSON($dados);
+        }
+
+        return view('sistema/usuario/questoes/pergunta', $dados);
     }
 
     // ---------------------------------------------------------------
@@ -92,6 +133,11 @@ class QuizController extends BaseController
         $cpf           = session()->get('usuario_cpf');
 
         if (!$idAlternativa) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Selecione uma alternativa antes de avançar.',
+                ]);
+            }
             return redirect()->to('/quiz/pergunta')
                 ->with('erro', 'Selecione uma alternativa antes de avançar.');
         }
@@ -100,6 +146,11 @@ class QuizController extends BaseController
         $indice = session()->get('quiz_indice') ?? 0;
 
         if (empty($ids) || $indice >= count($ids)) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Quiz não iniciado ou já finalizado. Inicie o quiz novamente.',
+                ]);
+            }
             return redirect()->to('/quiz/resultado');
         }
 
@@ -108,6 +159,12 @@ class QuizController extends BaseController
         // Já respondida? (evita registrar de novo se o usuário voltar/recarregar)
         $feedbackAtual = session()->get('quiz_feedback');
         if (is_array($feedbackAtual) && (int) $feedbackAtual['id_pergunta'] === (int) $idPergunta) {
+            if ($this->querJson()) {
+                // Idempotente: devolve o feedback já registrado em vez de erro
+                // — o app pode chamar isso de novo num refresh/retry sem que
+                // isso seja de fato um problema.
+                return $this->response->setJSON(['feedback' => $feedbackAtual]);
+            }
             return redirect()->to('/quiz/pergunta');
         }
 
@@ -129,12 +186,18 @@ class QuizController extends BaseController
             ->where('IS_CORRETA', 1)
             ->first();
 
-        session()->set('quiz_feedback', [
+        $feedback = [
             'id_pergunta' => $idPergunta,
             'escolhida'   => $idAlternativa,
             'correta_id'  => $correta['ID_ALTERNATIVA'] ?? null,
             'acertou'     => $acertou,
-        ]);
+        ];
+
+        session()->set('quiz_feedback', $feedback);
+
+        if ($this->querJson()) {
+            return $this->response->setJSON(['feedback' => $feedback]);
+        }
 
         // Permanece na mesma pergunta para mostrar o feedback;
         // o avanço para a próxima ocorre em /quiz/avancar
@@ -154,6 +217,11 @@ class QuizController extends BaseController
         $feedback = session()->get('quiz_feedback');
         if (!is_array($feedback) || empty($ids) || $indice >= count($ids)
             || (int) $feedback['id_pergunta'] !== (int) $ids[$indice]) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Nenhuma resposta pendente para avançar.',
+                ]);
+            }
             return redirect()->to('/quiz/pergunta');
         }
 
@@ -162,7 +230,13 @@ class QuizController extends BaseController
         $indice++;
         session()->set('quiz_indice', $indice);
 
-        if ($indice >= session()->get('quiz_total')) {
+        $terminou = $indice >= session()->get('quiz_total');
+
+        if ($this->querJson()) {
+            return $this->response->setJSON(['terminou' => $terminou]);
+        }
+
+        if ($terminou) {
             return redirect()->to('/quiz/resultado');
         }
 
@@ -181,6 +255,10 @@ class QuizController extends BaseController
         ];
 
         session()->remove(['quiz_ids', 'quiz_indice', 'quiz_acertos', 'quiz_total', 'quiz_feedback']);
+
+        if ($this->querJson()) {
+            return $this->response->setJSON($dados);
+        }
 
         return view('sistema/usuario/questoes/resultado', $dados);
     }

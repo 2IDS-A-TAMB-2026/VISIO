@@ -44,6 +44,7 @@ class Filters extends BaseFilters
 
     public array $globals = [
         'before' => [
+            'cors', // Necessário para o app Flutter Web (requisições cross-origin com credentials)
             // 'csrf', // Ativar em produção
         ],
         'after' => [],

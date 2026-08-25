@@ -111,6 +111,44 @@ class AuthController extends BaseController
 
     public function loginAdmin()
     {
+        // CORRIGIDO: faltava este branch — sem ele, uma requisição JSON (ex.:
+        // do app Flutter) nunca preenche $_POST, então getPost() sempre
+        // devolvia null e o login de admin falhava mesmo com credenciais
+        // corretas. Mesmo padrão de loginUsuario() acima.
+        if ($this->request->isAJAX() || str_contains($this->request->getHeaderLine('Content-Type'), 'json')) {
+            $json = $this->request->getJSON();
+            $email = $json->email ?? null;
+            $senha = $json->senha ?? null;
+
+            if (empty($email) || empty($senha)) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'E-mail e senha são obrigatórios.'
+                ]);
+            }
+
+            $model = new AdminModel();
+            $admin = $model->buscarPorEmail($email);
+
+            if (!$admin || !password_verify($senha, $admin['SENHA'])) {
+                return $this->response->setStatusCode(401)->setJSON([
+                    'message' => 'E-mail ou senha incorretos.'
+                ]);
+            }
+
+            session()->set([
+                'admin_logado' => true,
+                'admin_cnpj'   => $admin['CNPJ'],
+                'admin_email'  => $admin['EMAIL'],
+                'tipo'         => 'admin',
+            ]);
+
+            return $this->response->setJSON([
+                'status'  => 200,
+                'message' => 'Login realizado com sucesso!'
+            ]);
+        }
+
+        // Fallback: requisição via FORM tradicional
         $email = $this->request->getPost('email');
         $senha = $this->request->getPost('senha');
 

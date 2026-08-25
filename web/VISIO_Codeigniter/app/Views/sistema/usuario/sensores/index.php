@@ -23,6 +23,29 @@ body.light {
 .swal-popup  { border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.20); }
 .swal-titulo { text-align: center; font-size: 26px; font-weight: bold; color: #3a86ff; }
 .cardi       { cursor: pointer; }
+
+/* ============================================================
+   REGRA DE ALTO CONTRASTE: REMOVE O QUADRADO/FUNDO BRANCO
+   ============================================================ */
+html.high-contrast,
+body.high-contrast,
+.high-contrast .sensores-page-main {
+    background-color: #000000 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+/* Força os cards e as imagens dentro do Alto Contraste a ficarem sem fundo branco */
+.high-contrast .cardi {
+    background-color: #000000 !important;
+    background: #000000 !important;
+}
+
+.high-contrast .cardi img {
+    background-color: transparent !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
 </style>
 
 <main class="sensores-page-main">

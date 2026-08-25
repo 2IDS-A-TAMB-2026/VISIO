@@ -120,3 +120,40 @@ $routes->group('admin', ['filter' => 'adminAuth'], function ($routes) {
     $routes->post('pergunta/atualizar/(:num)', 'AdminController::atualizarPergunta/$1');
     $routes->post('pergunta/excluir/(:num)',   'AdminController::excluirPergunta/$1');
 });
+    // ----------------------------------------------------
+    // ROTAS OPTIONS — CORS / PREFLIGHT
+    // ----------------------------------------------------
+    $routes->options('usuarios', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('usuarios/(:any)', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('sensores', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('sensores/(:num)', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('quiz/perguntas', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('quiz/perguntas/(:num)', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->options('quiz/responder', static function () {
+        return response()->setStatusCode(204);
+    });
+
+    $routes->post(
+    'api/cartao/verificar',
+    'App\Controllers\api_controller\APICartaoController::verificar'
+);
+
+$routes->post('/login/cartao', 'UsuarioController::loginPorCartao');
