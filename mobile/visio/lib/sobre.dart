@@ -29,11 +29,10 @@ class AboutPage extends StatelessWidget {
         title: Row(
           children: [
             Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
-         
+
             Text('Sobre Nós'),
           ],
         ),
-        
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -79,10 +78,10 @@ class AboutPage extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                         ),
                       ),
                       child: const Text(
@@ -106,6 +105,7 @@ class AboutPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _infoCard(
+                      context,
                       Icons.flag_outlined,
                       'Missão',
                       'Desenvolver uma solução interativa de identificação de sensores IoT.',
@@ -115,6 +115,7 @@ class AboutPage extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _infoCard(
+                      context,
                       Icons.visibility_outlined,
                       'Visão',
                       'Ser referência em clareza e precisão na identificação de sensores.',
@@ -125,6 +126,7 @@ class AboutPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               _infoCard(
+                context,
                 Icons.diamond_outlined,
                 'Valores',
                 'Inovação, Segurança, Educação e Eficiência.',
@@ -151,7 +153,7 @@ class AboutPage extends StatelessWidget {
                   'IoT',
                   'Visão Computacional',
                   'Python',
-                ].map((tech) => _techChip(tech)).toList(),
+                ].map((tech) => _techChip(context, tech)).toList(),
               ),
 
               const SizedBox(height: 28),
@@ -161,9 +163,9 @@ class AboutPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: AppColors.bgCardAlt,
+                  color: context.cardBg,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.borderColor),
                 ),
                 child: Text(
                   'O VISIO é um sistema acadêmico desenvolvido como Trabalho de Conclusão de Curso que combina visão computacional e Inteligência Artificial para identificar automaticamente sensores IoT físicos, promovendo organização, rastreabilidade e apoio ao ensino de Internet das Coisas.',
@@ -186,9 +188,11 @@ class AboutPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.06),
+                  color: AppColors.primary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -206,12 +210,9 @@ class AboutPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Entre em contato com nossa equipe.',
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: context.textMuted, fontSize: 13),
                     ),
                     const SizedBox(height: 14),
                     SizedBox(
@@ -259,6 +260,7 @@ class AboutPage extends StatelessWidget {
   }
 
   Widget _infoCard(
+    BuildContext context,
     IconData icon,
     String title,
     String text,
@@ -268,9 +270,9 @@ class AboutPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,8 +290,8 @@ class AboutPage extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             text,
-            style: const TextStyle(
-              color: AppColors.textMuted,
+            style: TextStyle(
+              color: context.textMuted,
               fontSize: 12,
               height: 1.5,
             ),
@@ -299,17 +301,17 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _techChip(String label) {
+  Widget _techChip(BuildContext context, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 15, 14, 14),
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.borderColor),
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 12, color: AppColors.textSoft),
+        style: TextStyle(fontSize: 12, color: context.textSoft),
       ),
     );
   }
@@ -397,16 +399,16 @@ class AboutPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: cor.withOpacity(0.2)),
+        border: Border.all(color: cor.withValues(alpha: 0.2)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
             radius: 80,
-            backgroundColor: cor.withOpacity(0.2),
+            backgroundColor: cor.withValues(alpha: 0.2),
             child: ClipOval(
               child: Image.asset(
                 imagePath,
@@ -424,13 +426,13 @@ class AboutPage extends StatelessWidget {
           ),
           Text(
             nome.split(' ').length > 1 ? nome.split(' ').last : '',
-            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 11, color: context.textMuted),
           ),
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: cor.withOpacity(0.1),
+              color: cor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(

@@ -1,18 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:camera/camera.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'appcolor.dart';
+import 'services/api_config.dart';
 import 'widgets/tts_button.dart';
 
 class SensorResult {
   final String nome;
   final String descricao;
+
+  /// Pode ser um asset local (ex.: 'assets/images/Sensores/x.png') OU,
+  /// quando o dado vem da API real, uma URL http completa apontando para
+  /// o FOTO cadastrado no banco. Ver [_imagemResultado].
   final String imagemUrl;
 
   const SensorResult({
@@ -68,8 +75,7 @@ class AiSensorService {
     ),
     SensorResult(
       nome: 'Sensor de Pressão',
-      descricao:
-          'Mede a pressão atmosférica para indicar clima ou altitude.',
+      descricao: 'Mede a pressão atmosférica para indicar clima ou altitude.',
       imagemUrl: 'assets/images/Sensores/sensor_pressao.png',
     ),
     SensorResult(
@@ -81,16 +87,28 @@ class AiSensorService {
 
   /// ATENÇÃO: isto NÃO é um modelo de visão computacional treinado — é uma
   /// heurística simples baseada na cor/brilho médio da imagem, usada
-  /// apenas para que o resultado varie conforme a foto tirada. Antes deste
-  /// método, a "análise" ignorava completamente a imagem recebida e sempre
-  /// devolvia o mesmo sensor fixo (Sensor Ultrassônico), para qualquer
-  /// foto. Uma integração real de IA/visão computacional (ex.: um modelo
-  /// TFLite embarcado, ou uma chamada a um serviço de inferência) deve
-  /// substituir a lógica de [_indicePorHeuristica] no futuro — a assinatura
-  /// pública de [analisarImagem] não precisa mudar para isso.
+  /// apenas para escolher QUAL NOME buscar no catálogo. O backend não tem
+  /// nenhum endpoint de reconhecimento de imagem; o único endpoint
+  /// público disponível é a busca por NOME exato
+  /// (POST /identificador/buscar-sensor), então é isso que este método usa
+  /// depois de decidir o nome via heurística. Uma integração real de
+  /// IA/visão computacional (ex.: um modelo TFLite embarcado, ou uma
+  /// chamada a um serviço de inferência) deve substituir a lógica de
+  /// [_indicePorHeuristica] no futuro — a assinatura pública de
+  /// [analisarImagem] não precisa mudar para isso.
+  ///
+  /// Depois de escolher o nome, busca o sensor de verdade no banco via
+  /// API. Se a API não tiver esse nome cadastrado (ou estiver
+  /// indisponível), cai de volta no catálogo local fixo abaixo, para não
+  /// quebrar a tela.
+  ///
+  /// RISCO CONHECIDO, NÃO VERIFICADO: os 9 nomes abaixo ('Sensor de
+  /// Temperatura', etc.) precisam bater exatamente (sem diferenciar
+  /// maiúsculas/minúsculas) com a coluna NOME da tabela SENSOR no banco
+  /// real — o backend faz esse match com LOWER(NOME). Não tive acesso ao
+  /// conteúdo do banco para confirmar; vale conferir com uma consulta real
+  /// antes de considerar esta tela pronta para produção.
   Future<SensorResult> analisarImagem(XFile imagem) async {
-    await Future.delayed(const Duration(seconds: 2)); // latência simulada
-
     int indice = 0;
     try {
       final bytes = await imagem.readAsBytes();
@@ -101,7 +119,40 @@ class AiSensorService {
       indice = 0;
     }
 
-    return _catalogo[indice % _catalogo.length];
+    final resultadoLocal = _catalogo[indice % _catalogo.length];
+
+    try {
+      final resposta = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/identificador/buscar-sensor'),
+        headers: {'Accept': 'application/json'},
+        body: {'nome': resultadoLocal.nome},
+      );
+
+      if (resposta.statusCode == 200) {
+        final corpo = json.decode(resposta.body) as Map<String, dynamic>;
+
+        if (corpo['success'] == true && corpo['sensor'] is Map) {
+          final sensor = corpo['sensor'] as Map<String, dynamic>;
+          final foto = (sensor['FOTO'] as String?) ?? '';
+
+          return SensorResult(
+            nome: sensor['NOME'] as String? ?? resultadoLocal.nome,
+            descricao:
+                sensor['DESCRICAO'] as String? ?? resultadoLocal.descricao,
+            imagemUrl: foto.isNotEmpty
+                ? '${ApiConfig.baseUrl}/$foto'
+                : resultadoLocal.imagemUrl,
+          );
+        }
+        // success == false: banco não tem esse nome cadastrado ainda.
+        // Mantém o resultado local em vez de mostrar erro para o usuário.
+      }
+    } catch (_) {
+      // Sem conexão ou API fora do ar: cai no catálogo local abaixo,
+      // igual ao comportamento anterior à integração.
+    }
+
+    return resultadoLocal;
   }
 
   Future<int> _indicePorHeuristica(Uint8List bytes) async {
@@ -139,8 +190,7 @@ class AiSensorService {
 
     // Combina os canais de cor com o tamanho do arquivo para variar o
     // índice escolhido de foto para foto.
-    return (mediaR + mediaG * 2 + mediaB * 3 + bytes.length) %
-        _catalogo.length;
+    return (mediaR + mediaG * 2 + mediaB * 3 + bytes.length) % _catalogo.length;
   }
 }
 
@@ -323,7 +373,6 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: AppBar(
         title: Row(
           children: [
@@ -344,7 +393,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: AppColors.danger.withOpacity(0.2),
+                    color: AppColors.danger.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: AppColors.danger),
                   ),
@@ -363,7 +412,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
               _buildSecondaryButton(),
               const SizedBox(height: 20),
 
-              if (_resultado != null) _buildResultadoCard(),
+              if (_resultado != null) _buildResultadoCard(context),
             ],
           ),
         ),
@@ -495,13 +544,37 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
     );
   }
 
-  Widget _buildResultadoCard() {
+  /// FOTO cadastrada no banco (via API) é uma URL http; o catálogo local
+  /// de fallback usa assets do próprio app. Este helper escolhe o widget
+  /// certo conforme a origem, com o mesmo tratamento de erro de antes.
+  Widget _imagemResultado(String caminho) {
+    Widget errorBuilder(BuildContext c, Object e, StackTrace? s) =>
+        const Icon(Icons.image_not_supported, size: 60, color: Colors.white54);
+
+    if (caminho.startsWith('http://') || caminho.startsWith('https://')) {
+      return Image.network(
+        caminho,
+        height: 120,
+        fit: BoxFit.contain,
+        errorBuilder: errorBuilder,
+      );
+    }
+
+    return Image.asset(
+      caminho,
+      height: 120,
+      fit: BoxFit.contain,
+      errorBuilder: errorBuilder,
+    );
+  }
+
+  Widget _buildResultadoCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
+        color: context.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -513,10 +586,10 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
               Expanded(
                 child: Text(
                   _resultado!.nome,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
@@ -530,16 +603,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
           Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                _resultado!.imagemUrl,
-                height: 120,
-                fit: BoxFit.contain,
-                errorBuilder: (c, e, s) => const Icon(
-                  Icons.image_not_supported,
-                  size: 60,
-                  color: Colors.white54,
-                ),
-              ),
+              child: _imagemResultado(_resultado!.imagemUrl),
             ),
           ),
           const SizedBox(height: 16),
@@ -553,7 +617,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
           const SizedBox(height: 8),
           Text(
             _resultado!.descricao,
-            style: const TextStyle(color: AppColors.textSoft, height: 1.4),
+            style: TextStyle(color: context.textSoft, height: 1.4),
           ),
         ],
       ),

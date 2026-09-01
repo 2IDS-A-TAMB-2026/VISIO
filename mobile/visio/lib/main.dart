@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'login.dart';
+import 'perfil.dart';
 import 'sensores.dart';
 import 'questoes.dart';
 import 'identificador.dart';
@@ -9,11 +10,12 @@ import 'sobre.dart';
 import 'appcolor.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/font_scale_controller.dart';
+import 'services/auth_service.dart';
 import 'services/tts_service.dart';
 import 'theme/app_theme.dart';
 import 'widgets/accessibility_panel.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -21,12 +23,16 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ),
   );
+
+  await AuthService.instance.carregarSessaoSalva();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => FontScaleController()),
+        
         ChangeNotifierProvider.value(value: TtsService.instance),
+        ChangeNotifierProvider.value(value: AuthService.instance),
       ],
       child: const MyApp(),
     ),
@@ -48,11 +54,10 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeController.themeMode,
       builder: (context, child) {
-       
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(fontScale.scale),
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(fontScale.scale)),
           child: child!,
         );
       },
@@ -71,14 +76,13 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-
   List<Widget> _buildScreens() => [
-        const HomePage(),
-        const SensoresPage(),
-        IdentificadorPage(isActive: _currentIndex == 2),
-        const QuizPage(),
-        const AboutPage(),
-      ];
+    const HomePage(),
+    const SensoresPage(),
+    IdentificadorPage(isActive: _currentIndex == 2),
+    const QuizPage(),
+    const AboutPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +133,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // CORRIGIDO: antes este botão sempre mostrava "Entrar", mesmo com uma
+    // sessão de usuário já ativa (o cookie salvo nunca era sequer
+    // restaurado ao reabrir o app — ver AuthService.carregarSessaoSalva em
+    // main()). Agora reage ao login em tempo real via ChangeNotifier.
+    final logado = context.watch<AuthService>().estaLogadoComoUsuario;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -141,11 +151,17 @@ class HomePage extends StatelessWidget {
           TextButton.icon(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
+              MaterialPageRoute(
+                builder: (_) => logado ? const PerfilPage() : const LoginPage(),
+              ),
             ),
-            icon: const Icon(Icons.login, color: AppColors.primary, size: 18),
-            label: const Text(
-              'Entrar',
+            icon: Icon(
+              logado ? Icons.person : Icons.login,
+              color: AppColors.primary,
+              size: 18,
+            ),
+            label: Text(
+              logado ? 'Meu Perfil' : 'Entrar',
               style: TextStyle(color: AppColors.primary),
             ),
           ),
@@ -156,8 +172,8 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             _buildHero(context),
-            _buildStats(),
-            _buildServices(),
+            _buildStats(context),
+            _buildServices(context),
             _buildPortfolio(),
             _buildFooter(),
           ],
@@ -217,32 +233,32 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStats() {
+  Widget _buildStats(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Row(
         children: [
-          _statCard('128+', 'Sensores\ncadastrados'),
+          _statCard(context, '128+', 'Sensores\ncadastrados'),
           const SizedBox(width: 10),
-          _statCard('92%', 'Precisão\nde IA'),
+          _statCard(context, '92%', 'Precisão\nde IA'),
           const SizedBox(width: 10),
-          _statCard('9', 'Tipos de\nsensores'),
+          _statCard(context, '9', 'Tipos de\nsensores'),
         ],
       ),
     );
   }
 
-  Widget _statCard(String value, String label) {
+  Widget _statCard(BuildContext context, String value, String label) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
-          color: AppColors.bgCardAlt,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.06),
+              color: AppColors.primary.withValues(alpha: 0.06),
               blurRadius: 10,
               spreadRadius: 1,
             ),
@@ -262,9 +278,9 @@ class HomePage extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textMuted,
+                color: context.textMuted,
                 height: 1.3,
               ),
             ),
@@ -274,7 +290,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildServices() {
+  Widget _buildServices(BuildContext context) {
     final services = [
       (
         Icons.remove_red_eye_outlined,
@@ -318,6 +334,7 @@ class HomePage extends StatelessWidget {
             final i = e.key;
             final s = e.value;
             return _serviceItem(
+              context,
               (i + 1).toString().padLeft(2, '0'),
               s.$1,
               s.$2,
@@ -329,21 +346,27 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _serviceItem(String number, IconData icon, String title, String desc) {
+  Widget _serviceItem(
+    BuildContext context,
+    String number,
+    IconData icon,
+    String title,
+    String desc,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: AppColors.primary, size: 20),
@@ -378,10 +401,7 @@ class HomePage extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   desc,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textMuted,
-                  ),
+                  style: TextStyle(fontSize: 12, color: context.textMuted),
                 ),
               ],
             ),
@@ -448,7 +468,7 @@ class HomePage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
             ),
           ),
           Align(

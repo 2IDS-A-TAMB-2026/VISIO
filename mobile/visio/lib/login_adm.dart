@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'inicio_adm.dart';
+import 'senha.dart';
 import 'services/auth_service.dart';
-import 'widgets/demo_mode_banner.dart';
 
 class LoginAdminPage extends StatefulWidget {
   const LoginAdminPage({super.key});
@@ -50,7 +50,6 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: AppBar(
         title: Row(
           children: [
@@ -72,9 +71,11 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -97,37 +98,30 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                   ],
                 ),
               ),
-               const SizedBox(height: 32),
+              const SizedBox(height: 32),
               const Text(
                 'VISIO Admin',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Entre com as credenciais de administrador.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 13, color: context.textMuted),
               ),
               const SizedBox(height: 32),
 
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppColors.bgCardAlt,
+                  color: context.cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.borderColor),
                 ),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      if (AuthService.isDemoMode)
-                        const DemoModeBanner(
-                          mensagem:
-                              'Modo demonstração: este login não verifica '
-                              'credenciais reais e concede acesso ao painel '
-                              'administrativo apenas para fins de protótipo.',
-                        ),
                       TextFormField(
                         controller: emailCtrl,
                         keyboardType: TextInputType.emailAddress,
@@ -166,6 +160,22 @@ class _LoginAdminPageState extends State<LoginAdminPage> {
                           if (v.length < 6) return 'Mínimo 6 caracteres';
                           return null;
                         },
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ForgotPage(tipo: 'admin'),
+                            ),
+                          ),
+                          child: const Text(
+                            'Esqueceu a senha?',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       SizedBox(

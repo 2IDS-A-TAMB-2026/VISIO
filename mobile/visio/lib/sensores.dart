@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
+import 'services/api_client.dart';
 
 class SensoresPage extends StatefulWidget {
   const SensoresPage({super.key});
@@ -10,86 +11,100 @@ class SensoresPage extends StatefulWidget {
 
 class _SensoresPageState extends State<SensoresPage> {
   String _busca = '';
+  bool _carregando = true;
+  String? _erro;
+  List<Map<String, dynamic>> _sensores = [];
 
-  final List<Map<String, dynamic>> sensores = const [
-    {
-      'titulo': 'Temperatura',
-      'icone': Icons.thermostat_outlined,
-      'descricao':
-          'Identifica variações de calor ou frio em um ambiente ou objeto.',
-      'usos': 'Monitoramento climático, geladeiras industriais, sistemas HVAC',
-      'cor': Color(0xFFEF4444),
-      'imagem': 'assets/images/Sensores/sensor_temperatura.png',
-    },
-    {
-      'titulo': 'Proximidade',
-      'icone': Icons.radar_outlined,
-      'descricao': 'Detecta quando um objeto está próximo sem contato físico.',
-      'usos': 'Automação de portas, segurança, robótica',
-      'cor': Color(0xFF8B5CF6),
-      'imagem': 'assets/images/Sensores/sensor_proximidade.png',
-    },
-    {
-      'titulo': 'Umidade',
-      'icone': Icons.water_drop_outlined,
-      'descricao': 'Mede a quantidade de vapor de água presente no ar.',
-      'usos': 'Meteorologia, agricultura, controle de ambientes',
-      'cor': Color(0xFF1E6BE7),
-      'imagem': 'assets/images/Sensores/sensor_umidade.png',
-    },
-    {
-      'titulo': 'Luz',
-      'icone': Icons.wb_sunny_outlined,
-      'descricao': 'Mede a intensidade luminosa do ambiente.',
-      'usos': 'Iluminação automática, painéis solares, fotografia',
-      'cor': Color(0xFFF59E0B),
-      'imagem': 'assets/images/Sensores/sensor_luz.png',
-    },
-    {
-      'titulo': 'Movimento',
-      'icone': Icons.directions_run_outlined,
-      'descricao':
-          'Detecta presença através da variação de calor corporal (PIR).',
-      'usos': 'Segurança, automação residencial, câmeras',
-      'cor': Color(0xFF22C55E),
-      'imagem': 'assets/images/Sensores/sensor_movimento.png',
-    },
-    {
-      'titulo': 'Ultrassônico',
-      'icone': Icons.graphic_eq_outlined,
-      'descricao': 'Calcula distância usando pulsos de ondas sonoras.',
-      'usos': 'Mapeamento, robótica, estacionamento',
-      'cor': Color(0xFF06B6D4),
-      'imagem': 'assets/images/Sensores/sensor_ultrassonico.png',
-    },
-    {
-      'titulo': 'Gás / Fumaça',
-      'icone': Icons.cloud_queue_outlined,
-      'descricao': 'Identifica gases inflamáveis ou fumaça no ambiente.',
-      'usos': 'Alarmes de incêndio, monitoramento industrial',
-      'cor': Color(0xFFFF7043),
-      'imagem': 'assets/images/Sensores/sensor_gas.png',
-    },
-    {
-      'titulo': 'Pressão',
-      'icone': Icons.compress_outlined,
-      'descricao': 'Mede a pressão atmosférica para indicar clima ou altitude.',
-      'usos': 'Meteorologia, drones, dispositivos wearable',
-      'cor': Color(0xFF7C3AED),
-      'imagem': 'assets/images/Sensores/sensor_pressao.png',
-    },
-    {
-      'titulo': 'Toque',
-      'icone': Icons.touch_app_outlined,
-      'descricao': 'Reconhece o contato físico direto na superfície.',
-      'usos': 'Interfaces, botões capacitivos, eletrônicos',
-      'cor': Color(0xFFEC4899),
-      'imagem': 'assets/images/Sensores/sensor_toque.png',
-    },
+  static const List<Color> _paleta = [
+    Color(0xFFEF4444),
+    Color(0xFF8B5CF6),
+    Color(0xFF1E6BE7),
+    Color(0xFFF59E0B),
+    Color(0xFF22C55E),
+    Color(0xFF06B6D4),
+    Color(0xFFFF7043),
+    Color(0xFF7C3AED),
+    Color(0xFFEC4899),
   ];
 
-  List<Map<String, dynamic>> get _filtrados => sensores
-      .where((s) => s['titulo'].toLowerCase().contains(_busca.toLowerCase()))
+  @override
+  void initState() {
+    super.initState();
+    _carregar();
+  }
+
+  Future<void> _carregar() async {
+    setState(() {
+      _carregando = true;
+      _erro = null;
+    });
+
+    try {
+      final resposta = await ApiClient.get('sensores') as Map<String, dynamic>;
+
+      // Verifica se a API informou erro
+      if (resposta['erro'] == true) {
+        if (!mounted) return;
+
+        setState(() {
+          _carregando = false;
+          _erro =
+              resposta['mensagem']?.toString() ??
+              'Erro ao carregar sensores.';
+        });
+
+        return;
+      }
+
+      // Pega somente o conteúdo de "dados"
+      final dados = resposta['dados'];
+
+      if (dados is! List) {
+        if (!mounted) return;
+
+        setState(() {
+          _carregando = false;
+          _erro = 'Formato de resposta inválido.';
+        });
+
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _sensores = dados
+            .map((item) => Map<String, dynamic>.from(item as Map))
+            .toList();
+
+        _carregando = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _carregando = false;
+        _erro = e.mensagem;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _carregando = false;
+        _erro = 'Erro de conexão com o servidor: $e';
+      });
+    }
+  }
+
+  Color _corDoSensor(String nome) =>
+      _paleta[nome.hashCode.abs() % _paleta.length];
+
+  List<Map<String, dynamic>> get _filtrados => _sensores
+      .where(
+        (s) => (s['NOME'] as String? ?? '').toLowerCase().contains(
+          _busca.toLowerCase(),
+        ),
+      )
       .toList();
 
   @override
@@ -99,100 +114,150 @@ class _SensoresPageState extends State<SensoresPage> {
         title: Row(
           children: [
             Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
-            Text('Sensores IoT'),
+            const Text('Sensores IoT'),
           ],
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: TextField(
-                onChanged: (v) => setState(() => _busca = v),
-                decoration: InputDecoration(
-                  hintText: 'Buscar sensor...',
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  suffixIcon: _busca.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () => setState(() => _busca = ''),
-                        )
-                      : null,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
+        child: _carregando
+            ? const Center(child: CircularProgressIndicator())
+            : _erro != null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: AppColors.danger,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _erro!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: context.textMuted),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _carregar,
+                        child: const Text('Tentar novamente'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Row(
+              )
+            : Column(
                 children: [
-                  Text(
-                    '${_filtrados.length} sensor${_filtrados.length == 1 ? '' : 'es'} encontrado${_filtrados.length == 1 ? '' : 's'}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textMuted,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: TextField(
+                      onChanged: (v) => setState(() => _busca = v),
+                      decoration: InputDecoration(
+                        hintText: 'Buscar sensor...',
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        suffixIcon: _busca.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 18),
+                                onPressed: () => setState(() => _busca = ''),
+                              )
+                            : null,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${_filtrados.length} sensor${_filtrados.length == 1 ? '' : 'es'} encontrado${_filtrados.length == 1 ? '' : 's'}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: _carregar,
+                      child: _filtrados.isEmpty
+                          ? ListView(
+                              children: [
+                                SizedBox(height: 120),
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        _sensores.isEmpty
+                                            ? Icons.sensors_off
+                                            : Icons.search_off,
+                                        size: 48,
+                                        color: context.textMuted,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        _sensores.isEmpty
+                                            ? 'Nenhum sensor cadastrado ainda'
+                                            : 'Nenhum sensor encontrado',
+                                        style: TextStyle(
+                                          color: context.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : GridView.builder(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                    childAspectRatio: 0.5,
+                                  ),
+                              itemCount: _filtrados.length,
+                              itemBuilder: (_, i) =>
+                                  _sensorCard(context, _filtrados[i]),
+                            ),
                     ),
                   ),
                 ],
               ),
-            ),
-
-            Expanded(
-              child: _filtrados.isEmpty
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 48,
-                            color: AppColors.textMuted,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            'Nenhum sensor encontrado',
-                            style: TextStyle(color: AppColors.textMuted),
-                          ),
-                        ],
-                      ),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.5,
-                          ),
-                      itemCount: _filtrados.length,
-                      itemBuilder: (_, i) => _sensorCard(_filtrados[i]),
-                    ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _sensorCard(Map<String, dynamic> sensor) {
-    final color = sensor['cor'] as Color;
+  Widget _sensorCard(BuildContext context, Map<String, dynamic> sensor) {
+    final nome = sensor['NOME'] as String? ?? 'Sensor';
+    final descricao = sensor['DESCRICAO'] as String? ?? '';
+    final foto = sensor['FOTO'] as String?;
+    final color = _corDoSensor(nome);
+
     return GestureDetector(
       onTap: () => _showDetails(sensor),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.bgCardAlt,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.07),
+              color: color.withValues(alpha: 0.07),
               blurRadius: 12,
               spreadRadius: 1,
             ),
@@ -204,23 +269,23 @@ class _SensoresPageState extends State<SensoresPage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(sensor['icone'] as IconData, color: color, size: 24),
+              child: Icon(Icons.sensors, color: color, size: 24),
             ),
             const SizedBox(height: 12),
             Text(
-              sensor['titulo'] as String,
+              nome,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 6),
             Expanded(
               child: Text(
-                sensor['descricao'] as String,
-                style: const TextStyle(
+                descricao,
+                style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textMuted,
+                  color: context.textMuted,
                   height: 1.4,
                 ),
                 maxLines: 3,
@@ -228,16 +293,20 @@ class _SensoresPageState extends State<SensoresPage> {
               ),
             ),
 
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                sensor['imagem'],
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+
+              child: (foto != null && foto.isNotEmpty)
+                  ? Image.asset(
+                      foto,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => _semFoto(color),
+                    )
+                  : _semFoto(color),
             ),
             const SizedBox(height: 7),
             Align(
@@ -245,7 +314,7 @@ class _SensoresPageState extends State<SensoresPage> {
               child: Icon(
                 Icons.arrow_forward_ios,
                 size: 19,
-                color: color.withOpacity(0.6),
+                color: color.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -254,11 +323,33 @@ class _SensoresPageState extends State<SensoresPage> {
     );
   }
 
-  void _showDetails(Map<String, dynamic> sensor) {
-    final color = sensor['cor'] as Color;
+  Widget _semFoto(Color color) {
+    return Container(
+      height: 150,
+      width: double.infinity,
+      color: color.withValues(alpha: 0.08),
+      child: Icon(
+        Icons.image_not_supported_outlined,
+        color: color.withValues(alpha: 0.5),
+      ),
+    );
+  }
+
+  Future<void> _showDetails(Map<String, dynamic> sensorResumo) async {
+    final id = sensorResumo['ID_SENSOR'];
+    final color = _corDoSensor(sensorResumo['NOME'] as String? ?? '');
+
+    Map<String, dynamic> sensor = sensorResumo;
+    try {
+      final corpo = await ApiClient.get('sensor/$id') as Map<String, dynamic>;
+      sensor = corpo;
+    } catch (_) {}
+
+    if (!mounted) return;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.bgCardAlt,
+      backgroundColor: context.cardBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -273,7 +364,7 @@ class _SensoresPageState extends State<SensoresPage> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: context.borderColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -284,57 +375,59 @@ class _SensoresPageState extends State<SensoresPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    sensor['icone'] as IconData,
-                    color: color,
-                    size: 28,
-                  ),
+                  child: Icon(Icons.sensors, color: color, size: 28),
                 ),
                 const SizedBox(width: 14),
-                Text(
-                  'Sensor de ${sensor['titulo']}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    sensor['NOME'] as String? ?? 'Sensor',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Descrição',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textMuted,
+                color: context.textMuted,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              sensor['descricao'] as String,
+              (sensor['DESCRICAO'] as String?)?.isNotEmpty == true
+                  ? sensor['DESCRICAO'] as String
+                  : 'Sem descrição cadastrada.',
               style: const TextStyle(fontSize: 14, height: 1.5),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Aplicações comuns',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textMuted,
-                fontWeight: FontWeight.bold,
+            if ((sensor['CIRCUITO'] as String?)?.isNotEmpty == true) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Circuito',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.textMuted,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              sensor['usos'] as String,
-              style:  TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).textTheme.bodyMedium?.color,
-                height: 1.5,
+              const SizedBox(height: 6),
+              Text(
+                sensor['CIRCUITO'] as String,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  height: 1.5,
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,

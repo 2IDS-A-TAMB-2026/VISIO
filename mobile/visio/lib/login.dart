@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'cadastro.dart';
+import 'perfil.dart';
 import 'senha.dart';
 import 'login_adm.dart';
 import 'services/auth_service.dart';
-import 'widgets/demo_mode_banner.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
         senha: _senhaCtrl.text,
       );
 
-      // ✓ Verificar mounted ANTES de usar context
+
       if (!mounted) return;
 
       setState(() => _loading = false);
@@ -61,6 +61,11 @@ class _LoginPageState extends State<LoginPage> {
       if (resultado.sucesso) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login realizado com sucesso!')),
+        );
+      
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PerfilPage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +92,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: AppBar(
         title: Row(
           children: [
@@ -113,19 +117,19 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Entre com suas credenciais para acessar a plataforma.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 13, color: context.textMuted),
               ),
               const SizedBox(height: 32),
 
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: AppColors.bgCardAlt,
+                  color: context.cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: context.borderColor),
                 ),
                 child: Form(
                   key: _formKey,
@@ -143,9 +147,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      if (AuthService.isDemoMode) const DemoModeBanner(),
-
-                      // ✓ Email field com validação de formato de verdade
                       TextFormField(
                         controller: _emailCtrl,
                         keyboardType: TextInputType.emailAddress,
@@ -250,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+          style: TextStyle(color: context.textMuted, fontSize: 13),
         ),
         TextButton(
           onPressed: onTap,

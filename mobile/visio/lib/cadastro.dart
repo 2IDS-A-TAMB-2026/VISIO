@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'appcolor.dart';
+import 'services/api_client.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -13,6 +14,8 @@ class CadastroPage extends StatefulWidget {
 class _CadastroPageState extends State<CadastroPage> {
   final _formKey = GlobalKey<FormState>();
 
+  
+  final nomeCtrl = TextEditingController();
   final cpfCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
   final dataNascCtrl = TextEditingController();
@@ -48,21 +51,60 @@ class _CadastroPageState extends State<CadastroPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 900));
-    setState(() => _loading = false);
 
-    if (mounted) {
+    try {
+      final corpo = await ApiClient.postForm('usuarios', {
+        'nome': nomeCtrl.text.trim(),
+        'cpf': cpfCtrl.text.trim(),
+        'email': emailCtrl.text.trim(),
+       
+        // conversão sozinho (salva a string exatamente como chega).
+        'data_nascimento': _brParaIso(dataNascCtrl.text) ?? '',
+        'telefone': telefoneCtrl.text.trim(),
+        'cartao': cartaoCtrl.text.trim(),
+        'senha': senhaCtrl.text,
+      });
+
+      if (!mounted) return;
+      setState(() => _loading = false);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Conta criada com sucesso!')),
+        SnackBar(
+          content: Text(
+            (corpo is Map ? corpo['message'] as String? : null) ??
+                'Conta criada com sucesso!',
+          ),
+        ),
       );
       Navigator.pop(context);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.mensagem), backgroundColor: AppColors.danger),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro de conexão: $e'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
     }
+  }
+
+  /// 'DD/MM/AAAA' → 'AAAA-MM-DD' (ver nota em _cadastrar).
+  String? _brParaIso(String br) {
+    final limpo = br.replaceAll(RegExp(r'\D'), '');
+    if (limpo.length != 8) return null;
+    return '${limpo.substring(4, 8)}-${limpo.substring(2, 4)}-${limpo.substring(0, 2)}';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: AppBar(
         title: Row(
           children: [
@@ -83,9 +125,9 @@ class _CadastroPageState extends State<CadastroPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Preencha os dados para acessar a plataforma.',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                style: TextStyle(color: context.textMuted, fontSize: 13),
               ),
               const SizedBox(height: 24),
 
@@ -93,6 +135,11 @@ class _CadastroPageState extends State<CadastroPage> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    _field(
+                      nomeCtrl,
+                      'Nome completo',
+                      Icons.person_outline,
+                    ),
                     _field(
                       cpfCtrl,
                       'CPF',
@@ -158,10 +205,10 @@ class _CadastroPageState extends State<CadastroPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Já tem conta?',
                           style: TextStyle(
-                            color: AppColors.textMuted,
+                            color: context.textMuted,
                             fontSize: 13,
                           ),
                         ),
@@ -278,6 +325,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
   @override
   void dispose() {
+    nomeCtrl.dispose();
     cpfCtrl.dispose();
     emailCtrl.dispose();
     dataNascCtrl.dispose();

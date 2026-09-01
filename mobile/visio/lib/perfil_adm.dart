@@ -1,12 +1,13 @@
 import 'dart:typed_data';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'appcolor.dart';
+import 'login.dart';
+import 'services/api_client.dart';
+import 'services/api_config.dart';
+import 'services/auth_service.dart';
 
 class PerfilAdminPage extends StatefulWidget {
   const PerfilAdminPage({super.key});
@@ -19,15 +20,18 @@ class _PerfilAdminPageState extends State<PerfilAdminPage> {
   final nomeCtrl = TextEditingController();
   final telefoneCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
+  final senhaCtrl = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
-  Uint8List? _fotoBytes;
-  String? _fotoPath;
+  Uint8List? _novaFotoBytes;
+  XFile? _novaFoto;
+  String? _fotoAtualPath;
 
-  bool _loading = true;
+  bool _carregando = true;
+  String? _erroCarregar;
   bool _salvando = false;
-  bool _salvo = false;
+  bool _obscureSenha = true;
 
   @override
   void initState() {
@@ -36,115 +40,134 @@ class _PerfilAdminPageState extends State<PerfilAdminPage> {
   }
 
   Future<void> _carregar() async {
-    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _carregando = true;
+      _erroCarregar = null;
+    });
 
-    nomeCtrl.text = prefs.getString('nome_adm') ?? '';
-    telefoneCtrl.text = prefs.getString('tel_adm') ?? '';
-    emailCtrl.text = prefs.getString('email_adm') ?? '';
+    try {
+      final corpo = await ApiClient.get('admin/perfil') as Map<String, dynamic>;
+      final admin = corpo['admin'] as Map<String, dynamic>;
 
-    _fotoPath = prefs.getString('foto_adm');
+      nomeCtrl.text = admin['NOME'] as String? ?? '';
+      emailCtrl.text = admin['EMAIL'] as String? ?? '';
+      telefoneCtrl.text = admin['TELEFONE'] as String? ?? '';
+      _fotoAtualPath = admin['FOTO'] as String?;
 
-    if (_fotoPath != null) {
-      final file = File(_fotoPath!);
-      if (await file.exists()) {
-        _fotoBytes = await file.readAsBytes();
-      }
+      if (!mounted) return;
+      setState(() => _carregando = false);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _carregando = false;
+        _erroCarregar = e.mensagem;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _carregando = false;
+        _erroCarregar = 'Erro de conexão com o servidor: $e';
+      });
     }
-
-    if (!mounted) return;
-    setState(() => _loading = false);
   }
 
   Future<void> _salvar() async {
     setState(() => _salvando = true);
 
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('nome_adm', nomeCtrl.text.trim());
-    await prefs.setString('tel_adm', telefoneCtrl.text.trim());
-    await prefs.setString('email_adm', emailCtrl.text.trim());
-
-    if (_fotoPath != null) {
-      await prefs.setString('foto_adm', _fotoPath!);
+    final campos = <String, String>{
+      'nome': nomeCtrl.text.trim(),
+      'email': emailCtrl.text.trim(),
+      'telefone': telefoneCtrl.text.trim(),
+    };
+    if (senhaCtrl.text.isNotEmpty) {
+      campos['senha'] = senhaCtrl.text;
     }
 
-    if (!mounted) return;
+    try {
+      final corpo = await ApiClient.postMultipart(
+        'admin/perfil',
+        campos,
+        foto: _novaFoto,
+      ) as Map<String, dynamic>;
 
-    setState(() {
-      _salvando = false;
-      _salvo = true;
-    });
+      if (!mounted) return;
+      setState(() {
+        _salvando = false;
+        senhaCtrl.clear();
+      });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil atualizado com sucesso!')),
-    );
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() => _salvo = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(corpo['message'] as String? ?? 'Perfil atualizado com sucesso!')),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _salvando = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.mensagem), backgroundColor: AppColors.danger),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _salvando = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro de conexão: $e'), backgroundColor: AppColors.danger),
+      );
     }
   }
 
   Future<void> _selecionarFoto() async {
     try {
-      final image = await _picker.pickImage(source: ImageSource.gallery);
+      final image = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024);
       if (image == null) return;
-
       final bytes = await image.readAsBytes();
 
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/foto_adm.png');
-
-      await file.writeAsBytes(bytes);
-
       if (!mounted) return;
-
       setState(() {
-        _fotoBytes = bytes;
-        _fotoPath = file.path;
+        _novaFoto = image;
+        _novaFotoBytes = bytes;
       });
     } catch (_) {
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao selecionar imagem')),
       );
     }
   }
 
-  void _logout() {
-    showDialog(
+  Future<void> _logout() async {
+    final confirmar = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgCardAlt,
+        backgroundColor: context.cardBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Sair da conta'),
-        content: const Text(
+        content: Text(
           'Tem certeza que deseja sair?',
-          style: TextStyle(color: AppColors.textMuted),
+          style: TextStyle(color: context.textMuted),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
-            onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
+            onPressed: () => Navigator.pop(context, true),
             child: const Text('Sair'),
           ),
         ],
       ),
     );
+
+    if (confirmar != true) return;
+
+    await AuthService.instance.logout();
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -156,92 +179,119 @@ class _PerfilAdminPageState extends State<PerfilAdminPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: _selecionarFoto,
-              child: Stack(
-                alignment: Alignment.center,
+      body: _carregando
+          ? const Center(child: CircularProgressIndicator())
+          : _erroCarregar != null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: AppColors.danger),
+                    const SizedBox(height: 12),
+                    Text(_erroCarregar!, textAlign: TextAlign.center, style: TextStyle(color: context.textMuted)),
+                    const SizedBox(height: 20),
+                    ElevatedButton(onPressed: _carregar, child: const Text('Tentar novamente')),
+                  ],
+                ),
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 children: [
-                  Container(
-                    width: 104,
-                    height: 104,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary.withOpacity(0.15),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: ClipOval(
-                      child: _fotoBytes != null
-                          ? Image.memory(
-                              _fotoBytes!,
-                              fit: BoxFit.cover,
-                              width: 104,
-                              height: 104,
-                            )
-                          : const Icon(Icons.admin_panel_settings, size: 40),
+                  GestureDetector(
+                    onTap: _selecionarFoto,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 104,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primary.withValues(alpha: 0.15),
+                            border: Border.all(color: context.borderColor),
+                          ),
+                          child: ClipOval(
+                            child: _novaFotoBytes != null
+                                ? Image.memory(_novaFotoBytes!, fit: BoxFit.cover, width: 104, height: 104)
+                                : (_fotoAtualPath != null && _fotoAtualPath!.isNotEmpty)
+                                ? Image.network(
+                                    '${ApiConfig.baseUrl}/$_fotoAtualPath',
+                                    fit: BoxFit.cover,
+                                    width: 104,
+                                    height: 104,
+                                    errorBuilder: (c, e, s) => const Icon(Icons.admin_panel_settings, size: 40),
+                                  )
+                                : const Icon(Icons.admin_panel_settings, size: 40),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                            child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.camera_alt,
-                        size: 14,
-                        color: Colors.white,
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: nomeCtrl,
+                    decoration: const InputDecoration(labelText: 'Nome'),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: telefoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(labelText: 'Telefone'),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    controller: senhaCtrl,
+                    obscureText: _obscureSenha,
+                    decoration: InputDecoration(
+                      labelText: 'Nova senha (deixe em branco para manter)',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureSenha ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          size: 20,
+                        ),
+                        onPressed: () => setState(() => _obscureSenha = !_obscureSenha),
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: _salvando
+                        ? const Center(child: CircularProgressIndicator())
+                        : ElevatedButton(onPressed: _salvar, child: const Text('Salvar')),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 16),
-
-            TextField(
-              controller: nomeCtrl,
-              decoration: const InputDecoration(labelText: 'Nome'),
-            ),
-
-            const SizedBox(height: 12),
-
-            TextField(
-              controller: emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-
-            const SizedBox(height: 12),
-
-            TextField(
-              controller: telefoneCtrl,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Telefone'),
-            ),
-
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: double.infinity,
-              child: _salvando
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _salvar,
-                      child: Text(_salvo ? 'Salvo!' : 'Salvar'),
-                    ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -250,6 +300,7 @@ class _PerfilAdminPageState extends State<PerfilAdminPage> {
     nomeCtrl.dispose();
     telefoneCtrl.dispose();
     emailCtrl.dispose();
+    senhaCtrl.dispose();
     super.dispose();
   }
 }

@@ -38,7 +38,7 @@ class Cors extends BaseConfig
         // rodar o app: `flutter run -d web-server --web-hostname 192.168.0.6
         // --web-port 5000`. Mesmo host do backend, porta diferente — ainda
         // conta como cross-origin para o navegador (origem = esquema+host+porta).
-        'allowedOrigins' => ['http://192.168.0.6:5000'],
+        'allowedOrigins' => ['http://desktop-un212s1/VISIO_Codeigniter/public/'],
 
         /**
          * Origin regex patterns for the `Access-Control-Allow-Origin` header.

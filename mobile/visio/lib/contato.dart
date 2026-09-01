@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 
+/// NÃO INTEGRADO DE PROPÓSITO: ao contrário das outras telas, este
+/// formulário de contato não tem NENHUM endpoint correspondente no backend
+/// CodeIgniter (não existe ContatoController nem rota "/contato" — só
+/// SobreController, que é uma página estática). Como a tarefa era deixar o
+/// app "igual ao site", e o site não tem esse recurso, mantivemos a
+/// simulação local em vez de inventar um endpoint nos dois projetos.
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
 
@@ -29,7 +35,6 @@ class _ContactPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBase,
       appBar: AppBar(
         title: Row(
           children: [
@@ -42,13 +47,13 @@ class _ContactPageState extends State<ContactPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: _enviado ? _buildSucesso() : _buildConteudo(),
+          child: _enviado ? _buildSucesso(context) : _buildConteudo(context),
         ),
       ),
     );
   }
 
-  Widget _buildConteudo() {
+  Widget _buildConteudo(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,13 +62,9 @@ class _ContactPageState extends State<ContactPage> {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'Tem dúvidas sobre a plataforma VISIO? Fale com a gente.',
-          style: TextStyle(
-            color: AppColors.textMuted,
-            fontSize: 13,
-            height: 1.5,
-          ),
+          style: TextStyle(color: context.textMuted, fontSize: 13, height: 1.5),
         ),
         const SizedBox(height: 24),
 
@@ -72,6 +73,7 @@ class _ContactPageState extends State<ContactPage> {
           children: [
             Expanded(
               child: _contactInfo(
+                context,
                 Icons.email_outlined,
                 'E-mail',
                 'visio@gmail.com',
@@ -80,6 +82,7 @@ class _ContactPageState extends State<ContactPage> {
             const SizedBox(width: 10),
             Expanded(
               child: _contactInfo(
+                context,
                 Icons.phone_outlined,
                 'Telefone',
                 '(00) 00000-0000',
@@ -89,6 +92,7 @@ class _ContactPageState extends State<ContactPage> {
         ),
         const SizedBox(height: 10),
         _contactInfo(
+          context,
           Icons.location_on_outlined,
           'Localização',
           'Brasil',
@@ -162,6 +166,7 @@ class _ContactPageState extends State<ContactPage> {
   }
 
   Widget _contactInfo(
+    BuildContext context,
     IconData icon,
     String label,
     String value, {
@@ -170,9 +175,9 @@ class _ContactPageState extends State<ContactPage> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
@@ -184,10 +189,7 @@ class _ContactPageState extends State<ContactPage> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMuted,
-                  ),
+                  style: TextStyle(fontSize: 11, color: context.textMuted),
                 ),
                 Text(
                   value,
@@ -204,14 +206,14 @@ class _ContactPageState extends State<ContactPage> {
     );
   }
 
-  Widget _buildSucesso() {
+  Widget _buildSucesso(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 60),
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
+            color: AppColors.success.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -226,14 +228,10 @@ class _ContactPageState extends State<ContactPage> {
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        const Text(
+        Text(
           'Obrigado pelo contato. Nossa equipe responderá em breve.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: AppColors.textMuted,
-            fontSize: 14,
-            height: 1.5,
-          ),
+          style: TextStyle(color: context.textMuted, fontSize: 14, height: 1.5),
         ),
         const SizedBox(height: 40),
         SizedBox(
