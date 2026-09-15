@@ -80,17 +80,7 @@ class UsuarioController extends BaseController
             'NOME' => $nome,
             'EMAIL' => $email,
             'SENHA' => password_hash($senha, PASSWORD_BCRYPT),
-            // CORRIGIDO (encontrado ao trabalhar no item 8/9 — login
-            // por RFID): o loop acima já gerava um valor aleatório de
-            // 16 dígitos, ÚNICO no banco, exatamente para satisfazer a
-            // restrição UNIQUE de CARTAO sem colidir entre usuários —
-            // mas o insert usava uma string vazia fixa em vez dessa
-            // variável, descartando o valor calculado. Como CARTAO é
-            // UNIQUE, isso quebrava o cadastro a partir do segundo
-            // usuário (dois usuários não podem ter CARTAO = '' ao
-            // mesmo tempo). Este valor é só um placeholder até um
-            // admin associar o UID real de um cartão físico pela tela
-            // de administração de usuários.
+    
             'CARTAO' => $cartao,
             'DATA_NASCIMENTO' => $data,
             'TELEFONE' => $tel,
@@ -271,8 +261,6 @@ class UsuarioController extends BaseController
     // ---------------------------------------------------------------
 
     /**
-     * ADICIONADO (item 8/9 do pedido — login automático por RFID).
-     *
      * Chamado repetidamente (polling) pelo JavaScript da tela de login
      * enquanto o botão "Entrar com cartão" está ativo. Não é a
      * requisição do ESP32 — é a do PRÓPRIO NAVEGADOR verificando se

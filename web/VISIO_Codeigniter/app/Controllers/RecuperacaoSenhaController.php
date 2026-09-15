@@ -16,11 +16,7 @@ use App\Models\ResetSenhaModel;
  */
 class RecuperacaoSenhaController extends BaseController
 {
-    // ACHADO NA AUDITORIA (Etapa 4): senha.dart (Flutter) foi escrito pra
-    // chamar api/usuario/esqueceu_senha e api/usuario/redefinir_senha —
-    // mesmo padrão de causa raiz do quiz/histórico/admin: essas rotas só
-    // existiam fora do grupo api, e solicitar()/redefinir() nunca
-    // respondiam em JSON (só view()/redirect()).
+   
     private function querJson(): bool
     {
         return $this->request->isAJAX()
@@ -29,7 +25,7 @@ class RecuperacaoSenhaController extends BaseController
     }
 
     // ---------------------------------------------------------------
-    // PASSO 1 — Exibir formulário de solicitação
+    // Exibir formulário de solicitação
     // ---------------------------------------------------------------
     public function form(): string
     {
@@ -37,7 +33,7 @@ class RecuperacaoSenhaController extends BaseController
     }
 
     // ---------------------------------------------------------------
-    // PASSO 2 — Processar o e-mail, gerar token, exibir link
+    // Processar o e-mail, gerar token, exibir link
     // ---------------------------------------------------------------
     public function solicitar()
     {
@@ -58,13 +54,11 @@ class RecuperacaoSenhaController extends BaseController
 
         /*
          * Por segurança não revelamos se o e-mail existe ou não.
-         * Mas como estamos em modo de demonstração (sem e-mail real),
-         * exibimos a mensagem de "verifique" em qualquer caso —
          * o token só aparece se o e-mail existir de fato.
          */
         if ($usuario) {
             $resetModel = new ResetSenhaModel();
-            $resetModel->limparExpirados(); // manutenção preventiva
+            $resetModel->limparExpirados(); 
             $token = $resetModel->gerarToken($email);
 
             // Monta o link de redefinição completo
@@ -99,7 +93,7 @@ class RecuperacaoSenhaController extends BaseController
     }
 
     // ---------------------------------------------------------------
-    // PASSO 3 — Exibir formulário de nova senha
+    // Exibir formulário de nova senha
     // ---------------------------------------------------------------
     public function redefinirForm()
     {
@@ -125,7 +119,7 @@ class RecuperacaoSenhaController extends BaseController
     }
 
     // ---------------------------------------------------------------
-    // PASSO 4 — Salvar nova senha
+    // Salvar nova senha
     // ---------------------------------------------------------------
     public function redefinir()
     {
@@ -168,13 +162,11 @@ class RecuperacaoSenhaController extends BaseController
                 ->with('erro', 'Este link expirou ou já foi utilizado. Solicite um novo.');
         }
 
-        // Atualiza a senha do usuário
         $usuarioModel = new UsuarioModel();
         $usuarioModel->where('EMAIL', $registro['FK_EMAIL'])
                      ->set(['SENHA' => password_hash($novaSenha, PASSWORD_BCRYPT)])
                      ->update();
 
-        // Invalida o token
         $resetModel->marcarUsado($token);
 
         if ($this->querJson()) {

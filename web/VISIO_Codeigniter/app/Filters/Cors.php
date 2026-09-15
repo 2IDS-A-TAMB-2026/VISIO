@@ -10,7 +10,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * Cors
  *
  * Permite que o Flutter Web (rodando em uma origem diferente da API — ex.:
- * http://localhost:PORTA durante `flutter run -d chrome`, ou onde o build
+ * http://10.141.130.113:PORTA durante `flutter run -d chrome`, ou onde o build
  * web final for hospedado) consulte este backend mantendo a sessão PHP
  * (cookie), que é como AuthController/QuizController/etc. autenticam hoje.
  *
@@ -34,7 +34,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * qualquer Origin recebida. Antes de expor a API além da rede local,
  * troque $origensPermitidas por uma lista fixa dos domínios reais do
  * Flutter Web em produção — ex.:
- *   private ?array $origensPermitidas = ['http://localhost:8080'];
+ *   private ?array $origensPermitidas = ['http://10.141.130.113:8080'];
  */
 class Cors implements FilterInterface
 {
@@ -45,12 +45,7 @@ class Cors implements FilterInterface
     {
         $origem = $request->getHeaderLine('Origin');
 
-        // Preflight: o navegador manda OPTIONS antes de POST/PUT/DELETE com
-        // Content-Type não "simples" (ex.: application/json) ou com
-        // credentials, para perguntar se a requisição real é permitida.
-        // Respondemos aqui mesmo, sem deixar chegar ao Controller nem aos
-        // filtros userAuth/adminAuth (que rejeitariam por não haver cookie
-        // em uma requisição OPTIONS).
+    
         if (strtoupper($request->getMethod()) === 'OPTIONS') {
             $response = service('response');
             $this->aplicarHeaders($response, $origem);
@@ -81,8 +76,7 @@ class Cors implements FilterInterface
         $response->setHeader('Access-Control-Allow-Credentials', 'true');
         $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With');
-        // Como a resposta varia por Origin (refletimos o valor recebido),
-        // sinaliza para caches/CDNs não misturarem respostas de origens diferentes.
+      
         $response->setHeader('Vary', 'Origin');
     }
 }

@@ -506,7 +506,6 @@
 </main>
 
 <script>
-  // Limpa mensagens de erro ao digitar
   document.querySelectorAll('.auth-input').forEach(input => {
     input.addEventListener('input', function() {
       this.classList.remove('input-error');

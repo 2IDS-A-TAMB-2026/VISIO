@@ -10,7 +10,7 @@ use CodeIgniter\Database\Config;
  * ╔═══════════════════════════════════════════════════════════════╗
  * ║  AJUSTE OS VALORES ABAIXO conforme seu ambiente:             ║
  * ║                                                               ║
- * ║  hostname : 'localhost' (XAMPP padrão)                        ║
+ * ║  hostname : '10.141.130.113' (XAMPP padrão)                        ║
  * ║  username : 'root'      (XAMPP padrão)                        ║
  * ║  password : ''          (XAMPP sem senha) ou sua senha        ║
  * ║  database : 'visio'     (nome do banco — rode o BD_VISIO.sql) ║
@@ -30,7 +30,7 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',     // ← geralmente não precisa mudar
+        'hostname'     => '10.141.130.113',     // ← geralmente não precisa mudar
         'username'     => 'root',          // ← usuário do MySQL (XAMPP = root)
         'password'     => 'root',              // ← senha do MySQL (XAMPP = vazio)
         'database'     => 'bd_visio',         // ← nome do banco de dados

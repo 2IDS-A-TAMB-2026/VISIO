@@ -19,7 +19,6 @@ class RespondeModel extends Model
     protected $allowedFields = [
         'FK_CPF_USUARIO',
         'FK_ID_ALTERNATIVA',
-        // RESPONDIDO_EM é preenchido automaticamente pelo DEFAULT CURRENT_TIMESTAMP do banco
     ];
 
     // ---------------------------------------------------------------
@@ -56,8 +55,6 @@ class RespondeModel extends Model
             ->get()
             ->getResultArray();
 
-        // PREVENTIVO: mesma causa raiz do bug relatado no Quiz (ver
-        // PerguntaModel::buscarComAlternativas).
         foreach ($rows as &$row) {
             $row['ID_RESPONDE'] = (int) $row['ID_RESPONDE'];
             $row['IS_CORRETA'] = (int) $row['IS_CORRETA'];
@@ -91,23 +88,6 @@ class RespondeModel extends Model
     // DESEMPENHO DE UMA JANELA DE 7 DIAS (para o gráfico "Desempenho dos alunos")
     // Retorna um array com 7 posições (mais antigo -> mais recente),
     // cada uma com a taxa de acerto (%) do dia.
-    //
-    // CORRIGIDO (erro 1): antes a janela de 7 dias era sempre calculada a
-    // partir de "hoje", sem nenhuma forma de consultar semanas anteriores.
-    // $semanasAtras desloca a janela inteira para trás em múltiplos de 7
-    // dias (0 = semana atual, 1 = semana anterior, 2 = duas semanas atrás...).
-    // Com $semanasAtras = 0 o resultado é idêntico ao comportamento antigo.
-    //
-    // CORRIGIDO (erro navegação por semanas): a janela era ancorada em
-    // strtotime("-N days"), que usa o timestamp exato da requisição (hora
-    // atual inclusive). Isso significa que duas chamadas feitas em horas
-    // diferentes do mesmo dia podiam calcular limites de dia ligeiramente
-    // diferentes, arriscando inconsistência ao alternar entre semanas numa
-    // mesma sessão. Trocado para strtotime('today'), que ancora sempre na
-    // meia-noite do dia corrente (estável durante todo o dia). O método
-    // periodoSemana() usa exatamente esta mesma âncora para os dois nunca
-    // divergirem sobre qual é o intervalo de datas exibido.
-    // ---------------------------------------------------------------
     public function desempenhoSemanal(int $semanasAtras = 0): array
     {
         $semanasAtras = max(0, $semanasAtras);

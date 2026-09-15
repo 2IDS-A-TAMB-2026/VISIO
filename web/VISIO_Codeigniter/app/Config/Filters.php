@@ -25,7 +25,7 @@ class Filters extends BaseFilters
         'honeypot'     => Honeypot::class,
         'invalidchars' => InvalidChars::class,
         'secureheaders'=> SecureHeaders::class,
-        'cors'         => Cors::class, // App\Filters\Cors (customizado) — não o nativo do CI4. Trata o preflight OPTIONS diretamente, antes de userAuth/adminAuth, que sempre redirecionam sem sessão (e um preflight nunca tem sessão).
+        'cors'         => Cors::class, 
         'forcehttps'   => ForceHTTPS::class,
         'pagecache'    => PageCache::class,
         'performance'  => PerformanceMetrics::class,
@@ -38,14 +38,13 @@ class Filters extends BaseFilters
         'after' => [
             'pagecache',
             'performance',
-            'toolbar',
+         //   'toolbar',
         ],
     ];
 
     public array $globals = [
         'before' => [
-            'cors', // Necessário para o app Flutter Web (requisições cross-origin com credentials)
-            // 'csrf', // Ativar em produção
+            'cors',
         ],
         'after' => [
             'cors',

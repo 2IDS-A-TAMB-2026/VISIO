@@ -7,7 +7,6 @@ import 'sensores.dart';
 import 'questoes.dart';
 import 'identificador.dart';
 import 'sobre.dart';
-import 'appcolor.dart';
 import 'controllers/theme_controller.dart';
 import 'controllers/font_scale_controller.dart';
 import 'services/auth_service.dart';
@@ -30,7 +29,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => FontScaleController()),
-
         ChangeNotifierProvider.value(value: TtsService.instance),
         ChangeNotifierProvider.value(value: AuthService.instance),
       ],
@@ -77,7 +75,13 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   List<Widget> _buildScreens() => [
-    const HomePage(),
+    HomePage(
+      onIdentificar: () {
+        setState(() {
+          _currentIndex = 2;
+        });
+      },
+    ),
     const SensoresPage(),
     IdentificadorPage(isActive: _currentIndex == 2),
     const QuizPage(),
@@ -86,6 +90,8 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -94,7 +100,11 @@ class _MainShellState extends State<MainShell> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: isDark ? const Color(0xFF030712) : Colors.white,
+        selectedItemColor: const Color(0xFF0284C7),
+        unselectedItemColor: isDark ? const Color(0xFF64748B) : Colors.grey,
         currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
           BottomNavigationBarItem(
@@ -129,19 +139,34 @@ class _MainShellState extends State<MainShell> {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final VoidCallback onIdentificar;
+
+  const HomePage({super.key, required this.onIdentificar});
 
   @override
   Widget build(BuildContext context) {
-   
     final logado = context.watch<AuthService>().estaLogadoComoUsuario;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
 
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
+        backgroundColor: bgColor,
+        elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
-            SizedBox(width: 8),
+            Image.asset(
+              isDark
+                  ? 'assets/images/logos/Logo/LogoDark2.png'
+                  : 'assets/images/logos/Logo/LogoLight2.png',
+              height: 28,
+            ),
           ],
         ),
         actions: [
@@ -154,12 +179,15 @@ class HomePage extends StatelessWidget {
             ),
             icon: Icon(
               logado ? Icons.person : Icons.login,
-              color: AppColors.primary,
+              color: const Color(0xFF0284C7),
               size: 18,
             ),
             label: Text(
               logado ? 'Meu Perfil' : 'Entrar',
-              style: TextStyle(color: AppColors.primary),
+              style: const TextStyle(
+                color: Color(0xFF0284C7),
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -168,98 +196,134 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHero(context),
-            _buildStats(context),
-            _buildServices(context),
-            _buildPortfolio(),
-            _buildFooter(),
+            _buildHero(context, isDark, textColor, subtextColor),
+            _buildStats(isDark, subtextColor),
+            _buildServices(isDark, textColor, subtextColor),
+            _buildPortfolio(isDark, textColor),
+            _buildFooter(isDark, subtextColor),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHero(BuildContext context) {
+  Widget _buildHero(
+    BuildContext context,
+    bool isDark,
+    Color textColor,
+    Color subtextColor,
+  ) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color.fromARGB(234, 0, 0, 0), Color.fromARGB(234, 0, 0, 33)],
+          colors: isDark
+              ? [
+                  const Color(0xFF020617),
+                  const Color(0xFF031338),
+                  const Color(0xFF020617),
+                ]
+              : [
+                  const Color(0xFFF8FAFC),
+                  const Color(0xFFE2E8F0),
+                  const Color(0xFFF8FAFC),
+                ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(2),
-            child: Image.asset(
-              'assets/images/logos/Logo/LogoDarkD.png',
-              height: 350,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0A1329) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0284C7).withOpacity(0.15),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                isDark
+                    ? 'assets/images/logos/Logo/LogoDark2.png'
+                    : 'assets/images/logos/Logo/LogoLight2.png',
+                height: 180,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
-          const SizedBox(height: 14),
-          const Text(
-            'Sistema acadêmico com visão computacional e IA para identificar automaticamente sensores IoT físicos.',
+          const SizedBox(height: 24),
+          Text(
+            'Identificação Inteligente de Sensores IoT',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSoft,
-              height: 1.6,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+              height: 1.25,
             ),
           ),
-          const SizedBox(height: 28),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const IdentificadorPage()),
-              ),
-              icon: const Icon(Icons.camera_alt, size: 18),
-              label: const Text('IDENTIFICAR SENSOR'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 25),
-              ),
+          const SizedBox(height: 12),
+          Text(
+            'Sistema acadêmico desenvolvido como Trabalho de Conclusão de Curso que utiliza visão computacional e Inteligência Artificial para identificar automaticamente sensores IoT físicos, promovendo organização, rastreabilidade e apoio ao ensino de Internet das Coisas e automação.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: subtextColor, height: 1.5),
+          ),
+          const SizedBox(height: 24),
+          RotatingLedButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const IdentificadorPage()),
             ),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  Widget _buildStats(BuildContext context) {
+  Widget _buildStats(bool isDark, Color subtextColor) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          _statCard(context, '128+', 'Sensores\ncadastrados'),
-          const SizedBox(width: 10),
-          _statCard(context, '92%', 'Precisão\nde IA'),
-          const SizedBox(width: 10),
-          _statCard(context, '9', 'Tipos de\nsensores'),
+          _statCard('128+', 'Sensores\ncadastrados', isDark, subtextColor),
+          const SizedBox(width: 8),
+          _statCard('92%', 'Precisão\nde IA', isDark, subtextColor),
+          const SizedBox(width: 8),
+          _statCard('9', 'Tipos de\nsensores', isDark, subtextColor),
         ],
       ),
     );
   }
 
-  Widget _statCard(BuildContext context, String value, String label) {
+  Widget _statCard(
+    String value,
+    String label,
+    bool isDark,
+    Color subtextColor,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
-          color: context.cardBg,
+          color: isDark ? const Color(0xFF0B132B) : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.borderColor),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.06),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
+          border: Border.all(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
         ),
         child: Column(
           children: [
@@ -268,18 +332,14 @@ class HomePage extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: Color(0xFF0284C7),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: context.textMuted,
-                height: 1.3,
-              ),
+              style: TextStyle(fontSize: 11, color: subtextColor, height: 1.2),
             ),
           ],
         ),
@@ -287,55 +347,78 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildServices(BuildContext context) {
+  Widget _buildServices(bool isDark, Color textColor, Color subtextColor) {
     final services = [
       (
-        Icons.remove_red_eye_outlined,
-        'Visão Computacional',
-        'Reconhecimento automático via câmera e IA',
+        Icons.camera_alt_outlined,
+        'Identificação por IA',
+        'Reconhecimento automático de sensores por captura de imagem e processamento com modelos avançados de Inteligência Artificial.',
+        'VISÃO COMPUTACIONAL',
       ),
       (
-        Icons.memory_outlined,
+        Icons.dns_outlined,
         'Gestão de Sensores IoT',
-        'Cadastro e consulta centralizados',
+        'Registro, consulta e acompanhamento centralizado do status dos sensores, promovendo organização e rastreabilidade.',
+        'CONTROLE CENTRALIZADO',
       ),
       (
-        Icons.school_outlined,
+        Icons.developer_board_outlined,
         'Apoio Educacional',
-        'Ferramenta didática para IoT e automação',
+        'Ferramenta didática para o aprendizado prático de Internet das Coisas, automação e componentes eletrônicos.',
+        'ENSINO INTERATIVO',
       ),
       (
-        Icons.science_outlined,
-        'Aplicação em Laboratórios',
-        'Controle para experimentos práticos',
+        Icons.layers_outlined,
+        'Aplicação Prática',
+        'Organização e controle de componentes em atividades de laboratório, testes e desenvolvimento.',
+        'LABORATÓRIO & TESTES',
       ),
       (
         Icons.lock_outlined,
         'Autenticação e Segurança',
-        'Proteção e identificação digital',
+        'Identificação digital única por sensor e proteção de dados nas interações do sistema.',
+        'SEGURANÇA DIGITAL',
       ),
-      (Icons.smartphone_outlined, 'Web & Mobile', 'Acesso multiplataforma'),
+      (
+        Icons.smartphone_outlined,
+        'Web e Mobile',
+        'Acesso multiplataforma simplificado através de interfaces modernas e responsivas.',
+        'MULTIPLATAFORMA',
+      ),
     ];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 28, 16, 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Funcionalidades',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            'Ecossistema de Funcionalidades',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 6),
+          Text(
+            'Arquitetura modular desenhada para a perfeita gestão e identificação de componentes',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: subtextColor),
+          ),
+          const SizedBox(height: 20),
           ...services.asMap().entries.map((e) {
             final i = e.key;
             final s = e.value;
             return _serviceItem(
-              context,
               (i + 1).toString().padLeft(2, '0'),
               s.$1,
               s.$2,
               s.$3,
+              s.$4,
+              isDark,
+              textColor,
+              subtextColor,
             );
           }),
         ],
@@ -344,63 +427,78 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _serviceItem(
-    BuildContext context,
     String number,
     IconData icon,
     String title,
     String desc,
+    String categoryTag,
+    bool isDark,
+    Color textColor,
+    Color subtextColor,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.cardBg,
+        color: isDark ? const Color(0xFF0B132B) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.borderColor),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0284C7).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  number,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF0284C7),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.star_outline,
+                color: Color(0xFF0284C7),
+                size: 22,
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      number,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  desc,
-                  style: TextStyle(fontSize: 12, color: context.textMuted),
-                ),
-              ],
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            desc,
+            style: TextStyle(fontSize: 12, color: subtextColor, height: 1.4),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            categoryTag,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0284C7),
+              letterSpacing: 1.1,
             ),
           ),
         ],
@@ -408,45 +506,48 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPortfolio() {
+  Widget _buildPortfolio(bool isDark, Color textColor) {
     final items = [
       (
         'assets/images/Aplicacoes/identificacao.automatica.png',
-        '1- Identificação Automática',
+        'Identificação Automática de Sensores',
       ),
       (
         'assets/images/Aplicacoes/aplicacao.educacional.png',
-        '2- Aplicação Educacional',
+        'Aplicação Educacional',
       ),
       (
         'assets/images/Aplicacoes/gestaoeorganizacao.png',
-        '3- Gestão e Organização',
+        'Gestão e Organização',
       ),
       (
         'assets/images/Aplicacoes/interfaceegerenciamento.png',
-        '4- Interface de Gerenciamento',
+        'Interface de Gerenciamento',
       ),
     ];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 28, 16, 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Aplicações do Sistema',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 1,
+            childAspectRatio: 0.9,
             children: items
-                .map((item) => _portfolioCard(item.$1, item.$2))
+                .map((item) => _portfolioCard(item.$1, item.$2, isDark))
                 .toList(),
           ),
         ],
@@ -454,70 +555,196 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _portfolioCard(String imagePath, String title) {
+  Widget _portfolioCard(String imagePath, String title, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF0284C7).withOpacity(0.4)),
         image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover),
       ),
       child: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.black.withValues(alpha: 0.4),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  (isDark ? const Color(0xFF020617) : Colors.black).withOpacity(
+                    0.85,
+                  ),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
           ),
           Align(
-            alignment: Alignment.topRight,
-            child: Padding(padding: const EdgeInsets.all(10)),
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 3,
+                    width: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0284C7),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(bool isDark, Color subtextColor) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 28),
-      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 24),
-      color: AppColors.surfaceDark,
+      margin: const EdgeInsets.only(top: 32),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      color: isDark ? const Color(0xFF020617) : const Color(0xFFE2E8F0),
       child: Column(
         children: [
-          Image.asset('assets/images/logos/Logo/LogoDark.png', height: 60),
-          SizedBox(height: 10),
-          SizedBox(height: 6),
+          Image.asset(
+            isDark
+                ? 'assets/images/logos/Logo/LogoDark2.png'
+                : 'assets/images/logos/Logo/LogoLight2.png',
+            height: 45,
+          ),
+          const SizedBox(height: 12),
           Text(
             'Plataforma Inteligente para Identificação\ne Gestão de Sensores IoT',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMuted,
-              height: 1,
-            ),
+            style: TextStyle(fontSize: 12, color: subtextColor, height: 1.3),
           ),
-          SizedBox(height: 12),
-          Text(
+          const SizedBox(height: 12),
+          const Text(
             '© 2026 VISIO – Todos os direitos reservados',
-            style: TextStyle(fontSize: 11, color: AppColors.primary),
+            style: TextStyle(fontSize: 11, color: Color(0xFF0284C7)),
           ),
         ],
       ),
+    );
+  }
+}
+
+class RotatingLedButton extends StatefulWidget {
+  final VoidCallback onPressed;
+
+  const RotatingLedButton({super.key, required this.onPressed});
+
+  @override
+  State<RotatingLedButton> createState() => _RotatingLedButtonState();
+}
+
+class _RotatingLedButtonState extends State<RotatingLedButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Container(
+          width: double.infinity,
+          height: 52,
+          padding: const EdgeInsets.all(2.5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            gradient: SweepGradient(
+              colors: const [
+                Color(0xFF1E40AF),
+                Color(0xFF38BDF8),
+                Colors.white,
+                Color(0xFF38BDF8),
+                Color(0xFF1E40AF),
+                Color(0xFF0F172A),
+                Color(0xFF0F172A),
+                Color(0xFF1E40AF),
+              ],
+              stops: const [0.0, 0.15, 0.2, 0.25, 0.4, 0.6, 0.8, 1.0],
+              transform: GradientRotation(
+                _controller.value * 2 * 3.141592653589793,
+              ),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF38BDF8).withOpacity(0.35),
+                blurRadius: 15,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1D4ED8),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: ElevatedButton(
+              onPressed: widget.onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.center_focus_strong,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'IDENTIFICAR SENSOR',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

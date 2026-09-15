@@ -450,7 +450,6 @@
 </div><!-- /.layout -->
 
 <script>
-    // === SCRIPT DE PESQUISA EM TEMPO REAL ===
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
         const rows = document.querySelectorAll('.sensor-row');

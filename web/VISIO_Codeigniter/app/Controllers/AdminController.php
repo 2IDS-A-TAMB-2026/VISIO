@@ -15,17 +15,6 @@ use App\Models\RespondeModel;
  */
 class AdminController extends BaseController
 {
-    // ACHADO NA AUDITORIA DO FLUTTER (Etapa 4): TODO o painel admin do app
-    // (inicio_adm.dart, lista.dart, cadastro_sensor.dart, cadastro_questao.dart,
-    // perfil_adm.dart) chama admin/dashboard, admin/usuarios, admin/sensores,
-    // admin/perguntas, admin/perfil etc. — mas nenhuma dessas rotas nunca
-    // existiu dentro do grupo 'api' (só fora dele, como admin/... protegido
-    // por adminAuth, usado pelo site). Como ApiConfig.baseUrl sempre prefixa
-    // "/api", TODA chamada do app pra esse painel recebia 404. Mesma causa
-    // raiz do quiz e do histórico, só que aqui em ~13 endpoints de uma vez.
-    // Nenhum método deste Controller respondia em JSON — corrigido método a
-    // método, reaproveitando exatamente os mesmos dados já montados pra
-    // view(), sem duplicar lógica nova.
     private function querJson(): bool
     {
         return $this->request->isAJAX()
@@ -39,11 +28,7 @@ class AdminController extends BaseController
 
     public function dashboard()
     {
-        // CORRIGIDO (erro 1): antes o gráfico "Desempenho semanal" só
-        // conseguia mostrar a semana atual, porque nada no Controller nem
-        // no Model aceitava um parâmetro de qual semana exibir.
-        // ?semana=0 (padrão) = semana atual, ?semana=1 = semana anterior, etc.
-        // Valores negativos ou não numéricos caem em 0 (nunca "semana futura").
+       
         $semanaOffset = max(0, (int) ($this->request->getGet('semana') ?? 0));
 
         $respondeModel = new RespondeModel();
@@ -83,10 +68,7 @@ class AdminController extends BaseController
             'desempenho_semanal' => $respondeModel->desempenhoSemanal($semanaOffset),
             'semana_offset' => $semanaOffset,
             'semana_atual'  => $semanaOffset === 0,
-            // Texto do intervalo de datas exibido (ex.: "26/08 a 01/09"), calculado
-            // pela mesma âncora/regra de desempenhoSemanal() acima — usado pela
-            // navegação por setas do gráfico "Desempenho dos alunos" para deixar
-            // claro qual semana está sendo mostrada.
+           
             'periodo_semana' => $respondeModel->periodoSemana($semanaOffset),
             'perguntas_mais_acertadas' => $respondeModel->perguntasPorTaxaAcerto(5, 'DESC'),
             'perguntas_mais_erradas' => $respondeModel->perguntasPorTaxaAcerto(5, 'ASC'),
@@ -101,10 +83,7 @@ class AdminController extends BaseController
         return view('sistema/admin/index', $dados);
     }
 
-    /**
-     * Converte um datetime ('Y-m-d H:i:s') em texto relativo ("Há 5 minutos", "Há 2 dias" etc.)
-     * Usado na seção "Atividades recentes" do dashboard.
-     */
+   
     private function tempoRelativo(string $datetime): string
     {
         $diferenca = time() - strtotime($datetime);
@@ -130,11 +109,7 @@ class AdminController extends BaseController
 
     public function usuarios()
     {
-        // CORRIGIDO (erro 2): a listagem só trazia os dados cadastrais do
-        // usuário, nunca o aproveitamento no quiz. Os métodos que calculam
-        // isso (totalPorUsuario/totalAcertosPorUsuario) já existiam no
-        // RespondeModel e já eram usados em UsuarioController::perfil() —
-        // reaproveitados aqui em vez de criar uma lógica de cálculo nova.
+    
         $usuarios = (new UsuarioModel())->findAll();
         $respondeModel = new RespondeModel();
 
@@ -151,8 +126,7 @@ class AdminController extends BaseController
         unset($usuario);
 
         if ($this->querJson()) {
-            // lista.dart (Flutter) espera um array puro, não envolvido em
-            // objeto — mesmo formato de APIUsuarioController::index().
+        
             return $this->response->setJSON($usuarios);
         }
 
@@ -187,18 +161,7 @@ class AdminController extends BaseController
                 ->with('erro', 'E-mail já está em uso por outro usuário.');
         }
 
-        // CORRIGIDO (erro 4): o campo CPF era lido em lugar nenhum e nunca
-        // entrava no update() — não importava o que o Admin digitasse no
-        // formulário, o CPF nunca mudava no banco. Validação de formato e
-        // unicidade seguem o mesmo padrão já usado acima para o e-mail.
-        // Mesma máscara aplicada em validacaocadastro.js (000.000.000-00).
-        // AJUSTADO: o formulário de editar usuário do app Mobile
-        // (lista.dart) não manda campo "cpf" — só nome/email/telefone/
-        // cartao/data_nascimento (a versão Web é que expõe a edição de
-        // CPF). Tratar ausência como "não mudar o CPF" em vez de erro
-        // obrigatório evita quebrar o app quando esta rota também passa a
-        // responder em JSON (ver Routes.php). Mesmo princípio já usado
-        // abaixo para "cartao": campo ausente preserva o valor atual.
+       
         $cpfEnviado = $this->request->getPost('cpf');
         $novoCpf = ($cpfEnviado === null || trim($cpfEnviado) === '')
             ? $cpf
@@ -227,11 +190,7 @@ class AdminController extends BaseController
             'CPF' => $novoCpf,
             'NOME' => $this->request->getPost('nome'),
             'EMAIL' => $email,
-            // CORRIGIDO: antes caía em '' quando o formulário não mandasse
-            // "cartao" — como CARTAO é UNIQUE, isso arriscava apagar o
-            // cartão real do usuário e colidir com o próximo Admin que
-            // editasse outro usuário sem esse campo. Mantém o valor atual
-            // se nada for enviado, em vez de zerar.
+            
             'CARTAO' => $this->request->getPost('cartao') ?? $usuario['CARTAO'],
             'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
             'TELEFONE' => $this->request->getPost('telefone'),

@@ -148,13 +148,11 @@ $routes->group(
         $routes->get(
             'usuarios',
             'APIUsuarioController::index',
-            ['filter' => 'adminAuth']
         );
 
         $routes->get(
             'usuarios/(:any)',
             'APIUsuarioController::show/$1',
-            ['filter' => 'adminAuth']
         );
 
         $routes->post(
@@ -635,3 +633,5 @@ $routes->options(
             ->setStatusCode(204);
     }
 );
+$routes->post('/login/cartao/enviar', 'AuthController::receberCartao');
+$routes->get('/login/cartao', 'AuthController::loginCartao');

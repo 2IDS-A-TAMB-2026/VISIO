@@ -402,7 +402,6 @@
                 } else {
                     labelFoto.textContent = 'Nova foto: ' + file.name;
                     
-                    // Se houver prévia da imagem atual, substitui na hora
                     if (imgAtual) {
                         const reader = new FileReader();
                         reader.onload = function (e) {

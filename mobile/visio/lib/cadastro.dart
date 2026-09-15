@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
+import 'widgets/accessibility_panel.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -14,7 +15,6 @@ class CadastroPage extends StatefulWidget {
 class _CadastroPageState extends State<CadastroPage> {
   final _formKey = GlobalKey<FormState>();
 
-  
   final nomeCtrl = TextEditingController();
   final cpfCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
@@ -98,171 +98,12 @@ class _CadastroPageState extends State<CadastroPage> {
     return '${limpo.substring(4, 8)}-${limpo.substring(2, 4)}-${limpo.substring(0, 2)}';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
-            const SizedBox(width: 8),
-            const Text('Criar Conta'),
-          ],
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Cadastro',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Preencha os dados para acessar a plataforma.',
-                style: TextStyle(color: context.textMuted, fontSize: 13),
-              ),
-              const SizedBox(height: 24),
-
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    _field(
-                      nomeCtrl,
-                      'Nome completo',
-                      Icons.person_outline,
-                    ),
-                    _field(
-                      cpfCtrl,
-                      'CPF',
-                      Icons.badge_outlined,
-                      keyboard: TextInputType.number,
-                      inputFormatters: [cpfMask],
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Campo obrigatório';
-                        if (!_cpfValido(v)) return 'CPF inválido';
-                        return null;
-                      },
-                    ),
-                    _field(
-                      emailCtrl,
-                      'E-mail',
-                      Icons.email_outlined,
-                      keyboard: TextInputType.emailAddress,
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Campo obrigatório';
-                        if (!_emailValido(v)) return 'E-mail inválido';
-                        return null;
-                      },
-                    ),
-                    _field(
-                      dataNascCtrl,
-                      'Data de nascimento',
-                      Icons.calendar_today_outlined,
-                      keyboard: TextInputType.number,
-                      hint: 'DD/MM/AAAA',
-                      inputFormatters: [dataMask],
-                    ),
-                    _field(
-                      telefoneCtrl,
-                      'Telefone',
-                      Icons.phone_outlined,
-                      keyboard: TextInputType.phone,
-                      inputFormatters: [telefoneMask],
-                    ),
-                    _passwordField(senhaCtrl, 'Senha', _obscureSenha, () {
-                      setState(() => _obscureSenha = !_obscureSenha);
-                    }),
-                    _field(
-                      cartaoCtrl,
-                      'Cartão IoT (opcional)',
-                      Icons.credit_card_outlined,
-                      required: false,
-                      inputFormatters: [cartaoMask],
-                    ),
-                    const SizedBox(height: 8),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: _loading
-                          ? const Center(child: CircularProgressIndicator())
-                          : ElevatedButton(
-                              onPressed: _cadastrar,
-                              child: const Text('Criar Conta'),
-                            ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Já tem conta?',
-                          style: TextStyle(
-                            color: context.textMuted,
-                            fontSize: 13,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Fazer login',
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _field(
-    TextEditingController ctrl,
-    String label,
-    IconData icon, {
-    TextInputType keyboard = TextInputType.text,
-    String? hint,
-    bool required = true,
-    List<TextInputFormatter>? inputFormatters,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextFormField(
-        controller: ctrl,
-        keyboardType: keyboard,
-        inputFormatters: inputFormatters,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          prefixIcon: Icon(icon, size: 20),
-        ),
-        validator: validator ??
-            (required
-                ? (v) => v!.isEmpty ? 'Campo obrigatório' : null
-                : null),
-      ),
-    );
-  }
-
   bool _emailValido(String email) {
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
   }
 
   bool _cpfValido(String cpfComMascara) {
     final cpf = cpfComMascara.replaceAll(RegExp(r'\D'), '');
-
     if (cpf.length != 11) return false;
     if (RegExp(r'^(\d)\1{10}$').hasMatch(cpf)) return false;
 
@@ -276,43 +117,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
       if (int.parse(cpf[posicaoDigito]) != digitoEsperado) return false;
     }
-
     return true;
-  }
-
-  Widget _passwordField(
-    TextEditingController ctrl,
-    String label,
-    bool obscure,
-    VoidCallback toggle,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextFormField(
-        controller: ctrl,
-        obscureText: obscure,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: const Icon(Icons.lock_outline, size: 20),
-          suffixIcon: IconButton(
-            icon: Icon(
-              obscure
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-              size: 20,
-            ),
-            onPressed: toggle,
-          ),
-        ),
-        validator: (v) {
-          if (v!.isEmpty) return 'Campo obrigatório';
-          if (label == 'Senha' && v.length < 6) {
-            return 'Mínimo 6 caracteres';
-          }
-          return null;
-        },
-      ),
-    );
   }
 
   @override
@@ -325,5 +130,550 @@ class _CadastroPageState extends State<CadastroPage> {
     cartaoCtrl.dispose();
     senhaCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Definição dinâmicas de cores para Dark/Light Mode
+    final bgColor = isDark ? const Color(0xFF030712) : const Color(0xFFF1F5F9);
+    final cardBgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final infoBgColor = isDark ? const Color(0xFF030712).withOpacity(0.5) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final bodyTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              _buildTopNavBar(context, isDark, titleTextColor, bodyTextColor, borderColor),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  child: Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 1000),
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: cardBgColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: borderColor),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          bool isWide = constraints.maxWidth > 700;
+                          return isWide
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(flex: 6, child: _buildFormSide(isDark, titleTextColor, bodyTextColor, borderColor)),
+                                    const SizedBox(width: 32),
+                                    Expanded(flex: 5, child: _buildInfoSide(isDark, infoBgColor, titleTextColor, bodyTextColor, borderColor)),
+                                  ],
+                                )
+                              : Column(
+                                  children: [
+                                    _buildFormSide(isDark, titleTextColor, bodyTextColor, borderColor),
+                                    const SizedBox(height: 32),
+                                    _buildInfoSide(isDark, infoBgColor, titleTextColor, bodyTextColor, borderColor),
+                                  ],
+                                );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const AccessibilityPanel(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopNavBar(
+    BuildContext context,
+    bool isDark,
+    Color titleColor,
+    Color textColor,
+    Color borderColor,
+  ) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF030712) : Colors.white,
+        border: Border(bottom: BorderSide(color: borderColor)),
+      ),
+      child: Row(
+        children: [
+          Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 28),
+          const SizedBox(width: 8),
+          
+          const SizedBox(width: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _navButton(Icons.home, 'Início', () => Navigator.pop(context), textColor),
+                  _navButton(Icons.info_outline, 'Sobre Nós', () {}, textColor),
+                  _navButton(Icons.developer_board, 'Sensores', () {}, textColor),
+                  _navButton(Icons.help_outline, 'Questões', () {}, textColor),
+                  _navButton(Icons.login, 'Login', () => Navigator.pop(context), textColor),
+                  const SizedBox(width: 8),
+                  Icon(Icons.settings, color: textColor, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _navButton(IconData icon, String label, VoidCallback onTap, Color textColor) {
+    return TextButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 16, color: textColor),
+      label: Text(
+        label,
+        style: TextStyle(color: textColor, fontSize: 13),
+      ),
+    );
+  }
+
+  Widget _buildFormSide(bool isDark, Color titleColor, Color bodyColor, Color borderColor) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Criar Conta',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: titleColor,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Cadastre-se para acessar o ecossistema VISIO.',
+            style: TextStyle(color: bodyColor, fontSize: 14),
+          ),
+          const SizedBox(height: 24),
+
+          _buildCustomField(
+            controller: nomeCtrl,
+            label: 'Nome Completo',
+            hint: 'Ex: João Silva',
+            icon: Icons.person_outline,
+            isDark: isDark,
+            titleColor: titleColor,
+            borderColor: borderColor,
+          ),
+
+          LayoutBuilder(
+            builder: (context, constraints) {
+              bool isCompact = constraints.maxWidth < 340;
+              if (isCompact) {
+                return Column(
+                  children: [
+                    _buildCustomField(
+                      controller: cpfCtrl,
+                      label: 'CPF',
+                      hint: '000.000.000-00',
+                      icon: Icons.badge_outlined,
+                      keyboard: TextInputType.number,
+                      inputFormatters: [cpfMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Campo obrigatório';
+                        if (!_cpfValido(v)) return 'CPF inválido';
+                        return null;
+                      },
+                    ),
+                    _buildCustomField(
+                      controller: telefoneCtrl,
+                      label: 'Telefone',
+                      hint: '(00) 00000-0000',
+                      icon: Icons.phone_android_outlined,
+                      keyboard: TextInputType.phone,
+                      inputFormatters: [telefoneMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: _buildCustomField(
+                      controller: cpfCtrl,
+                      label: 'CPF',
+                      hint: '000.000.000-00',
+                      icon: Icons.badge_outlined,
+                      keyboard: TextInputType.number,
+                      inputFormatters: [cpfMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Campo obrigatório';
+                        if (!_cpfValido(v)) return 'CPF inválido';
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildCustomField(
+                      controller: telefoneCtrl,
+                      label: 'Telefone',
+                      hint: '(00) 00000-0000',
+                      icon: Icons.phone_android_outlined,
+                      keyboard: TextInputType.phone,
+                      inputFormatters: [telefoneMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          _buildCustomField(
+            controller: emailCtrl,
+            label: 'E-mail',
+            hint: 'nome@empresa.com',
+            icon: Icons.email_outlined,
+            keyboard: TextInputType.emailAddress,
+            isDark: isDark,
+            titleColor: titleColor,
+            borderColor: borderColor,
+            validator: (v) {
+              if (v == null || v.isEmpty) return 'Campo obrigatório';
+              if (!_emailValido(v)) return 'E-mail inválido';
+              return null;
+            },
+          ),
+
+          LayoutBuilder(
+            builder: (context, constraints) {
+              bool isCompact = constraints.maxWidth < 340;
+              if (isCompact) {
+                return Column(
+                  children: [
+                    _buildCustomField(
+                      controller: dataNascCtrl,
+                      label: 'Nascimento',
+                      hint: 'dd/mm/aaaa',
+                      icon: Icons.calendar_today_outlined,
+                      keyboard: TextInputType.number,
+                      inputFormatters: [dataMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                    _buildCustomField(
+                      controller: cartaoCtrl,
+                      label: 'Nº do Cartão',
+                      hint: '5087 8630 9749 7718',
+                      icon: Icons.credit_card_outlined,
+                      required: false,
+                      inputFormatters: [cartaoMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: _buildCustomField(
+                      controller: dataNascCtrl,
+                      label: 'Nascimento',
+                      hint: 'dd/mm/aaaa',
+                      icon: Icons.calendar_today_outlined,
+                      keyboard: TextInputType.number,
+                      inputFormatters: [dataMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildCustomField(
+                      controller: cartaoCtrl,
+                      label: 'Nº do Cartão',
+                      hint: '5087 8630 9749 7718',
+                      icon: Icons.credit_card_outlined,
+                      required: false,
+                      inputFormatters: [cartaoMask],
+                      isDark: isDark,
+                      titleColor: titleColor,
+                      borderColor: borderColor,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          _buildPasswordField(isDark, titleColor, borderColor),
+
+          const SizedBox(height: 16),
+
+          SizedBox(
+            width: double.infinity,
+            height: 46,
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton.icon(
+                    onPressed: _cadastrar,
+                    icon: const Icon(Icons.person_add, size: 18),
+                    label: const Text(
+                      'Finalizar Cadastro',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0284C7),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+          ),
+
+          const SizedBox(height: 16),
+
+          Center(
+            child: TextButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back, size: 16, color: Color(0xFF0284C7)),
+              label: const Text(
+                'Voltar para o login',
+                style: TextStyle(color: Color(0xFF0284C7), fontSize: 13),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoSide(
+    bool isDark,
+    Color infoBg,
+    Color titleColor,
+    Color bodyColor,
+    Color borderColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: infoBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 20),
+          Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 140),
+          const SizedBox(height: 32),
+          Text(
+            'Plataforma VISIO',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: titleColor,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Gerenciamento de dispositivos e inteligência de dados centralizados em tempo real.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: bodyColor,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    required bool isDark,
+    required Color titleColor,
+    required Color borderColor,
+    TextInputType keyboard = TextInputType.text,
+    bool required = true,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+  }) {
+    final inputFillColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final inputTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final hintColor = isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.circle, size: 6, color: Color(0xFF0284C7)),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: titleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            keyboardType: keyboard,
+            inputFormatters: inputFormatters,
+            style: TextStyle(color: inputTextColor, fontSize: 13),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: hintColor, fontSize: 13),
+              filled: true,
+              fillColor: inputFillColor,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF0284C7)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.danger),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.danger),
+              ),
+            ),
+            validator: validator ??
+                (required
+                    ? (v) => v == null || v.isEmpty ? 'Campo obrigatório' : null
+                    : null),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(bool isDark, Color titleColor, Color borderColor) {
+    final inputFillColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final inputTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final hintColor = isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.circle, size: 6, color: Color(0xFF0284C7)),
+              const SizedBox(width: 6),
+              Text(
+                'Senha',
+                style: TextStyle(
+                  color: titleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: senhaCtrl,
+            obscureText: _obscureSenha,
+            style: TextStyle(color: inputTextColor, fontSize: 13),
+            decoration: InputDecoration(
+              hintText: '••••••••',
+              hintStyle: TextStyle(color: hintColor, fontSize: 13),
+              filled: true,
+              fillColor: inputFillColor,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureSenha ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  size: 18,
+                  color: hintColor,
+                ),
+                onPressed: () => setState(() => _obscureSenha = !_obscureSenha),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF0284C7)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.danger),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColors.danger),
+              ),
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) return 'Campo obrigatório';
+              if (v.length < 6) return 'Mínimo 6 caracteres';
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

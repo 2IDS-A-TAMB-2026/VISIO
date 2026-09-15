@@ -23,6 +23,5 @@ class UserAuth implements FilterInterface
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Nenhuma ação necessária após a requisição
     }
 }

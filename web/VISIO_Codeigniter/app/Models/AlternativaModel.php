@@ -18,7 +18,7 @@ class AlternativaModel extends Model
 
     protected $allowedFields = [
         'DESCRICAO',
-        'IS_CORRETA', // Substituiu o CORRETA_ERRADA
+        'IS_CORRETA',
         'FK_ID_PERGUNTA',
     ];
 }

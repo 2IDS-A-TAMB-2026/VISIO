@@ -11,15 +11,14 @@ import 'appcolor.dart';
 import 'services/api_config.dart';
 import 'services/teachable_machine_service.dart';
 import 'services/tts_service.dart';
+import 'widgets/accessibility_panel.dart';
 import 'widgets/tts_button.dart';
 
 class SensorResult {
   final String nome;
   final String descricao;
   final String circuito;
-
   final double confianca;
-
   final String imagemUrl;
 
   const SensorResult({
@@ -162,7 +161,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
   }
 
   Future<void> _initCamera() async {
-    if (_cameraController != null) return; 
+    if (_cameraController != null) return;
 
     if (!kIsWeb) {
       final status = await Permission.camera.request();
@@ -204,7 +203,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
           _isCameraInitialized = false;
           if (kIsWeb) {
             _errorMessage =
-                "Câmera bloqueada ou indisponível.\nCertifique-se de estar usando 'localhost' ou 'https://' e permita o acesso no navegador.";
+                "Câmera bloqueada ou indisponível.\nCertifique-se de permitir o acesso no navegador.";
           } else {
             _errorMessage = "Erro ao carregar câmera: $e";
           }
@@ -215,12 +214,6 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
   @override
   void dispose() {
-    // CORRIGIDO (item 1 do pedido: leitura continuava em segundo plano
-    // após sair da tela): TtsService é um singleton que sobrevive além
-    // do ciclo de vida desta tela, então uma leitura em andamento nunca
-    // parava sozinha ao navegar para outra página. Chamado sem "await"
-    // de propósito — dispose() é síncrono e o widget já está sendo
-    // destruído, então só precisamos disparar o stop(), não esperá-lo.
     TtsService.instance.stop();
     _cameraController?.dispose();
     super.dispose();
@@ -288,64 +281,218 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final bodyTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 40),
-            const SizedBox(width: 10),
-            const Text('Identificador'),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const RadialGradient(
+                  center: Alignment(0, -0.4),
+                  radius: 1.2,
+                  colors: [Color(0xFF0F172A), Color(0xFF030712)],
+                )
+              : null,
+          color: isDark ? null : const Color(0xFFF8FAFC),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_errorMessage != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.danger.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.danger),
-                  ),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.white),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                _buildTopNavBar(context, isDark, titleTextColor, bodyTextColor),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
+                    child: Center(
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [
+                                  Color(0xFF60A5FA), // Azul suave
+                                  Color(0xFF3B82F6), // Azul primário
+                                  Color(0xFF06B6D4), // Ciano
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ).createShader(bounds),
+                              child: Text(
+                                'Identificação de dispositivos via câmera',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 34,
+                                  fontWeight: FontWeight.w800, // Corrigido aqui
+                                  letterSpacing: -0.5,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      color: const Color(
+                                        0xFF2563EB,
+                                      ).withOpacity(0.3),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+
+                            if (_errorMessage != null)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                margin: const EdgeInsets.only(bottom: 20),
+                                decoration: BoxDecoration(
+                                  color: AppColors.danger.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: AppColors.danger),
+                                ),
+                                child: Text(
+                                  _errorMessage!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+
+                            _buildCameraCard(isDark),
+                            const SizedBox(height: 24),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: (_isLoading || _imageFile != null)
+                                      ? null
+                                      : _tirarFoto,
+                                  icon: const Icon(Icons.camera_alt, size: 20),
+                                  label: const Text(
+                                    'Identificar',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                OutlinedButton.icon(
+                                  onPressed: _isLoading ? null : _abrirGaleria,
+                                  icon: const Icon(Icons.photo, size: 20),
+                                  label: const Text('Galeria'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: titleTextColor,
+                                    side: BorderSide(
+                                      color: isDark
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFFCBD5E1),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+
+                            if (_resultado != null)
+                              _buildResultadoCard(
+                                context,
+                                isDark,
+                                titleTextColor,
+                                bodyTextColor,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-
-              _buildCameraCard(),
-              const SizedBox(height: 20),
-
-              _buildPrimaryButton(),
-              const SizedBox(height: 10),
-
-              _buildSecondaryButton(),
-              const SizedBox(height: 20),
-
-              if (_resultado != null) _buildResultadoCard(context),
-            ],
-          ),
+              ],
+            ),
+            const AccessibilityPanel(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCameraCard() {
+  Widget _buildTopNavBar(
+    BuildContext context,
+    bool isDark,
+    Color titleColor,
+    Color textColor,
+  ) {
     return Container(
-      height: 260,
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.bgCardAlt,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        color: isDark ? const Color(0xFF030712).withOpacity(0.8) : Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Image.asset(
+            isDark
+                ? 'assets/images/logos/Logo/LogoDark2.png'
+                : 'assets/images/logos/Logo/LogoLight2.png',
+            height: 28,
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCameraCard(bool isDark) {
+    return Container(
+      height: 420,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark ? Colors.black : Colors.grey.shade900,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF2563EB), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2563EB).withOpacity(0.2),
+            blurRadius: 16,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         child: _buildCameraContent(),
       ),
     );
@@ -364,13 +511,13 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
             Container(
               color: Colors.black54,
               child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+                child: CircularProgressIndicator(color: Color(0xFF2563EB)),
               ),
             ),
           if (!_isLoading)
             Positioned(
-              top: 8,
-              right: 8,
+              top: 12,
+              right: 12,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
                 style: IconButton.styleFrom(backgroundColor: Colors.black54),
@@ -396,7 +543,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
               onPressed: () => openAppSettings(),
               child: const Text(
                 'Abrir configurações',
-                style: TextStyle(color: AppColors.primaryLight),
+                style: TextStyle(color: Color(0xFF2563EB)),
               ),
             ),
           ],
@@ -426,33 +573,11 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
     if (!_isCameraInitialized) {
       return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+        child: CircularProgressIndicator(color: Color(0xFF2563EB)),
       );
     }
 
     return CameraPreview(_cameraController!);
-  }
-
-  Widget _buildPrimaryButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: (_isLoading || _imageFile != null) ? null : _tirarFoto,
-        icon: const Icon(Icons.camera_alt),
-        label: const Text('Identificar sensor'),
-      ),
-    );
-  }
-
-  Widget _buildSecondaryButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton.icon(
-        onPressed: _isLoading ? null : _abrirGaleria,
-        icon: const Icon(Icons.photo),
-        label: const Text('Usar galeria'),
-      ),
-    );
   }
 
   Widget _imagemResultado(String caminho) {
@@ -465,34 +590,47 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
     return Image.network(
       caminho,
-      height: 120,
+      height: 140,
       fit: BoxFit.contain,
       errorBuilder: errorBuilder,
     );
   }
 
-  Widget _buildResultadoCard(BuildContext context) {
+  Widget _buildResultadoCard(
+    BuildContext context,
+    bool isDark,
+    Color titleColor,
+    Color textColor,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: context.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.5)),
+        color: isDark ? const Color(0xFF0B132B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF2563EB).withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.check_circle, color: AppColors.success),
+              const Icon(Icons.check_circle, color: Color(0xFF10B981)),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   _resultado!.nome,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: context.textPrimary,
+                    color: titleColor,
                   ),
                 ),
               ),
@@ -507,7 +645,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
           const SizedBox(height: 4),
           Text(
             'Confiança: ${(_resultado!.confianca * 100).toStringAsFixed(1)}%',
-            style: TextStyle(color: context.textSoft, fontSize: 13),
+            style: TextStyle(color: textColor, fontSize: 13),
           ),
           const SizedBox(height: 16),
           Center(
@@ -520,28 +658,28 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
           const Text(
             'Como funciona:',
             style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryLight,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0284C7),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             _resultado!.descricao,
-            style: TextStyle(color: context.textSoft, height: 1.4),
+            style: TextStyle(color: textColor, height: 1.5),
           ),
           if (_resultado!.circuito.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Text(
               'Circuito:',
               style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryLight,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0284C7),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               _resultado!.circuito,
-              style: TextStyle(color: context.textSoft, height: 1.4),
+              style: TextStyle(color: textColor, height: 1.5),
             ),
           ],
         ],

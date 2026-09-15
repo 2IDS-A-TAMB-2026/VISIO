@@ -15,11 +15,7 @@ class APISensorController extends ResourceController
     {
         $sensores = $this->model->findAll();
 
-        // PREVENTIVO: mesma causa raiz do bug relatado no Quiz (ver
-        // PerguntaModel::buscarComAlternativas) — o driver do banco
-        // devolve ID_SENSOR como string em vez de número. sensores.dart
-        // não quebra hoje porque não faz cast direto pra int, mas
-        // corrigido aqui pra a API sempre devolver o tipo certo.
+      
         foreach ($sensores as &$s) {
             $s['ID_SENSOR'] = (int) $s['ID_SENSOR'];
         }

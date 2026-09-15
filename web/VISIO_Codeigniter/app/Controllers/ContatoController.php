@@ -66,7 +66,6 @@ class ContatoController extends BaseController
         $destino = env('CONTATO_EMAIL_DESTINO');
 
         if (empty($destino)) {
-            // Configuração ausente — não finjo sucesso.
             log_message('error', 'ContatoController: variável CONTATO_EMAIL_DESTINO não configurada no .env.');
             if ($this->querJson()) {
                 return $this->response->setStatusCode(500)->setJSON([

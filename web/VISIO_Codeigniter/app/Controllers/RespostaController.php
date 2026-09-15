@@ -15,14 +15,7 @@ use App\Models\RespondeModel;
  */
 class RespostaController extends BaseController
 {
-    // ACHADO NA AUDITORIA (Etapa 4): historico.dart (Flutter) foi escrito
-    // pra ler exatamente os campos que historicoPorUsuario() já devolve
-    // (ID_RESPONDE, PERGUNTA_TEXTO, ALTERNATIVA_TEXTO, NIVEL_DIFICULDADE,
-    // IS_CORRETA, RESPONDIDO_EM) — mas nenhum dos dois métodos deste
-    // Controller respondia em JSON (só view()/redirect()), e nenhuma rota
-    // pra cá existia dentro do grupo 'api' (só fora dele, protegida por
-    // userAuth, usada pelo site). Mesmo padrão de causa raiz do quiz:
-    // cliente e Model corretos, faltava a ligação no Controller/rotas.
+   
     private function querJson(): bool
     {
         return $this->request->isAJAX()
@@ -30,8 +23,7 @@ class RespostaController extends BaseController
             || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
     }
 
-    // Também alcançável via /api agora (sem userAuth) — mesmo motivo e
-    // mesmo padrão de autochecagem já usados em QuizController.
+  
     private function exigirLogin()
     {
         if (session()->get('usuario_cpf')) {

@@ -339,7 +339,6 @@
     const formSensor = document.getElementById('formSensor');
     const btnSubmit = document.getElementById('btnSubmit');
 
-    // Validação de arquivo + Preview visual
     inputFoto.addEventListener('change', function () {
         const maxBytes = 2 * 1024 * 1024; // 2 MB
         const file = this.files[0];
@@ -353,7 +352,6 @@
             } else {
                 labelFoto.textContent = 'Imagem: ' + file.name;
                 
-                // Exibe o preview da imagem
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     previewFoto.src = e.target.result;
@@ -364,7 +362,6 @@
         }
     });
 
-    // Estado de carregamento no envio para evitar cliques duplos
     formSensor.addEventListener('submit', function() {
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...';

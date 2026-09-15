@@ -391,18 +391,16 @@ document.getElementById('campo_tel').addEventListener('input', function () {
     let raw = this.value.replace(/\D/g, '').slice(0, 11);
     let v = raw;
 
-    // Aplicação da máscara
     if      (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
     else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/,        '($1) $2');
     else if (v.length > 0) v = v.replace(/^(\d{0,2})/,               '($1');
     
     this.value = v;
 
-    // Validação de quantidade de dígitos
     if (raw.length > 0 && raw.length < 10) {
         this.setCustomValidity('Informe o DDD e o telefone completo (mínimo 10 dígitos).');
     } else {
-        this.setCustomValidity(''); // Limpa a mensagem e valida o campo
+        this.setCustomValidity(''); 
     }
 });
 

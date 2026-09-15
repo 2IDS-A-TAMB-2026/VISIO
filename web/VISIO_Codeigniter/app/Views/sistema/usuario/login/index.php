@@ -552,75 +552,162 @@
     });
   });
 
-  // CORRIGIDO (item 8/9 do pedido — login automático por RFID): antes,
-  // este botão só mostrava um timer fixo de 2 segundos seguido de um
-  // erro falso, sem nunca chamar nenhuma API real. Agora consulta de
-  // verdade UsuarioController::loginPorCartao via polling. Explicação
-  // completa de por que esse modelo (navegador perguntando
-  // repetidamente) é necessário — em vez do ESP32 simplesmente "logar"
-  // o navegador direto, o que não é tecnicamente possível — em
-  // WEB/app/Models/LoginCartaoModel.php.
-  btnCartao.addEventListener('click', function() {
-    const DURACAO_MAXIMA_MS = 30000;
-    const INTERVALO_POLLING_MS = 1500;
+  // btnCartao.addEventListener('click', function() {
+  //   const DURACAO_MAXIMA_MS = 30000;
+  //   const INTERVALO_POLLING_MS = 1500;
 
-    let intervaloId = null;
+  //   let intervaloId = null;
 
-    const pararPolling = () => {
-      if (intervaloId !== null) {
-        clearInterval(intervaloId);
-        intervaloId = null;
-      }
-    };
+  //   const pararPolling = () => {
+  //     if (intervaloId !== null) {
+  //       clearInterval(intervaloId);
+  //       intervaloId = null;
+  //     }
+  //   };
 
-    Swal.fire({
-      title: "Aguardando aproximação",
-      html: "Aproxime o cartão do leitor.",
-      timer: DURACAO_MAXIMA_MS,
-      timerProgressBar: true,
-      allowOutsideClick: true,
-      didOpen: () => {
-        Swal.showLoading();
+  //   Swal.fire({
+  //     title: "Aguardando aproximação",
+  //     html: "Aproxime o cartão do leitor.",
+  //     timer: DURACAO_MAXIMA_MS,
+  //     timerProgressBar: true,
+  //     allowOutsideClick: true,
+  //     didOpen: () => {
+  //       Swal.showLoading();
 
-        intervaloId = setInterval(async () => {
-          try {
-            const resposta = await fetch("<?= base_url('login/cartao') ?>", {
-              method: 'POST',
-              headers: { 'Accept': 'application/json' },
-            });
-            const dados = await resposta.json();
+  //       intervaloId = setInterval(async () => {
+  //         try {
+  //           const resposta = await fetch("<?= base_url('login/cartao') ?>", {
+  //             method: 'POST',
+  //             headers: { 'Accept': 'application/json' },
+  //           });
+  //           const dados = await resposta.json();
 
-            if (dados.autorizado) {
-              pararPolling();
+  //           if (dados.autorizado) {
+  //             pararPolling();
+  //             Swal.close();
+  //             window.location.href = dados.redirect || "<?= base_url('perfil') ?>";
+  //           }
+  //         } catch (erro) {
+  //           // Falha de rede pontual durante o polling não deve
+  //           // interromper a espera — só registra e tenta de novo no
+  //           // próximo intervalo.
+  //           console.error('Erro ao consultar login por cartão:', erro);
+  //         }
+  //       }, INTERVALO_POLLING_MS);
+  //     },
+  //     willClose: () => {
+  //       pararPolling();
+  //     }
+  //   }).then((resultado) => {
+  //     // Só mostra "tempo esgotado" se o motivo do fechamento foi
+  //     // realmente o timer acabar — se fechamos programaticamente após
+  //     // um login bem-sucedido (Swal.close() acima), o dismiss não é
+  //     // "timer" e o redirecionamento já está em andamento.
+  //     if (resultado.dismiss === Swal.DismissReason.timer) {
+  //       Swal.fire({
+  //         title: "Nenhum cartão identificado",
+  //         text: "Não conseguimos identificar um cartão autorizado a tempo. Tente novamente.",
+  //         icon: "error",
+  //         confirmButtonColor: '#2563eb'
+  //       });
+  //     }
+  //   });
+  // });
+
+btnCartao.addEventListener('click', function() {
+
+  const DURACAO_MAXIMA_MS = 4000;
+  const INTERVALO_POLLING_MS = 500;
+
+  let intervaloId = null;
+
+  const pararPolling = () => {
+    if (intervaloId !== null) {
+      clearInterval(intervaloId);
+      intervaloId = null;
+    }
+  };
+
+  Swal.fire({
+    title: "Aguardando aproximação",
+    text: "Aproxime o cartão do leitor.",
+    timer: DURACAO_MAXIMA_MS,
+    timerProgressBar: true,
+    allowOutsideClick: true,
+    didOpen: () => {
+
+      Swal.showLoading();
+
+      intervaloId = setInterval(async () => {
+
+        try {
+
+          const resposta = await fetch("<?= base_url('login/cartao') ?>", {
+            method: "GET",
+            headers: {
+              "Accept": "application/json"
+            },
+            cache: "no-store"
+          });
+
+          const dados = await resposta.json();
+
+          console.log("Login cartão:", dados);
+
+          if (dados.cartao_lido === true) {
+
+            pararPolling();
+
+            if (dados.autorizado === true) {
+
               Swal.close();
+
               window.location.href = dados.redirect || "<?= base_url('perfil') ?>";
+
+            } else {
+
+              Swal.fire({
+                title: "Não autorizado",
+                text: "Este cartão não está cadastrado.",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#2563eb"
+              });
+
             }
-          } catch (erro) {
-            // Falha de rede pontual durante o polling não deve
-            // interromper a espera — só registra e tenta de novo no
-            // próximo intervalo.
-            console.error('Erro ao consultar login por cartão:', erro);
+
           }
-        }, INTERVALO_POLLING_MS);
-      },
-      willClose: () => {
-        pararPolling();
-      }
-    }).then((resultado) => {
-      // Só mostra "tempo esgotado" se o motivo do fechamento foi
-      // realmente o timer acabar — se fechamos programaticamente após
-      // um login bem-sucedido (Swal.close() acima), o dismiss não é
-      // "timer" e o redirecionamento já está em andamento.
-      if (resultado.dismiss === Swal.DismissReason.timer) {
-        Swal.fire({
-          title: "Nenhum cartão identificado",
-          text: "Não conseguimos identificar um cartão autorizado a tempo. Tente novamente.",
-          icon: "error",
-          confirmButtonColor: '#2563eb'
-        });
-      }
-    });
+
+        } catch (erro) {
+
+          console.error("Erro:", erro);
+
+        }
+
+      }, INTERVALO_POLLING_MS);
+    },
+
+    willClose: () => {
+      pararPolling();
+    }
+
+  }).then((resultado) => {
+
+    if (resultado.dismiss === Swal.DismissReason.timer) {
+
+      Swal.fire({
+        title: "Nenhum cartão identificado",
+        text: "Aproxime um cartão do leitor.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#2563eb"
+      });
+
+    }
+
   });
+
+});
 
   // Validação apenas do envio do formulário padrão
   loginForm.addEventListener('submit', function(e) {

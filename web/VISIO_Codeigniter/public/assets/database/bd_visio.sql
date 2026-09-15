@@ -72,25 +72,6 @@ CREATE TABLE RESET_SENHA (
         ON DELETE CASCADE
 );
 
--- ADICIONADO (item 8/9 do pedido — login automático por RFID).
--- Segue o MESMO padrão de RESET_SENHA acima (registro temporário de
--- autenticação, com FK para USUARIO, flag USADO e expiração por
--- tempo). Não é uma tabela de "donos de cartão" — essa relação já
--- existe em USUARIO.CARTAO e não foi duplicada aqui. Ver
--- WEB/app/Models/LoginCartaoModel.php para o porquê desta tabela
--- existir (o ESP32 e o navegador são clientes HTTP separados, sem
--- sessão em comum).
-CREATE TABLE LOGIN_CARTAO (
-    ID_LOGIN_CARTAO INT AUTO_INCREMENT PRIMARY KEY,
-    FK_CPF VARCHAR(14) NOT NULL,
-    USADO TINYINT(1) NOT NULL DEFAULT 0,
-    CRIADO_EM DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    EXPIRA_EM DATETIME NOT NULL,
-    FOREIGN KEY (FK_CPF)
-        REFERENCES USUARIO (CPF)
-        ON DELETE CASCADE
-);
-
 -- ===== ADMIN  =====
 INSERT INTO ADMIN (CNPJ, NOME, EMAIL, TELEFONE, SENHA) VALUES
 ('12.345.678/0001-01', 'Administrador VISIO', 'admin@visio.com', '(11) 98765-4321', '$2b$12$up2lvf2xBzAw6C6PVUIQW.IXCAviqwpyOGpEMNiSArmiQGgZO.kl.'), -- Senha: Admin@123,
@@ -294,14 +275,7 @@ INSERT INTO ALTERNATIVA (DESCRICAO, IS_CORRETA, FK_ID_PERGUNTA) VALUES
 ('Um protocolo de comunicação wireless',0,30),
 ('Um tipo de sensor analógico',0,30);
 
--- ===== USUARIO  =====
--- CORRIGIDO: o INSERT original não incluía a coluna CARTAO na lista de
--- colunas, então TODAS as linhas caíam no valor padrão da coluna
--- (''). Como CARTAO é UNIQUE, a segunda linha já falhava com
--- "Duplicate entry '' for key 'usuario.CARTAO'" — mesmo bug de
--- espírito do que foi corrigido em UsuarioController::cadastrar()
--- (placeholder único por usuário até um admin associar o UID real de
--- um cartão físico).
+
 INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE, FOTO) VALUES
 ('123.456.789-01','Pedro Henrique Alves','user1@email.com','$2b$10$ygfUJ3b3ezvzVGcRgCT7OuVZUqcdVuPjSfQB0M8AQUqvbf.4.gqba','0000000000000001','1998-03-12','(11) 98765-1231',''),
 ('123.456.789-02','Mariana Souza Costa','user2@email.com','$2b$10$AEQR0We9OvzgeC/8jPaviuoAcT86uGegEqasnCUK3yll.kVxwDkSq','0000000000000002','1995-07-25','(11) 98765-1232',''),

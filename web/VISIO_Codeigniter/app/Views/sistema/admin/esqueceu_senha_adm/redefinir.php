@@ -525,7 +525,6 @@
   
   if (!form) return;
 
-  // Limpa erros visuais ao digitar
   [senha, confirma].forEach(function(input) {
     input.addEventListener('input', function() {
       this.classList.remove('input-error');
@@ -534,7 +533,6 @@
     });
   });
 
-  // Validação no envio
   form.addEventListener('submit', function (e) {
     var valido = true;
     

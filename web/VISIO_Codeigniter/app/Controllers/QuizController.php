@@ -20,11 +20,7 @@ use App\Models\RespondeModel;
  */
 class QuizController extends BaseController
 {
-    // CORRIGIDO: nenhum dos 5 métodos respondia JSON — só redirect()/view().
-    // A correção do baseUrl (feita antes) já fazia o app acertar as rotas
-    // certas, mas o quiz continuava quebrando porque a resposta nunca vinha
-    // no formato que questoes.dart espera. Mesma receita usada em
-    // Auth/Usuario/SensorController: um branch antes de cada retorno.
+   
     private function querJson(): bool
     {
         return $this->request->isAJAX()
@@ -32,13 +28,7 @@ class QuizController extends BaseController
             || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
     }
 
-    // ADICIONADO: estas 5 rotas agora também são alcançáveis via /api (ver
-    // Routes.php), grupo que só tem o filtro 'cors' — o filtro 'userAuth'
-    // continua protegendo apenas as rotas sem prefixo, usadas pelo site.
-    // Sem esta checagem, uma chamada direta e não-autenticada a
-    // api/quiz/responder chegaria com $cpf nulo e tentaria gravar
-    // FK_CPF_USUARIO NULL (coluna NOT NULL) — mesmo padrão de autochecagem
-    // já usado em UsuarioController::perfil()/atualizarPerfil().
+    
     private function exigirLogin()
     {
         if (session()->get('usuario_cpf')) {
@@ -78,13 +68,7 @@ class QuizController extends BaseController
                 ->with('erro', 'Ainda não há perguntas suficientes cadastradas para iniciar o quiz.');
         }
 
-        // CORRIGIDO — mesma causa raiz do bug relatado (agora em
-        // "correta_id"): array_column() pegava ID_PERGUNTA cru do banco
-        // (string, via listarAleatorio/findAll sem conversão) e colocava
-        // direto na sessão (quiz_ids). Dali esse valor reaparece em vários
-        // pontos do fluxo (responder(), avancar()) — corrigindo na
-        // origem, onde os IDs entram na sessão, evita que a mesma string
-        // vaze de novo em outro ponto do JSON no futuro.
+ 
         $ids = array_map('intval', array_column($perguntas, 'ID_PERGUNTA'));
 
         session()->set([
@@ -140,13 +124,7 @@ class QuizController extends BaseController
             return redirect()->to('/quiz/resultado');
         }
 
-        // CORRIGIDO: buscarComAlternativas() traz IS_CORRETA em cada
-        // alternativa (é usado também por listarComAlternativas(), da tela
-        // administrativa, onde isso é necessário). Na página web isso nunca
-        // vazava porque o HTML renderizado não expõe esse dado ao navegador
-        // — mas devolvendo isso como JSON puro pro app, a resposta certa
-        // fica visível antes do usuário responder. Removido só aqui, no
-        // ponto que é exposto ao usuário, sem tocar no Model.
+      
         if (isset($pergunta['alternativas']) && is_array($pergunta['alternativas'])) {
             foreach ($pergunta['alternativas'] as &$alt) {
                 unset($alt['IS_CORRETA']);
@@ -154,7 +132,6 @@ class QuizController extends BaseController
             unset($alt);
         }
 
-        // Se a pergunta atual já foi respondida, exibe o feedback (modo revisão)
         $feedback = session()->get('quiz_feedback');
         if (!is_array($feedback) || (int) $feedback['id_pergunta'] !== (int) $idAtual) {
             $feedback = null;
@@ -212,22 +189,17 @@ class QuizController extends BaseController
 
         $idPergunta = $ids[$indice];
 
-        // Já respondida? (evita registrar de novo se o usuário voltar/recarregar)
         $feedbackAtual = session()->get('quiz_feedback');
         if (is_array($feedbackAtual) && (int) $feedbackAtual['id_pergunta'] === (int) $idPergunta) {
             if ($this->querJson()) {
-                // Idempotente: devolve o feedback já registrado em vez de erro
-                // — o app pode chamar isso de novo num refresh/retry sem que
-                // isso seja de fato um problema.
+              
                 return $this->response->setJSON(['feedback' => $feedbackAtual]);
             }
             return redirect()->to('/quiz/pergunta');
         }
 
-        // Registra no banco
         (new RespondeModel())->registrar($cpf, $idAlternativa);
 
-        // Verifica acerto usando IS_CORRETA (coluna correta do banco)
         $alternativaModel = new AlternativaModel();
         $alternativa      = $alternativaModel->find($idAlternativa);
         $acertou          = $alternativa && (int) $alternativa['IS_CORRETA'] === 1;
@@ -236,19 +208,13 @@ class QuizController extends BaseController
             session()->set('quiz_acertos', session()->get('quiz_acertos') + 1);
         }
 
-        // Busca a alternativa correta da pergunta para exibir no feedback
         $correta = $alternativaModel
             ->where('FK_ID_PERGUNTA', $idPergunta)
             ->where('IS_CORRETA', 1)
             ->first();
 
         $feedback = [
-            // CORRIGIDO (bug relatado: "'33': type 'String' is not a
-            // subtype of type 'int?'"): correta_id vinha direto de
-            // $correta['ID_ALTERNATIVA'] — resultado cru de first(), sem
-            // conversão — o mesmo tipo de problema já corrigido em
-            // PerguntaModel::buscarComAlternativas, só que aqui. id_pergunta
-            // convertido também, por precaução (vem da sessão).
+           
             'id_pergunta' => (int) $idPergunta,
             'escolhida'   => $idAlternativa,
             'correta_id'  => isset($correta['ID_ALTERNATIVA']) ? (int) $correta['ID_ALTERNATIVA'] : null,
@@ -261,8 +227,7 @@ class QuizController extends BaseController
             return $this->response->setJSON(['feedback' => $feedback]);
         }
 
-        // Permanece na mesma pergunta para mostrar o feedback;
-        // o avanço para a próxima ocorre em /quiz/avancar
+     
         return redirect()->to('/quiz/pergunta');
     }
 
@@ -279,7 +244,6 @@ class QuizController extends BaseController
         $ids    = session()->get('quiz_ids') ?? [];
         $indice = session()->get('quiz_indice') ?? 0;
 
-        // Só avança se a pergunta atual já tiver feedback registrado
         $feedback = session()->get('quiz_feedback');
         if (!is_array($feedback) || empty($ids) || $indice >= count($ids)
             || (int) $feedback['id_pergunta'] !== (int) $ids[$indice]) {

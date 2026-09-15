@@ -44,18 +44,7 @@ class PerguntaModel extends Model
         $pergunta = $this->find($idPergunta);
 
         if ($pergunta) {
-            // CORRIGIDO — bug relatado pelo usuário testando o app:
-            // "TypeError: '53': type 'String' is not a subtype of type
-            // 'int'" na tela de Quiz.
-            //
-            // Causa raiz: o driver do banco (MySQLi) devolve colunas
-            // numéricas como STRING em PHP (ex.: '53' em vez de 53) a
-            // menos que sejam convertidas explicitamente. Sem essa
-            // conversão, o JSON saía com "ID_ALTERNATIVA": "53" (texto)
-            // em vez de "ID_ALTERNATIVA": 53 (número) — e questoes.dart
-            // (Flutter) faz um cast direto pra int
-            // (alt['ID_ALTERNATIVA'] as int), que quebra ao receber uma
-            // string em vez de um número.
+           
             $pergunta['ID_PERGUNTA'] = (int) $pergunta['ID_PERGUNTA'];
 
             $alternativas = $this->db->table('ALTERNATIVA')
@@ -85,7 +74,6 @@ class PerguntaModel extends Model
         $perguntas = $this->findAll();
 
         foreach ($perguntas as &$p) {
-            // Mesma correção de tipos de buscarComAlternativas() acima.
             $p['ID_PERGUNTA'] = (int) $p['ID_PERGUNTA'];
 
             $alternativas = $this->db->table('ALTERNATIVA')

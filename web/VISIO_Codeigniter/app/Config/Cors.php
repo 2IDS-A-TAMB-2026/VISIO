@@ -31,14 +31,14 @@ class Cors extends BaseConfig
          * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
          *
          * E.g.:
-         *   - ['http://localhost:8080']
+         *   - ['http://10.141.130.113:8080']
          *   - ['https://www.example.com']
          */
         // Origem real do Flutter Web, confirmada pelo comando usado para
-        // rodar o app: `flutter run -d web-server --web-hostname localhost
+        // rodar o app: `flutter run -d web-server --web-hostname 10.141.130.113
         // --web-port 5000`. Mesmo host do backend, porta diferente — ainda
         // conta como cross-origin para o navegador (origem = esquema+host+porta).
-        'allowedOrigins' => ['http://localhost:5000'],
+        'allowedOrigins' => ['http://10.141.130.113:5000'],
 
         /**
          * Origin regex patterns for the `Access-Control-Allow-Origin` header.
