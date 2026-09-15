@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../appcolor.dart';
 
-/// Aviso visível de que a tela em questão não está de fato validando dados
-/// contra nenhum backend — usado nas telas de login enquanto
-/// [AuthService.isDemoMode] for true. Ver `services/auth_service.dart`.
 class DemoModeBanner extends StatelessWidget {
   final String mensagem;
 

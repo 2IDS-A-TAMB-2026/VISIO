@@ -295,44 +295,37 @@ INSERT INTO ALTERNATIVA (DESCRICAO, IS_CORRETA, FK_ID_PERGUNTA) VALUES
 ('Um tipo de sensor analógico',0,30);
 
 -- ===== USUARIO  =====
--- CORRIGIDO: o INSERT original não incluía a coluna CARTAO na lista de
--- colunas, então TODAS as linhas caíam no valor padrão da coluna
--- (''). Como CARTAO é UNIQUE, a segunda linha já falhava com
--- "Duplicate entry '' for key 'usuario.CARTAO'" — mesmo bug de
--- espírito do que foi corrigido em UsuarioController::cadastrar()
--- (placeholder único por usuário até um admin associar o UID real de
--- um cartão físico).
-INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE, FOTO) VALUES
-('123.456.789-01','Pedro Henrique Alves','user1@email.com','$2b$10$ygfUJ3b3ezvzVGcRgCT7OuVZUqcdVuPjSfQB0M8AQUqvbf.4.gqba','0000000000000001','1998-03-12','(11) 98765-1231',''),
-('123.456.789-02','Mariana Souza Costa','user2@email.com','$2b$10$AEQR0We9OvzgeC/8jPaviuoAcT86uGegEqasnCUK3yll.kVxwDkSq','0000000000000002','1995-07-25','(11) 98765-1232',''),
-('123.456.789-03','João Vitor Pereira','user3@email.com','$2b$10$N3Aalag.5RBVgucKxJIuNOYK9gcoJnnRoUarcnCHvnw4yYnYdO4Si','0000000000000003','2000-11-09','(11) 98765-1233',''),
-('123.456.789-04','Carla Beatriz Lima','user4@email.com','$2b$10$1JpCs.EPg4m9h9Hgfc.XUOnXPe7QKRmeip1zS67XQuts3h8oQgxHu','0000000000000004','1997-01-17','(11) 98765-1234',''),
-('123.456.789-05','Gustavo Henrique Rocha','user5@email.com','$2b$10$IRC7dOO6Pa89G5H.MJZd6eAfystDKRJEUvcNguCcif3SlsWunHrvm','0000000000000005','1999-06-30','(11) 98765-1235',''),
-('123.456.789-06','Amanda Cristina Silva','user6@email.com','$2b$10$nU8OE9K0swmly.EQ7o8CkehPH14B52jTyVriFMzMn3XIaIvDiHv0K','0000000000000006','1996-09-14','(11) 98765-1236',''),
-('123.456.789-07','Eduardo Santos Barros','user7@email.com','$2b$10$WYO0ELrEVqMoq1wbi7XfGO7mUiUHoQGt0uBltQwQ2.55Jx7syCKYq','0000000000000007','2001-12-22','(11) 98765-1237',''),
-('123.456.789-08','Bianca Oliveira Reis','user8@email.com','$2b$10$UafH2zKBfkpXxFZw8eafm.PlPJT1Jrtupb2q/K2KauimsfvkaCnsK','0000000000000008','1994-05-05','(11) 98765-1238',''),
-('123.456.789-09','Rafael Augusto Dias','user9@email.com','$2b$10$.VJWTAWV65FrRDVAqdJ5TuNx24Pgb6FjIorSGUGjl8Suhzwhv9gSK','0000000000000009','1998-08-18','(11) 98765-1239',''),
-('123.456.789-10','Letícia Fernandes Cruz','user10@email.com','$2b$10$sRmndqtp5jYSbMOnSjx7TusFOmVuq.ypqE5o5BBWFrb6bQ7Jzdb8y','0000000000000010','2002-02-27','(11) 98765-1240',''),
-('123.456.789-00','Vinícius Almeida Teixeira','user11@email.com','$2b$10$VX7d6hyIQAfHBOE3IUHLP.faE0oUPgKq/xRaHmZgsviQy.8pdnqmq','0000000000000011','1990-03-12','(11) 99876-5432',''),
-('987.654.321-00','Camila Rodrigues Nunes','user12@email.com','$2b$10$hSSTLdOsD/dZTRHwAE7TXOu9BuZ9ZmkTme7z8dC/go5zLt01FaypC','0000000000000012','1990-03-12','(12) 98765-4321',''),
-('111.222.333-44','Felipe Martins Araújo','user13@email.com','$2b$10$JL/yxtoEI43ti.NMGQftxetayna3N5Zcc5a4DuMtJSLNhdTgYP4pK','0000000000000013','1992-11-08','(13) 97654-3210',''),
-('222.333.444-55','Daniela Carvalho Pinto','user14@email.com','$2b$10$kFrx2Yi.5ty62eQZCpWfPuUvpmsHTLpbvBCzA71QY4mOwBUnqFJ7.','0000000000000014','1978-01-30','(14) 96543-2109',''),
-('333.444.555-66','Matheus Cardoso Farias','user15@email.com','$2b$10$qwzG/yUm8/LfAvn6sPkaYe4wvfPqZjhCYPqr.2A8.u96IdrYKs6EW','0000000000000015','2000-09-14','(15) 95432-1098',''),
-('444.555.666-77','Larissa Gomes Moura','user16@email.com','$2b$10$wF4sinWaoQ9vAx9nizvdbevWTbbL4NHRUmWS/U94LILlBjlkWy8/W','0000000000000016','1995-05-22','(16) 94321-0987',''),
-('555.666.777-88','Bruno Cesar Ribeiro','user17@email.com','$2b$10$7/sMzgyVc8SVIx0CD5zkmez9TbnShJ8Negghpj07PABaCVEMoRBGq','0000000000000017','1988-12-03','(17) 93210-9876',''),
-('666.777.888-99','Tatiane Andrade Lopes','user18@email.com','$2b$10$/85nQQKbQPewcTZkyt0v3u4savVIF8XdH1bXCAqa4mi9RbWt.jvY6','0000000000000018','1993-06-17','(18) 92109-8765',''),
-('777.888.999-00','Diego Souza Tavares','user19@email.com','$2b$10$ICQm1hjTEVJSzRYc8GfiMexDeS2yLHRcsaFUX4CSt7bfsBefuSDeO','0000000000000019','1980-04-09','(19) 91098-7654',''),
-('888.999.000-11','Aline Pereira Cavalcante','user20@email.com','$2b$10$mDaZ6dokJfk7o3Z.q2Nhu.hwpFtuq2Zwbifgf/mZ/6KWgVBHqDfP2','0000000000000020','2002-08-28','(21) 99911-2233',''),
-('101.202.303-44','Renato Marques Duarte','user21@email.com','$2b$10$7WSLuGhPTy7KpdQufQ/xce3WC.PXTGD2Gx0kV9o9Y6kCZirxeoLR.','0000000000000021','1998-02-11','(22) 98822-3344',''),
-('202.303.404-55','Fernanda Lima Batista','user22@email.com','$2b$10$F6xdvZoyuU/d7XaJkp5G0uZugYYdTQdPEK0Iw9hutgvfUqfbT0X8a','0000000000000022','1983-10-05','(24) 97733-4455',''),
-('303.404.505-66','Lucas Gabriel Freitas','user23@email.com','$2b$10$VUcOizaaPAwEblC8.HRBvOpETOGSjz79gTaMDDQjU7scrK1wRrS4.','0000000000000023','1991-07-19','(37) 98921-2233',''),
-('404.505.606-77','Patrícia Nascimento Moreira','user24@email.com','$2b$10$cDzTVW98pgqVWyYqf1S9YuZOMRreK6NKgktKWXLxpO6IMWCva.aze','0000000000000024','1975-03-23','(35) 90010-1122',''),
-('505.606.707-88','Igor Castro Cunha','user25@email.com','$2b$10$mS5qSK13WnRyaD6WtWpPSeBE5fPZBlwxHjt/aq.vQsmBGOpkq6wFC','0000000000000025','2001-11-07','(33) 92288-9900',''),
-('606.707.808-99','Vanessa Ramos Correia','user26@email.com','$2b$10$52u9EaYLX.l2HEhds8Gd9OfvAHzXMCh8pkXFde31KxTKXCnsv4WVy','0000000000000026','1987-01-16','(31) 94466-7788',''),
-('707.808.909-00','Henrique Vieira Macedo','user27@email.com','$2b$10$/KOPM.WeEz1Ucy9QTDUSWeKUp4yo4BpDiXc02pff4hmjKbaTbiziy','0000000000000027','1996-09-29','(28) 95555-6677',''),
-('808.909.010-11','Juliana Cunha Pacheco','user28@email.com','$2b$10$IXBZxF.zuJMsnI7QyPA7sOZOsmk024GfIdm4wG7Sq8N6UuhbSrfOe','0000000000000028','1982-06-04','(27) 96644-5566',''),
-('909.010.121-22','Marcelo Borges Monteiro','user29@email.com','$2b$10$VkvrCIDArk62ZRSR.w.QGu6BfXaXeFlUwS9SeELvnRvRXyEqUyeHS','0000000000000029','1999-12-21','(34) 91199-0011',''),
-('010.121.232-33','Sabrina Nogueira Campos','user30@email.com','$2b$10$7Zar8Ht6MFeXZauDAxFIjO59IveLjoXihDNVTpIcy2/HgXJl5hgwm','0000000000000030','1994-08-10','(32) 93377-8899','');
+INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, DATA_NASCIMENTO, TELEFONE, FOTO) VALUES
+('123.456.789-01','Pedro Henrique Alves','user1@email.com','$2b$10$ygfUJ3b3ezvzVGcRgCT7OuVZUqcdVuPjSfQB0M8AQUqvbf.4.gqba','1998-03-12','(11) 98765-1231',''),
+('123.456.789-02','Mariana Souza Costa','user2@email.com','$2b$10$AEQR0We9OvzgeC/8jPaviuoAcT86uGegEqasnCUK3yll.kVxwDkSq','1995-07-25','(11) 98765-1232',''),
+('123.456.789-03','João Vitor Pereira','user3@email.com','$2b$10$N3Aalag.5RBVgucKxJIuNOYK9gcoJnnRoUarcnCHvnw4yYnYdO4Si','2000-11-09','(11) 98765-1233',''),
+('123.456.789-04','Carla Beatriz Lima','user4@email.com','$2b$10$1JpCs.EPg4m9h9Hgfc.XUOnXPe7QKRmeip1zS67XQuts3h8oQgxHu','1997-01-17','(11) 98765-1234',''),
+('123.456.789-05','Gustavo Henrique Rocha','user5@email.com','$2b$10$IRC7dOO6Pa89G5H.MJZd6eAfystDKRJEUvcNguCcif3SlsWunHrvm','1999-06-30','(11) 98765-1235',''),
+('123.456.789-06','Amanda Cristina Silva','user6@email.com','$2b$10$nU8OE9K0swmly.EQ7o8CkehPH14B52jTyVriFMzMn3XIaIvDiHv0K','1996-09-14','(11) 98765-1236',''),
+('123.456.789-07','Eduardo Santos Barros','user7@email.com','$2b$10$WYO0ELrEVqMoq1wbi7XfGO7mUiUHoQGt0uBltQwQ2.55Jx7syCKYq','2001-12-22','(11) 98765-1237',''),
+('123.456.789-08','Bianca Oliveira Reis','user8@email.com','$2b$10$UafH2zKBfkpXxFZw8eafm.PlPJT1Jrtupb2q/K2KauimsfvkaCnsK','1994-05-05','(11) 98765-1238',''),
+('123.456.789-09','Rafael Augusto Dias','user9@email.com','$2b$10$.VJWTAWV65FrRDVAqdJ5TuNx24Pgb6FjIorSGUGjl8Suhzwhv9gSK','1998-08-18','(11) 98765-1239',''),
+('123.456.789-10','Letícia Fernandes Cruz','user10@email.com','$2b$10$sRmndqtp5jYSbMOnSjx7TusFOmVuq.ypqE5o5BBWFrb6bQ7Jzdb8y','2002-02-27','(11) 98765-1240',''),
+('123.456.789-00','Vinícius Almeida Teixeira','user11@email.com','$2b$10$VX7d6hyIQAfHBOE3IUHLP.faE0oUPgKq/xRaHmZgsviQy.8pdnqmq','1990-03-12','(11) 99876-5432',''),
+('987.654.321-00','Camila Rodrigues Nunes','user12@email.com','$2b$10$hSSTLdOsD/dZTRHwAE7TXOu9BuZ9ZmkTme7z8dC/go5zLt01FaypC','1990-03-12','(12) 98765-4321',''),
+('111.222.333-44','Felipe Martins Araújo','user13@email.com','$2b$10$JL/yxtoEI43ti.NMGQftxetayna3N5Zcc5a4DuMtJSLNhdTgYP4pK','1992-11-08','(13) 97654-3210',''),
+('222.333.444-55','Daniela Carvalho Pinto','user14@email.com','$2b$10$kFrx2Yi.5ty62eQZCpWfPuUvpmsHTLpbvBCzA71QY4mOwBUnqFJ7.','1978-01-30','(14) 96543-2109',''),
+('333.444.555-66','Matheus Cardoso Farias','user15@email.com','$2b$10$qwzG/yUm8/LfAvn6sPkaYe4wvfPqZjhCYPqr.2A8.u96IdrYKs6EW','2000-09-14','(15) 95432-1098',''),
+('444.555.666-77','Larissa Gomes Moura','user16@email.com','$2b$10$wF4sinWaoQ9vAx9nizvdbevWTbbL4NHRUmWS/U94LILlBjlkWy8/W','1995-05-22','(16) 94321-0987',''),
+('555.666.777-88','Bruno Cesar Ribeiro','user17@email.com','$2b$10$7/sMzgyVc8SVIx0CD5zkmez9TbnShJ8Negghpj07PABaCVEMoRBGq','1988-12-03','(17) 93210-9876',''),
+('666.777.888-99','Tatiane Andrade Lopes','user18@email.com','$2b$10$/85nQQKbQPewcTZkyt0v3u4savVIF8XdH1bXCAqa4mi9RbWt.jvY6','1993-06-17','(18) 92109-8765',''),
+('777.888.999-00','Diego Souza Tavares','user19@email.com','$2b$10$ICQm1hjTEVJSzRYc8GfiMexDeS2yLHRcsaFUX4CSt7bfsBefuSDeO','1980-04-09','(19) 91098-7654',''),
+('888.999.000-11','Aline Pereira Cavalcante','user20@email.com','$2b$10$mDaZ6dokJfk7o3Z.q2Nhu.hwpFtuq2Zwbifgf/mZ/6KWgVBHqDfP2','2002-08-28','(21) 99911-2233',''),
+('101.202.303-44','Renato Marques Duarte','user21@email.com','$2b$10$7WSLuGhPTy7KpdQufQ/xce3WC.PXTGD2Gx0kV9o9Y6kCZirxeoLR.','1998-02-11','(22) 98822-3344',''),
+('202.303.404-55','Fernanda Lima Batista','user22@email.com','$2b$10$F6xdvZoyuU/d7XaJkp5G0uZugYYdTQdPEK0Iw9hutgvfUqfbT0X8a','1983-10-05','(24) 97733-4455',''),
+('303.404.505-66','Lucas Gabriel Freitas','user23@email.com','$2b$10$VUcOizaaPAwEblC8.HRBvOpETOGSjz79gTaMDDQjU7scrK1wRrS4.','1991-07-19','(37) 98921-2233',''),
+('404.505.606-77','Patrícia Nascimento Moreira','user24@email.com','$2b$10$cDzTVW98pgqVWyYqf1S9YuZOMRreK6NKgktKWXLxpO6IMWCva.aze','1975-03-23','(35) 90010-1122',''),
+('505.606.707-88','Igor Castro Cunha','user25@email.com','$2b$10$mS5qSK13WnRyaD6WtWpPSeBE5fPZBlwxHjt/aq.vQsmBGOpkq6wFC','2001-11-07','(33) 92288-9900',''),
+('606.707.808-99','Vanessa Ramos Correia','user26@email.com','$2b$10$52u9EaYLX.l2HEhds8Gd9OfvAHzXMCh8pkXFde31KxTKXCnsv4WVy','1987-01-16','(31) 94466-7788',''),
+('707.808.909-00','Henrique Vieira Macedo','user27@email.com','$2b$10$/KOPM.WeEz1Ucy9QTDUSWeKUp4yo4BpDiXc02pff4hmjKbaTbiziy','1996-09-29','(28) 95555-6677',''),
+('808.909.010-11','Juliana Cunha Pacheco','user28@email.com','$2b$10$IXBZxF.zuJMsnI7QyPA7sOZOsmk024GfIdm4wG7Sq8N6UuhbSrfOe','1982-06-04','(27) 96644-5566',''),
+('909.010.121-22','Marcelo Borges Monteiro','user29@email.com','$2b$10$VkvrCIDArk62ZRSR.w.QGu6BfXaXeFlUwS9SeELvnRvRXyEqUyeHS','1999-12-21','(34) 91199-0011',''),
+('010.121.232-33','Sabrina Nogueira Campos','user30@email.com','$2b$10$7Zar8Ht6MFeXZauDAxFIjO59IveLjoXihDNVTpIcy2/HgXJl5hgwm','1994-08-10','(32) 93377-8899','');
 
 -- ===== RESPONDE  =====
 INSERT INTO RESPONDE (FK_CPF_USUARIO, FK_ID_ALTERNATIVA) VALUES

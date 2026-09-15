@@ -24,17 +24,26 @@ class APIQuizController extends ResourceController
         }
 
         foreach ($perguntas as &$pergunta) {
+            // PREVENTIVO: mesma causa raiz do bug relatado no Quiz (ver
+            // PerguntaModel::buscarComAlternativas) — faltava aqui também.
+            $pergunta['ID_PERGUNTA'] = (int) $pergunta['ID_PERGUNTA'];
+
             // Busca usando as colunas reais do Model/Banco
             $alternativas = $alternativaModel
                 ->where('FK_ID_PERGUNTA', $pergunta['ID_PERGUNTA'])
                 ->findAll();
 
-            // Mapeia para padronizar a resposta da API
+            // ENCONTRADO NA AUDITORIA: este endpoint devolvia IS_CORRETA
+            // junto de cada alternativa, ou seja, a resposta certa ficava
+            // visível no JSON antes de o usuário responder. QuizController
+            // ::pergunta() (fluxo web) já tinha sido corrigido para remover
+            // isso, com um comentário explicando exatamente esse motivo —
+            // a mesma correção nunca tinha chegado a este endpoint, que é
+            // o usado por requisições JSON (app/Flutter).
             $pergunta['alternativas'] = array_map(function ($alt) {
                 return [
                     'ID_ALTERNATIVA' => (int) $alt['ID_ALTERNATIVA'],
                     'DESCRICAO'      => $alt['DESCRICAO'],
-                    'IS_CORRETA'     => (int) $alt['IS_CORRETA']
                 ];
             }, $alternativas);
         }
@@ -64,11 +73,12 @@ class APIQuizController extends ResourceController
             ->where('FK_ID_PERGUNTA', $id)
             ->findAll();
 
+        // Mesmo motivo de perguntas() acima: não expor a resposta certa
+        // antes de o usuário responder.
         $pergunta['alternativas'] = array_map(function ($alt) {
             return [
                 'ID_ALTERNATIVA' => (int) $alt['ID_ALTERNATIVA'],
                 'DESCRICAO'      => $alt['DESCRICAO'],
-                'IS_CORRETA'     => (int) $alt['IS_CORRETA']
             ];
         }, $alternativas);
 
@@ -81,17 +91,44 @@ class APIQuizController extends ResourceController
     }
 
     // POST /api/quiz/responder
+    //
+    // ENCONTRADO NA AUDITORIA (não estava na lista de erros, mas é grave):
+    // esta rota gravava a resposta com as chaves ID_USUARIO, ID_PERGUNTA e
+    // ACERTOU. Nenhuma delas existe na tabela RESPONDE nem em
+    // RespondeModel::$allowedFields (que só permite FK_CPF_USUARIO e
+    // FK_ID_ALTERNATIVA) — o Model do CodeIgniter descarta silenciosamente
+    // qualquer chave fora de $allowedFields por proteção contra mass
+    // assignment, então o insert() tentava gravar sem FK_CPF_USUARIO nem
+    // FK_ID_ALTERNATIVA (ambas NOT NULL, sem default) e falhava sempre —
+    // enquanto a resposta HTTP dizia "sucesso" de qualquer forma, porque o
+    // retorno de insert() nunca era conferido. Ou seja: toda resposta de
+    // quiz enviada por este endpoint (o usado pelo app/API, diferente do
+    // fluxo web em QuizController) parecia funcionar mas nunca era
+    // realmente salva. Isso é um candidato forte para o erro 5 (site
+    // travando), se for este o caminho que o Flutter usa para responder.
+    //
+    // Também corrigido: a identidade do usuário agora vem da sessão PHP
+    // (session()->get('usuario_cpf')), no mesmo padrão já usado em
+    // UsuarioController::perfil()/atualizarPerfil() — antes vinha de
+    // ID_USUARIO enviado livremente pelo cliente no corpo da requisição,
+    // ou seja, qualquer chamada podia registrar uma resposta em nome de
+    // qualquer usuário só informando outro ID.
     public function responder()
     {
+        $cpf = session()->get('usuario_cpf');
+
+        if (empty($cpf)) {
+            return $this->failUnauthorized('Usuário não autenticado.');
+        }
+
         $json = $this->request->getJSON(true) ?? $this->request->getPost();
 
-        $idUsuario     = $json['ID_USUARIO'] ?? $json['id_usuario'] ?? null;
         $idPergunta    = $json['ID_PERGUNTA'] ?? $json['id_pergunta'] ?? null;
         $idAlternativa = $json['ID_ALTERNATIVA'] ?? $json['id_alternativa'] ?? null;
 
-        if (!$idUsuario || !$idPergunta || !$idAlternativa) {
+        if (!$idPergunta || !$idAlternativa) {
             return $this->failValidationErrors([
-                'mensagem' => 'Os campos ID_USUARIO, ID_PERGUNTA e ID_ALTERNATIVA são obrigatórios.'
+                'mensagem' => 'Os campos ID_PERGUNTA e ID_ALTERNATIVA são obrigatórios.'
             ]);
         }
 
@@ -113,14 +150,9 @@ class APIQuizController extends ResourceController
 
         $acertou = ((int)$alternativaEscolhida['IS_CORRETA'] === 1);
 
-        $dadosResposta = [
-            'ID_USUARIO'     => $idUsuario,
-            'ID_PERGUNTA'    => $idPergunta,
-            'ID_ALTERNATIVA' => $idAlternativa,
-            'ACERTOU'        => $acertou ? 1 : 0
-        ];
-
-        $respondeModel->insert($dadosResposta);
+        if (!$respondeModel->registrar($cpf, (int) $idAlternativa)) {
+            return $this->failServerError('Não foi possível registrar a resposta.');
+        }
 
         return $this->respond([
             'status'   => 200,
@@ -131,7 +163,7 @@ class APIQuizController extends ResourceController
                 'escolhida'   => (int)$idAlternativa,
                 'correta_id'  => $alternativaCorreta ? (int)$alternativaCorreta['ID_ALTERNATIVA'] : null,
                 'id_pergunta' => (int)$idPergunta,
-                'id_usuario'  => (int)$idUsuario
+                'cpf'         => $cpf
             ]
         ], 200);
     }

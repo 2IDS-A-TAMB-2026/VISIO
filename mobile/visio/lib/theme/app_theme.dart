@@ -2,23 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../appcolor.dart';
 
-/// Centraliza a definição de todos os temas da aplicação (claro e escuro).
-///
-/// Antes desta refatoração, o `ThemeData` era construído diretamente dentro
-/// de `MyApp`, contemplando apenas a variação escura. Ao mover essa
-/// construção para esta classe foi possível adicionar o tema claro e
-/// alternar entre os dois em um único lugar (veja [ThemeController]), sem
-/// exigir nenhuma alteração nas telas que já utilizam `Theme.of(context)`
-/// ou os componentes padrão do Flutter (AppBar, ElevatedButton, Card,
-/// SnackBar, etc.) — eles passam a responder à troca de tema
-/// automaticamente.
-///
-/// Observação importante: widgets que usam cores fixas de [AppColors]
-/// diretamente (ex.: `AppColors.bgCardAlt`) em vez de `Theme.of(context)`
-/// não mudam de cor ao trocar de tema, pois essas constantes não dependem
-/// do brightness atual. Isso é esperado e não é alterado por este arquivo;
-/// para que uma tela específica siga o tema, ela deve ler as cores via
-/// `Theme.of(context).colorScheme` (como fizemos em [AccessibilityPanel]).
 class AppTheme {
   AppTheme._();
 

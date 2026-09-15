@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
+import 'services/api_client.dart';
 
-/// NÃO INTEGRADO DE PROPÓSITO: ao contrário das outras telas, este
-/// formulário de contato não tem NENHUM endpoint correspondente no backend
-/// CodeIgniter (não existe ContatoController nem rota "/contato" — só
-/// SobreController, que é uma página estática). Como a tarefa era deixar o
-/// app "igual ao site", e o site não tem esse recurso, mantivemos a
-/// simulação local em vez de inventar um endpoint nos dois projetos.
+
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
 
@@ -25,11 +21,31 @@ class _ContactPageState extends State<ContactPage> {
   Future<void> _enviar() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 1000));
-    setState(() {
-      _loading = false;
-      _enviado = true;
-    });
+
+    try {
+      await ApiClient.postForm('contato/enviar', {
+        'nome': nomeCtrl.text.trim(),
+        'email': emailCtrl.text.trim(),
+        'mensagem': msgCtrl.text.trim(),
+      });
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _enviado = true;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.mensagem)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro de conexão com o servidor.')),
+      );
+    }
   }
 
   @override
@@ -68,7 +84,6 @@ class _ContactPageState extends State<ContactPage> {
         ),
         const SizedBox(height: 24),
 
-        // Info cards
         Row(
           children: [
             Expanded(

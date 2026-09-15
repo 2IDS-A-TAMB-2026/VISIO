@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../controllers/font_scale_controller.dart';
 import '../controllers/theme_controller.dart';
+import '../services/tts_service.dart';
 
 
 class AccessibilityPanel extends StatefulWidget {
@@ -19,19 +20,12 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
   Widget build(BuildContext context) {
     final fontScale = context.watch<FontScaleController>();
     final theme = context.watch<ThemeController>();
+    final tts = context.watch<TtsService>();
 
     return Positioned(
       right: 12,
       bottom: 12,
-      // ConstrainedBox é essencial aqui: um Positioned com apenas `right`
-      // (sem `left`/`width`) dá ao filho uma largura NÃO limitada
-      // (infinita). Isso é inofensivo para o botão fechado (pequeno), mas
-      // quebra o painel expandido: a Column interna usa
-      // `CrossAxisAlignment.stretch`, que tenta esticar até a largura
-      // máxima disponível — que seria infinita. Isso gera uma caixa de
-      // tamanho inválido que não é pintada (por isso "some") mas continua
-      // recebendo toques em toda a tela (por isso trava os cliques). Ao
-      // limitar maxWidth aqui, o stretch passa a ter um limite real.
+     
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 260),
         child: SafeArea(
@@ -40,7 +34,7 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
             curve: Curves.easeOut,
             alignment: Alignment.bottomRight,
             child: _expanded
-                ? _buildExpanded(context, fontScale, theme)
+                ? _buildExpanded(context, fontScale, theme, tts)
                 : _buildCollapsed(context),
           ),
         ),
@@ -63,6 +57,7 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
     BuildContext context,
     FontScaleController fontScale,
     ThemeController theme,
+    TtsService tts,
   ) {
     return _panelSurface(
       context,
@@ -118,6 +113,17 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
                 Switch(
                   value: theme.isDarkMode,
                   onChanged: (_) => theme.toggleTheme(),
+                ),
+              ],
+            ),
+           
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Modo fala', style: TextStyle(fontSize: 13)),
+                Switch(
+                  value: tts.enabled,
+                  onChanged: (valor) => TtsService.instance.setEnabled(valor),
                 ),
               ],
             ),

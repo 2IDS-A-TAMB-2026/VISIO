@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import 'appcolor.dart';
-import 'historico.dart';
 import 'login.dart';
 import 'services/api_client.dart';
 import 'services/api_config.dart';
@@ -22,7 +21,6 @@ class _PerfilPageState extends State<PerfilPage> {
   final _formKey = GlobalKey<FormState>();
   final _nomeCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
-  final _cartaoCtrl = TextEditingController();
   final _dataNascCtrl = TextEditingController();
   final _telefoneCtrl = TextEditingController();
   final _senhaCtrl = TextEditingController();
@@ -32,10 +30,6 @@ class _PerfilPageState extends State<PerfilPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  final _cartaoMask = MaskTextInputFormatter(
-    mask: '#### #### #### ####',
-    filter: {"#": RegExp(r'[0-9]')},
-  );
 
   final _dataMask = MaskTextInputFormatter(
     mask: '##/##/####',
@@ -47,15 +41,16 @@ class _PerfilPageState extends State<PerfilPage> {
   XFile? _novaFoto;
   Uint8List? _novaFotoBytes;
   String? _fotoAtualPath;
+  bool _fotoFalhouAoCarregar = false;
 
   bool _carregando = true;
   bool _salvando = false;
   bool _obscureSenha = true;
   String? _erroCarregar;
 
-  final int _total = 0;
-  final int _acertos = 0;
-  final int _percentual = 0;
+  int _total = 0;
+  int _acertos = 0;
+  int _percentual = 0;
 
   @override
   void initState() {
@@ -84,17 +79,21 @@ class _PerfilPageState extends State<PerfilPage> {
 
       _nomeCtrl.text = usuario['NOME']?.toString() ?? '';
       _emailCtrl.text = usuario['EMAIL']?.toString() ?? '';
-      _cartaoCtrl.text = usuario['CARTAO']?.toString() ?? '';
       _telefoneCtrl.text = usuario['TELEFONE']?.toString() ?? '';
 
       _dataNascCtrl.text =
           _isoParaBr(usuario['DATA_NASCIMENTO']?.toString()) ?? '';
 
       _fotoAtualPath = usuario['FOTO']?.toString() ?? '';
+      _fotoFalhouAoCarregar = false;
 
       if (!mounted) return;
 
       setState(() {
+       
+        _total = (usuario['TOTAL'] as num?)?.toInt() ?? 0;
+        _acertos = (usuario['ACERTOS'] as num?)?.toInt() ?? 0;
+        _percentual = (usuario['PERCENTUAL'] as num?)?.toInt() ?? 0;
         _carregando = false;
       });
     } on ApiException catch (e) {
@@ -150,7 +149,6 @@ class _PerfilPageState extends State<PerfilPage> {
     final campos = <String, String>{
       'nome': _nomeCtrl.text.trim(),
       'email': _emailCtrl.text.trim(),
-      'cartao': _cartaoCtrl.text.trim(),
       'data_nascimento': dataIso ?? '',
       'telefone': _telefoneCtrl.text.trim(),
     };
@@ -166,7 +164,6 @@ class _PerfilPageState extends State<PerfilPage> {
 
       if (!mounted) return;
 
-      // O backend retorna o usuário diretamente.
       final usuarioAtualizado = resposta;
 
       setState(() {
@@ -176,6 +173,7 @@ class _PerfilPageState extends State<PerfilPage> {
         _novaFotoBytes = null;
 
         _fotoAtualPath = usuarioAtualizado['FOTO']?.toString();
+        _fotoFalhouAoCarregar = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -383,17 +381,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
             const SizedBox(height: 14),
 
-            TextFormField(
-              controller: _cartaoCtrl,
-              inputFormatters: [_cartaoMask],
-              decoration: const InputDecoration(
-                labelText: 'Cartão IoT (opcional)',
-                prefixIcon: Icon(Icons.credit_card_outlined, size: 20),
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
+          
             TextFormField(
               controller: _senhaCtrl,
               obscureText: _obscureSenha,
@@ -436,20 +424,7 @@ class _PerfilPageState extends State<PerfilPage> {
                       child: const Text('Salvar alterações'),
                     ),
             ),
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HistoricoPage()),
-                ),
-                icon: const Icon(Icons.history, size: 18),
-                label: const Text('Ver histórico de respostas'),
-              ),
-            ),
+          
           ],
         ),
       ),
@@ -461,8 +436,14 @@ class _PerfilPageState extends State<PerfilPage> {
 
     if (_novaFotoBytes != null) {
       imagem = MemoryImage(_novaFotoBytes!);
-    } else if (_fotoAtualPath != null && _fotoAtualPath!.isNotEmpty) {
-      imagem = NetworkImage('${ApiConfig.baseUrl}/$_fotoAtualPath');
+    } else if (!_fotoFalhouAoCarregar) {
+     
+      final urlResolvida = ApiConfig.resolverUrlImagem(_fotoAtualPath);
+      if (urlResolvida != null) {
+        imagem = urlResolvida.startsWith('assets/')
+            ? AssetImage(urlResolvida)
+            : NetworkImage(urlResolvida);
+      }
     }
 
     return GestureDetector(
@@ -478,7 +459,16 @@ class _PerfilPageState extends State<PerfilPage> {
               color: AppColors.primary.withValues(alpha: 0.15),
               border: Border.all(color: context.borderColor),
               image: imagem != null
-                  ? DecorationImage(image: imagem, fit: BoxFit.cover)
+                  ? DecorationImage(
+                      image: imagem,
+                      fit: BoxFit.cover,
+                   
+                      onError: (exception, stackTrace) {
+                        if (!mounted) return;
+                        if (_fotoFalhouAoCarregar) return;
+                        setState(() => _fotoFalhouAoCarregar = true);
+                      },
+                    )
                   : null,
             ),
             child: imagem == null ? const Icon(Icons.person, size: 40) : null,
@@ -546,7 +536,6 @@ class _PerfilPageState extends State<PerfilPage> {
   void dispose() {
     _nomeCtrl.dispose();
     _emailCtrl.dispose();
-    _cartaoCtrl.dispose();
     _dataNascCtrl.dispose();
     _telefoneCtrl.dispose();
     _senhaCtrl.dispose();

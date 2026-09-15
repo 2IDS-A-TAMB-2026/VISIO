@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:js_interop';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 
 class TeachableMachineService {
   TeachableMachineService._();
@@ -19,6 +19,7 @@ class TeachableMachineService {
       final lista = jsonDecode(jsonTexto) as List;
       return lista.cast<Map<String, dynamic>>();
     } catch (e) {
+      debugPrint('TeachableMachineService.prever() falhou: $e');
       return [];
     }
   }

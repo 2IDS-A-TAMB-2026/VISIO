@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api_config.dart';
 import 'http_client_provider.dart';
 
-/// Resultado de uma tentativa de autenticação.
 class AuthResult {
   final bool sucesso;
   final String? mensagemErro;
@@ -20,18 +19,6 @@ class AuthResult {
       mensagemErro = mensagem;
 }
 
-/// LOGIN DE USUÁRIO COMUM e LOGIN DE ADMINISTRADOR — ambos integrados de
-/// verdade com o backend (`POST /login` e `POST /login/admin`, em
-/// `AuthController::loginUsuario` / `loginAdmin`), que respondem em JSON.
-///
-/// A autenticação do backend é por SESSÃO PHP (cookie `PHPSESSID`), não por
-/// token. Isso é tratado de duas formas diferentes dependendo da
-/// plataforma, via `criarHttpClient()` (ver http_client_provider*.dart):
-///
-/// • Mobile/desktop (`dart:io`): este serviço captura o cookie devolvido no
-///   header `Set-Cookie` da resposta de login e o reenvia manualmente em
-///   toda requisição futura, através de [sessionCookie] / [ApiClient].
-///
 class AuthService extends ChangeNotifier {
   AuthService._();
 
@@ -41,10 +28,8 @@ class AuthService extends ChangeNotifier {
   static const String _chaveTipo = 'visio_session_tipo';
 
   String? _sessionCookie;
-  String? _tipoSessao; // 'usuario' | 'admin' | null
+  String? _tipoSessao; // 'usuario' | null
 
-  /// Deve ser chamado uma vez na inicialização do app (em `main()`, antes
-  /// de `runApp`) para restaurar uma sessão salva de um login anterior.
   Future<void> carregarSessaoSalva() async {
     final prefs = await SharedPreferences.getInstance();
     _sessionCookie = prefs.getString(_chaveCookie);
@@ -52,28 +37,12 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// True se há qualquer sessão ativa (usuário OU admin).
   bool get estaLogado => _sessionCookie != null;
-
-  /// True se a sessão ativa é de um usuário comum.
   bool get estaLogadoComoUsuario => estaLogado && _tipoSessao == 'usuario';
-
-  /// True se a sessão ativa é de um administrador.
   bool get estaLogadoComoAdmin => estaLogado && _tipoSessao == 'admin';
 
-  /// Cookie de sessão salvo (ou null se não houver login ativo). Usado por
-  /// [ApiClient] para anexar automaticamente em toda chamada autenticada.
   String? get sessionCookie => _sessionCookie;
 
-  /// Cabeçalhos prontos para requisições autenticadas manuais. Preferir
-  /// [ApiClient], que já usa isto internamente — mantido público para casos
-  /// específicos fora do ApiClient.
-  ///
-  /// No Web nunca anexa um header Cookie manual: além de não haver um valor
-  /// real capturado (ver [_extrairCookie]), navegadores bloqueiam a escrita
-  /// manual desse header via JavaScript de qualquer forma. O cookie de
-  /// sessão de verdade é gerenciado pelo navegador via credentials
-  /// automáticas (ver [criarHttpClient]).
   Map<String, String> get headersComSessao {
     final headers = <String, String>{'Accept': 'application/json'};
     if (!kIsWeb) {
@@ -92,16 +61,10 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Ver [_extrairCookie]: no Web isto nunca é um cookie de verdade, só um
-  /// marcador local de "há uma sessão de navegador ativa".
   static const String _marcadorSessaoWeb = 'sessao-navegador-web';
 
   String? _extrairCookie(http.Response resposta) {
     if (kIsWeb) {
-      // O navegador nunca expõe Set-Cookie para o JS (ver comentário da
-      // classe). Se chegou aqui é porque o backend respondeu 200 (login
-      // OK), então o cookie real já foi guardado pelo navegador sozinho —
-      // só precisamos de um marcador não-nulo para estaLogado funcionar.
       return _marcadorSessaoWeb;
     }
     final setCookie = resposta.headers['set-cookie'];
@@ -109,10 +72,6 @@ class AuthService extends ChangeNotifier {
     return setCookie.split(';').first;
   }
 
-  /// Encerra a sessão. Tenta avisar o backend (`GET /logout`, que também já
-  /// responde em JSON), mas limpa o estado local de qualquer forma mesmo se
-  /// a chamada de rede falhar — o usuário não deve ficar "preso" logado no
-  /// app só porque a conexão caiu.
   Future<void> logout() async {
     final estavaLogado = _sessionCookie != null;
     if (estavaLogado) {
@@ -123,7 +82,6 @@ class AuthService extends ChangeNotifier {
           headers: headersComSessao,
         );
       } catch (_) {
-        // Sem conexão: segue para limpar o estado local mesmo assim.
       } finally {
         client.close();
       }
@@ -190,10 +148,6 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  /// LOGIN DE ADMINISTRADOR — integrado com `POST /login/admin`
-  /// (`AuthController::loginAdmin`), que responde em JSON. Segue exatamente
-  /// o mesmo padrão de [loginUsuario]: mesma validação de formato, mesma
-  /// captura de cookie/sessão.
   Future<AuthResult> loginAdmin({
     required String email,
     required String senha,

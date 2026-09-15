@@ -717,8 +717,27 @@
                     <div class="chart-card">
  
                         <div class="chart-header">
-                            <h3>Desempenho dos alunos</h3>
-                            <span>Evolução semanal</span>
+                            <div>
+                                <h3>Desempenho dos alunos</h3>
+                                <span id="periodo-desempenho"><?= esc($periodo_semana) ?></span>
+                            </div>
+                            <div class="semana-nav">
+                                <button type="button"
+                                        id="btn-semana-anterior"
+                                        class="btn-semana"
+                                        aria-label="Ver semana anterior"
+                                        onclick="navegarSemana(1)">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button type="button"
+                                        id="btn-semana-proxima"
+                                        class="btn-semana"
+                                        aria-label="Ver semana seguinte"
+                                        onclick="navegarSemana(-1)"
+                                        <?= $semana_atual ? 'disabled' : '' ?>>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
                         </div>
  
                         <canvas id="performanceChart"></canvas>
@@ -801,6 +820,40 @@
         color: var(--text2);
     }
  
+    /* Navegação por semana no card "Desempenho dos alunos" */
+    .semana-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .btn-semana {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+    .btn-semana:hover:not(:disabled) {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+
+    .btn-semana:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
     /* TABELA */
     table {
         width: 100%;
@@ -1022,6 +1075,16 @@
  
         /* ── Instâncias dos gráficos ── */
         let perfChart, questChart, corrChart, wrongChart;
+
+        /* Estado atual do gráfico "Desempenho dos alunos" (labels + percentuais).
+           Fica em variável separada porque criarGraficos() também é chamada
+           ao trocar tema/alto contraste (atualizarCoresGraficos()) - sem isso, trocar
+           de tema depois de navegar de semana faria o gráfico voltar para os dados
+           da semana renderizada originalmente pelo PHP, desfazendo a navegação. */
+        let desempenhoAtual = {
+            labels: <?= json_encode(array_column($desempenho_semanal, 'label')) ?>,
+            percentual: <?= json_encode(array_column($desempenho_semanal, 'percentual')) ?>
+        };
  
         function criarGraficos() {
             const c = getChartColors();
@@ -1029,10 +1092,10 @@
             perfChart = new Chart(document.getElementById('performanceChart'), {
                 type: 'line',
                 data: {
-                    labels: <?= json_encode(array_column($desempenho_semanal, 'label')) ?>,
+                    labels: desempenhoAtual.labels,
                     datasets: [{
                         label: 'Acertos (%)',
-                        data: <?= json_encode(array_column($desempenho_semanal, 'percentual')) ?>,
+                        data: desempenhoAtual.percentual,
                         borderColor: c.line,
                         backgroundColor: c.lineFill,
                         fill: true,
@@ -1110,6 +1173,78 @@
         function atualizarCoresGraficos() {
             [perfChart, questChart, corrChart, wrongChart].forEach(ch => { if (ch) ch.destroy(); });
             criarGraficos();
+        }
+ 
+        /* ── Navegação por semana (gráfico "Desempenho dos alunos") ── */
+        let semanaOffsetAtual = <?= (int) $semana_offset ?>;
+        let controladorSemanaEmVoo = null;
+
+        function atualizarUiNavegacaoSemana(carregando) {
+            const btnAnterior = document.getElementById("btn-semana-anterior");
+            const btnProxima  = document.getElementById("btn-semana-proxima");
+            if (btnAnterior) btnAnterior.disabled = carregando;
+            // A seta "próxima" nunca deve permitir ir além da semana atual (offset 0),
+            // mesmo quando a requisição termina de carregar.
+            if (btnProxima) btnProxima.disabled = carregando || semanaOffsetAtual === 0;
+        }
+
+        function navegarSemana(delta) {
+            const novoOffset = Math.max(0, semanaOffsetAtual + delta);
+
+            // Offset não mudou (ex.: já na semana atual e clicou em "próxima"):
+            // nenhuma requisição precisa ser feita.
+            if (novoOffset === semanaOffsetAtual) return;
+
+            // Cancela qualquer requisição de semana ainda em andamento. Sem isso,
+            // cliques rápidos em sequência poderiam fazer uma resposta mais antiga
+            // (que demorou mais para chegar) sobrescrever por cima de uma resposta mais
+            // nova, mostrando dados da semana errada no gráfico.
+            if (controladorSemanaEmVoo) controladorSemanaEmVoo.abort();
+            controladorSemanaEmVoo = new AbortController();
+
+            atualizarUiNavegacaoSemana(true);
+
+            const url = "<?= base_url('admin/dashboard') ?>?semana=" + novoOffset;
+
+            fetch(url, {
+                headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
+                signal: controladorSemanaEmVoo.signal
+            })
+                .then(resp => {
+                    if (!resp.ok) throw new Error("HTTP " + resp.status);
+                    return resp.json();
+                })
+                .then(dados => {
+                    // Substitui integralmente os dados do gráfico pela resposta da nova
+                    // semana (nunca concatena/soma com o que já estava exibido), evitando
+                    // duplicação ou mistura de dados entre semanas diferentes.
+                    desempenhoAtual = {
+                        labels: dados.desempenho_semanal.map(d => d.label),
+                        percentual: dados.desempenho_semanal.map(d => d.percentual)
+                    };
+                    semanaOffsetAtual = dados.semana_offset;
+
+                    perfChart.data.labels = desempenhoAtual.labels;
+                    perfChart.data.datasets[0].data = desempenhoAtual.percentual;
+                    perfChart.update();
+
+                    const spanPeriodo = document.getElementById("periodo-desempenho");
+                    if (spanPeriodo) spanPeriodo.textContent = dados.periodo_semana;
+
+                    controladorSemanaEmVoo = null;
+                    atualizarUiNavegacaoSemana(false);
+                })
+                .catch(erro => {
+                    // Requisição cancelada de propósito (AbortError) por um clique mais
+                    // recente não é um erro real - a próxima resposta que chegar já
+                    // reabilita os botões normalmente.
+                    if (erro.name === "AbortError") return;
+
+                    console.error("Falha ao navegar entre semanas do gráfico:", erro);
+                    controladorSemanaEmVoo = null;
+                    atualizarUiNavegacaoSemana(false);
+                    alert("Não foi possível carregar os dados desta semana. Tente novamente.");
+                });
         }
  
         /* Observa mudança de classe no body (tema e alto contraste vêm do footer_adm.php) */

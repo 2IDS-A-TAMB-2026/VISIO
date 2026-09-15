@@ -40,7 +40,7 @@ class RespondeModel extends Model
     // ---------------------------------------------------------------
     public function historicoPorUsuario(string $cpf): array
     {
-        return $this->db->table('RESPONDE r')
+        $rows = $this->db->table('RESPONDE r')
             ->select('
                 r.ID_RESPONDE,
                 r.RESPONDIDO_EM,
@@ -55,6 +55,16 @@ class RespondeModel extends Model
             ->orderBy('r.RESPONDIDO_EM', 'DESC')
             ->get()
             ->getResultArray();
+
+        // PREVENTIVO: mesma causa raiz do bug relatado no Quiz (ver
+        // PerguntaModel::buscarComAlternativas).
+        foreach ($rows as &$row) {
+            $row['ID_RESPONDE'] = (int) $row['ID_RESPONDE'];
+            $row['IS_CORRETA'] = (int) $row['IS_CORRETA'];
+        }
+        unset($row);
+
+        return $rows;
     }
 
     // ---------------------------------------------------------------
@@ -78,16 +88,39 @@ class RespondeModel extends Model
     }
 
     // ---------------------------------------------------------------
-    // DESEMPENHO DOS ÚLTIMOS 7 DIAS (para o gráfico "Desempenho dos alunos")
+    // DESEMPENHO DE UMA JANELA DE 7 DIAS (para o gráfico "Desempenho dos alunos")
     // Retorna um array com 7 posições (mais antigo -> mais recente),
     // cada uma com a taxa de acerto (%) do dia.
+    //
+    // CORRIGIDO (erro 1): antes a janela de 7 dias era sempre calculada a
+    // partir de "hoje", sem nenhuma forma de consultar semanas anteriores.
+    // $semanasAtras desloca a janela inteira para trás em múltiplos de 7
+    // dias (0 = semana atual, 1 = semana anterior, 2 = duas semanas atrás...).
+    // Com $semanasAtras = 0 o resultado é idêntico ao comportamento antigo.
+    //
+    // CORRIGIDO (erro navegação por semanas): a janela era ancorada em
+    // strtotime("-N days"), que usa o timestamp exato da requisição (hora
+    // atual inclusive). Isso significa que duas chamadas feitas em horas
+    // diferentes do mesmo dia podiam calcular limites de dia ligeiramente
+    // diferentes, arriscando inconsistência ao alternar entre semanas numa
+    // mesma sessão. Trocado para strtotime('today'), que ancora sempre na
+    // meia-noite do dia corrente (estável durante todo o dia). O método
+    // periodoSemana() usa exatamente esta mesma âncora para os dois nunca
+    // divergirem sobre qual é o intervalo de datas exibido.
     // ---------------------------------------------------------------
-    public function desempenhoSemanal(): array
+    public function desempenhoSemanal(int $semanasAtras = 0): array
     {
+        $semanasAtras = max(0, $semanasAtras);
+        $diasBase     = $semanasAtras * 7;
+
+        $fim    = strtotime("-{$diasBase} days", strtotime('today'));
+        $inicio = strtotime("-" . ($diasBase + 6) . " days", strtotime('today'));
+
         $rows = $this->db->table('RESPONDE r')
             ->select("DATE(r.RESPONDIDO_EM) AS dia, COUNT(*) AS total, SUM(a.IS_CORRETA) AS acertos")
             ->join('ALTERNATIVA a', 'a.ID_ALTERNATIVA = r.FK_ID_ALTERNATIVA')
-            ->where('r.RESPONDIDO_EM >=', date('Y-m-d 00:00:00', strtotime('-6 days')))
+            ->where('r.RESPONDIDO_EM >=', date('Y-m-d 00:00:00', $inicio))
+            ->where('r.RESPONDIDO_EM <', date('Y-m-d 00:00:00', strtotime('+1 day', $fim)))
             ->groupBy('DATE(r.RESPONDIDO_EM)')
             ->get()
             ->getResultArray();
@@ -101,7 +134,7 @@ class RespondeModel extends Model
 
         $resultado = [];
         for ($i = 6; $i >= 0; $i--) {
-            $data = date('Y-m-d', strtotime("-{$i} days"));
+            $data = date('Y-m-d', strtotime("-{$i} days", $fim));
             $total = isset($porDia[$data]) ? (int) $porDia[$data]['total'] : 0;
             $acertos = isset($porDia[$data]) ? (int) $porDia[$data]['acertos'] : 0;
 
@@ -115,6 +148,26 @@ class RespondeModel extends Model
         }
 
         return $resultado;
+    }
+
+    // ---------------------------------------------------------------
+    // TEXTO DO PERÍODO EXIBIDO NO GRÁFICO "Desempenho dos alunos"
+    // (ex.: "26/08 a 01/09"). Usa a mesma âncora e a mesma regra de
+    // deslocamento de desempenhoSemanal(), para que os dois métodos
+    // concordem sempre sobre qual intervalo de datas está sendo mostrado.
+    // Mantido como método separado (em vez de mudar o retorno de
+    // desempenhoSemanal) para não alterar o formato já consumido via
+    // array_column() na view do dashboard.
+    // ---------------------------------------------------------------
+    public function periodoSemana(int $semanasAtras = 0): string
+    {
+        $semanasAtras = max(0, $semanasAtras);
+        $diasBase     = $semanasAtras * 7;
+
+        $fim    = strtotime("-{$diasBase} days", strtotime('today'));
+        $inicio = strtotime("-" . ($diasBase + 6) . " days", strtotime('today'));
+
+        return date('d/m', $inicio) . ' a ' . date('d/m', $fim);
     }
 
     // ---------------------------------------------------------------
@@ -177,7 +230,7 @@ class RespondeModel extends Model
     // ---------------------------------------------------------------
     public function atividadesRecentes(int $limite = 4): array
     {
-        return $this->db->table('RESPONDE r')
+        $rows = $this->db->table('RESPONDE r')
             ->select('r.RESPONDIDO_EM, u.NOME, u.EMAIL, p.DESCRICAO AS PERGUNTA_TEXTO, a.IS_CORRETA')
             ->join('USUARIO u', 'u.CPF = r.FK_CPF_USUARIO')
             ->join('ALTERNATIVA a', 'a.ID_ALTERNATIVA = r.FK_ID_ALTERNATIVA')
@@ -186,6 +239,14 @@ class RespondeModel extends Model
             ->limit($limite)
             ->get()
             ->getResultArray();
+
+        // PREVENTIVO: mesma causa raiz do bug relatado no Quiz.
+        foreach ($rows as &$row) {
+            $row['IS_CORRETA'] = (int) $row['IS_CORRETA'];
+        }
+        unset($row);
+
+        return $rows;
     }
 
     // ---------------------------------------------------------------

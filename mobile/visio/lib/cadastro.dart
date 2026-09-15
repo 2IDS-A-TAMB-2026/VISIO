@@ -26,7 +26,6 @@ class _CadastroPageState extends State<CadastroPage> {
   bool _obscureSenha = true;
   bool _loading = false;
 
-  // ✔️ Máscaras
   final cpfMask = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {"#": RegExp(r'[0-9]')},
@@ -57,8 +56,6 @@ class _CadastroPageState extends State<CadastroPage> {
         'nome': nomeCtrl.text.trim(),
         'cpf': cpfCtrl.text.trim(),
         'email': emailCtrl.text.trim(),
-       
-        // conversão sozinho (salva a string exatamente como chega).
         'data_nascimento': _brParaIso(dataNascCtrl.text) ?? '',
         'telefone': telefoneCtrl.text.trim(),
         'cartao': cartaoCtrl.text.trim(),
@@ -95,7 +92,6 @@ class _CadastroPageState extends State<CadastroPage> {
     }
   }
 
-  /// 'DD/MM/AAAA' → 'AAAA-MM-DD' (ver nota em _cadastrar).
   String? _brParaIso(String br) {
     final limpo = br.replaceAll(RegExp(r'\D'), '');
     if (limpo.length != 8) return null;
@@ -260,14 +256,10 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  /// Valida um e-mail com uma checagem simples de formato.
   bool _emailValido(String email) {
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
   }
 
-  /// Valida um CPF (com ou sem máscara) pelo algoritmo oficial de dígitos
-  /// verificadores — mesma lógica usada no backend web (UsuarioController).
-  /// Também rejeita sequências de dígitos repetidos (ex.: 111.111.111-11).
   bool _cpfValido(String cpfComMascara) {
     final cpf = cpfComMascara.replaceAll(RegExp(r'\D'), '');
 

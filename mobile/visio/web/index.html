@@ -2,45 +2,162 @@
 <html>
 <head>
   <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    ARQUIVO NOVO (não veio no material recebido — o .zip do MOBILE só
+    continha lib/ e pubspec.yaml, sem a pasta web/). Esta é a causa raiz
+    confirmada da correção 6: TeachableMachineService (lib/services/
+    teachable_machine_service.dart) chama, via dart:js_interop, uma
+    função JavaScript chamada 'visioTmPreverBase64' que precisa existir
+    globalmente na página. Sem este arquivo (ou um equivalente com o
+    mesmo script), essa função nunca existe, então TODA tentativa de
+    identificação no Flutter Web falha silenciosamente e cai na mensagem
+    "Modelo de identificação não carregado. Tente novamente." — não
+    porque o modelo tenha falhado ao carregar, mas porque a ponte
+    JS/Dart nunca existiu.
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    O script abaixo replica exatamente a lógica já usada e validada na
+    versão WEB (app/Views/sistema/usuario/identificador/index.php):
+    mesmas bibliotecas (TensorFlow.js + Teachable Machine Image), mesma
+    URL de modelo público do Google, mesmo formato de retorno
+    (className/probability por classe). A diferença é só a interface:
+    a versão WEB desenha o <video> ao vivo num <canvas>; aqui a imagem
+    já chega pronta do Flutter como base64 (foto tirada ou selecionada
+    da galeria), então o canvas é usado só como ponte para decodificá-la
+    em um formato que tmImage.predict() aceita.
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
+    Se este projeto já tiver um web/index.html próprio com customizações
+    (ícone, nome do app, etc.), migre o bloco "head"/"body" padrão do
+    Flutter você mesmo e mantenha só o bloco de script de identificação
+    abaixo, inteiro, sem alterações.
   -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="VISIO - Identificação de sensores">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="visio">
+  <meta name="apple-mobile-web-app-title" content="VISIO">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>visio</title>
   <link rel="manifest" href="manifest.json">
+
+  <title>VISIO</title>
+
+  <!--
+    CORRIGIDO (causa raiz da correção 6): bibliotecas do modelo de
+    identificação, carregadas ANTES do bootstrap do Flutter, para que
+    'visioTmPreverBase64' já exista no window no momento em que o Dart
+    tentar chamá-la. Mesmas versões/CDN já usadas e validadas na versão
+    WEB (ver app/Views/sistema/usuario/identificador/index.php).
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+  <script>
+    // Mesmo modelo público (Teachable Machine / Google) já usado e
+    // validado na versão WEB — mantém a mesma "regra de negócio" de
+    // identificação nas duas plataformas, como pedido.
+    const VISIO_TM_MODEL_URL = "https://teachablemachine.withgoogle.com/models/G7gJB1a1F/";
+
+    // Cache do modelo carregado, para não recarregar a cada identificação
+    // (tmImage.load() baixa e inicializa os pesos do modelo — é uma
+    // operação de rede+CPU cara para repetir a cada clique).
+    let _visioTmModelPromise = null;
+
+    function _visioTmCarregarModelo() {
+      if (!_visioTmModelPromise) {
+        _visioTmModelPromise = tmImage.load(
+          VISIO_TM_MODEL_URL + "model.json",
+          VISIO_TM_MODEL_URL + "metadata.json"
+        ).catch((erro) => {
+          // Se o carregamento falhar, limpa o cache para permitir nova
+          // tentativa na próxima chamada, em vez de ficar preso numa
+          // Promise rejeitada para sempre.
+          _visioTmModelPromise = null;
+          throw erro;
+        });
+      }
+      return _visioTmModelPromise;
+    }
+
+    // Decodifica uma imagem base64 (sem prefixo "data:...;base64,") em
+    // um HTMLImageElement já carregado, pronto para tmImage.predict().
+    //
+    // CORRIGIDO: a foto pode vir da câmera (normalmente JPEG) OU da
+    // galeria (pode ser PNG, WEBP, HEIC convertido, etc. — o usuário
+    // escolhe qualquer imagem que já tenha salva). Fixar o prefixo como
+    // "data:image/jpeg;base64," faz o navegador tentar decodificar bytes
+    // de outros formatos como se fossem JPEG, o que pode falhar (imagem
+    // corrompida/tamanho 0) dependendo do navegador e do formato real.
+    // Convertendo para Blob sem forçar um tipo MIME, o navegador detecta
+    // o formato real pela assinatura dos próprios bytes, cobrindo os
+    // formatos comuns (JPEG, PNG, WEBP) sem exigir que o Flutter informe
+    // o tipo da imagem.
+    function _visioTmBase64ParaImagem(base64) {
+      return new Promise((resolve, reject) => {
+        try {
+          const binario = atob(base64);
+          const bytes = new Uint8Array(binario.length);
+          for (let i = 0; i < binario.length; i++) {
+            bytes[i] = binario.charCodeAt(i);
+          }
+
+          const blob = new Blob([bytes]);
+          const url = URL.createObjectURL(blob);
+
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Falha ao decodificar a imagem recebida."));
+          };
+          img.src = url;
+        } catch (erro) {
+          reject(erro);
+        }
+      });
+    }
+
+    /**
+     * Função chamada pelo Flutter via dart:js_interop
+     * (ver lib/services/teachable_machine_service.dart).
+     * Recebe uma imagem em base64 (sem o prefixo data:), roda o modelo
+     * de identificação e devolve uma Promise que resolve para uma
+     * STRING JSON (não um objeto — o lado Dart faz jsonDecode nela) no
+     * mesmo formato que tmImage.predict() já produz nativamente:
+     *   [{ "className": "...", "probability": 0.0..1.0 }, ...]
+     */
+    async function visioTmPreverBase64(base64) {
+      const model = await _visioTmCarregarModelo();
+      const imagem = await _visioTmBase64ParaImagem(base64);
+      const previsoes = await model.predict(imagem);
+
+      // tmImage já devolve objetos simples {className, probability} —
+      // mapeado explicitamente aqui só para blindar contra qualquer
+      // propriedade extra que a lib venha a adicionar no futuro, já que
+      // o lado Dart faz um cast estrito (className as String,
+      // probability as num).
+      const resultado = previsoes.map((p) => ({
+        className: p.className,
+        probability: p.probability
+      }));
+
+      return JSON.stringify(resultado);
+    }
+
+    // Expõe explicitamente no escopo global (window), garantindo que a
+    // função é encontrada pelo @JS('visioTmPreverBase64') do Dart mesmo
+    // que este script rode dentro de outro escopo/módulo no futuro.
+    window.visioTmPreverBase64 = visioTmPreverBase64;
+  </script>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

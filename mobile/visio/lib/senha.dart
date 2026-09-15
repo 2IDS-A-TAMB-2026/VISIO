@@ -2,23 +2,8 @@ import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
 
-/// Recuperação de senha — PASSO 1 (pedir o e-mail).
-/// Corresponde a `RecuperacaoSenhaController::form()`/`solicitar()`
-/// (`GET`/`POST /usuario/esqueceu_senha`) no backend.
-///
-/// O backend não envia e-mail de verdade ("modo demonstração"): a resposta
-/// de `POST /usuario/esqueceu_senha` já devolve o token/link diretamente no
-/// JSON quando o e-mail existe. Por isso, ao contrário da versão original
-/// (que só mostrava "instruções enviadas" e parava por aí), esta tela agora
-/// oferece um botão para seguir direto para o passo 2 com o token em mãos —
-/// replicando o mesmo "modo demonstração sem e-mail real" que a página web
-/// já usa.
 class ForgotPage extends StatefulWidget {
-  /// 'usuario' (padrão) ou 'admin' — decide se fala com
-  /// `/usuario/esqueceu_senha` ou `/admin/esqueceu_senha` no backend.
-  final String tipo;
-
-  const ForgotPage({super.key, this.tipo = 'usuario'});
+  const ForgotPage({super.key});
 
   @override
   State<ForgotPage> createState() => _ForgotPageState();
@@ -32,8 +17,8 @@ class _ForgotPageState extends State<ForgotPage> {
   String? _mensagem;
   String? _token;
 
-  String get _rotaSolicitar =>
-      widget.tipo == 'admin' ? 'admin/esqueceu_senha' : 'usuario/esqueceu_senha';
+  
+  static const _rotaSolicitar = 'usuario/esqueceu_senha';
 
   Future<void> _recuperar() async {
     if (!_formKey.currentState!.validate()) return;
@@ -177,16 +162,14 @@ class _ForgotPageState extends State<ForgotPage> {
         ),
         const SizedBox(height: 32),
         if (_token != null) ...[
-          // Não existe envio de e-mail real (nem no backend, nem aqui) —
-          // o próprio backend já devolve o token diretamente na resposta
-          // ("modo demonstração"), então seguimos direto para o passo 2.
+          
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => RedefinirSenhaPage(token: _token!, tipo: widget.tipo),
+                  builder: (_) => RedefinirSenhaPage(token: _token!),
                 ),
               ),
               icon: const Icon(Icons.lock_reset, size: 18),
@@ -213,15 +196,10 @@ class _ForgotPageState extends State<ForgotPage> {
   }
 }
 
-/// Recuperação de senha — PASSO 2 (definir a nova senha com o token).
-/// NOVA TELA (não existia antes desta integração — o app só tinha o passo
-/// 1). Corresponde a `RecuperacaoSenhaController::redefinirForm()`/
-/// `redefinir()` (`GET`/`POST /usuario/redefinir_senha`) no backend.
 class RedefinirSenhaPage extends StatefulWidget {
   final String token;
-  final String tipo;
 
-  const RedefinirSenhaPage({super.key, required this.token, this.tipo = 'usuario'});
+  const RedefinirSenhaPage({super.key, required this.token});
 
   @override
   State<RedefinirSenhaPage> createState() => _RedefinirSenhaPageState();
@@ -234,8 +212,7 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
   bool _obscure = true;
   bool _loading = false;
 
-  String get _rotaRedefinir =>
-      widget.tipo == 'admin' ? 'admin/redefinir_senha' : 'usuario/redefinir_senha';
+  static const _rotaRedefinir = 'usuario/redefinir_senha';
 
   Future<void> _redefinir() async {
     if (!_formKey.currentState!.validate()) return;

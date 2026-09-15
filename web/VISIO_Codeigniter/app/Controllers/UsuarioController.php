@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\UsuarioModel;
 use App\Models\RespondeModel;
+use App\Models\LoginCartaoModel;
 
 /**
  * UsuarioController
@@ -22,14 +23,13 @@ class UsuarioController extends BaseController
 
     public function cadastrar()
     {
-        $nome   = $this->request->getPost('nome');
-        $cpf    = $this->request->getPost('cpf');
-        $email  = $this->request->getPost('email');
-        $senha  = $this->request->getPost('senha');
-        $cartao = $this->request->getPost('cartao') ?? ''; // <--- PEGA O CARTÃO GERADO NO HTML
-        $data   = $this->request->getPost('data_nascimento');
-        $tel    = $this->request->getPost('telefone');
-
+        $nome = $this->request->getPost('nome');
+        $cpf = $this->request->getPost('cpf');
+        $email = $this->request->getPost('email');
+        $senha = $this->request->getPost('senha');
+        $data = $this->request->getPost('data_nascimento');
+        $tel = $this->request->getPost('telefone');
+        
         $querJson = $this->request->isAJAX()
             || str_contains($this->request->getHeaderLine('Accept'), 'json')
             || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
@@ -66,20 +66,39 @@ class UsuarioController extends BaseController
                 ->with('erro', 'Este e-mail já está em uso.');
         }
 
-        // Salva todos os dados incluindo o cartão gerado
+        do {
+            $cartao = '';
+
+            for ($i = 0; $i < 16; $i++) {
+                $cartao .= random_int(0, 9);
+            }
+
+        } while ($model->where('CARTAO', $cartao)->first());
+
         $model->insert([
-            'CPF'             => $cpf,
-            'NOME'            => $nome,
-            'EMAIL'           => $email,
-            'SENHA'           => password_hash($senha, PASSWORD_BCRYPT),
-            'CARTAO'          => $cartao, // <--- SALVA NO BANCO DE DADOS
+            'CPF' => $cpf,
+            'NOME' => $nome,
+            'EMAIL' => $email,
+            'SENHA' => password_hash($senha, PASSWORD_BCRYPT),
+            // CORRIGIDO (encontrado ao trabalhar no item 8/9 — login
+            // por RFID): o loop acima já gerava um valor aleatório de
+            // 16 dígitos, ÚNICO no banco, exatamente para satisfazer a
+            // restrição UNIQUE de CARTAO sem colidir entre usuários —
+            // mas o insert usava uma string vazia fixa em vez dessa
+            // variável, descartando o valor calculado. Como CARTAO é
+            // UNIQUE, isso quebrava o cadastro a partir do segundo
+            // usuário (dois usuários não podem ter CARTAO = '' ao
+            // mesmo tempo). Este valor é só um placeholder até um
+            // admin associar o UID real de um cartão físico pela tela
+            // de administração de usuários.
+            'CARTAO' => $cartao,
             'DATA_NASCIMENTO' => $data,
-            'TELEFONE'        => $tel,
+            'TELEFONE' => $tel,
         ]);
 
         if ($querJson) {
             return $this->response->setJSON([
-                'status'  => 200,
+                'status' => 200,
                 'message' => 'Cadastro realizado com sucesso!',
             ]);
         }
@@ -101,14 +120,36 @@ class UsuarioController extends BaseController
     // PERFIL DO USUÁRIO LOGADO
     // ---------------------------------------------------------------
 
-    public function perfil(): string
+    public function perfil()
     {
         $cpf = session()->get('usuario_cpf');
+
+        $querJson = $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+
+        if (empty($cpf)) {
+            if ($querJson) {
+                return $this->response->setStatusCode(401)->setJSON([
+                    'message' => 'Usuário não autenticado.'
+                ]);
+            }
+            return redirect()->to('/login')->with('erro', 'Faça login para continuar.');
+        }
 
         $usuarioModel = new UsuarioModel();
         $respondeModel = new RespondeModel();
 
+        // Dados do usuário
         $usuario = $usuarioModel->where('CPF', $cpf)->first();
+
+        if (!$usuario && $querJson) {
+            return $this->response->setStatusCode(404)->setJSON([
+                'message' => 'Usuário não encontrado.'
+            ]);
+        }
+
+        // Estatísticas do quiz
         $total = $respondeModel->totalPorUsuario($cpf);
         $acertos = $respondeModel->totalAcertosPorUsuario($cpf);
 
@@ -116,10 +157,19 @@ class UsuarioController extends BaseController
             ? round(($acertos / $total) * 100)
             : 0;
 
+        if ($querJson) {
+            unset($usuario['SENHA']);
+            $usuario['TOTAL'] = $total;
+            $usuario['ACERTOS'] = $acertos;
+            $usuario['PERCENTUAL'] = $percentual;
+
+            return $this->response->setJSON($usuario);
+        }
+
         return view('sistema/usuario_logado/perfil/index', [
-            'usuario'    => $usuario,
-            'total'      => $total,
-            'acertos'    => $acertos,
+            'usuario' => $usuario,
+            'total' => $total,
+            'acertos' => $acertos,
             'percentual' => $percentual,
         ]);
     }
@@ -127,23 +177,41 @@ class UsuarioController extends BaseController
     public function atualizarPerfil()
     {
         $cpf = session()->get('usuario_cpf');
+
+        $querJson = $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+
+        if (empty($cpf)) {
+            if ($querJson) {
+                return $this->response->setStatusCode(401)->setJSON([
+                    'message' => 'Usuário não autenticado.'
+                ]);
+            }
+            return redirect()->to('/login')->with('erro', 'Faça login para continuar.');
+        }
+
         $model = new UsuarioModel();
         $email = $this->request->getPost('email');
 
         // 1. Validação de Email Existente
         $emailExistente = $model->where('EMAIL', $email)->where('CPF !=', $cpf)->first();
         if ($emailExistente) {
+            if ($querJson) {
+                return $this->response->setStatusCode(409)->setJSON([
+                    'message' => 'Este e-mail já está em uso por outra conta.'
+                ]);
+            }
             return redirect()->to('/perfil')
                 ->with('erro', 'Este e-mail já está em uso por outra conta.');
         }
 
         // 2. Montagem dos dados básicos
         $dados = [
-            'NOME'            => $this->request->getPost('nome'),
-            'EMAIL'           => $email,
-            'CARTAO'          => $this->request->getPost('cartao') ?? '',
+            'NOME' => $this->request->getPost('nome'),
+            'EMAIL' => $email,
             'DATA_NASCIMENTO' => $this->request->getPost('data_nascimento'),
-            'TELEFONE'        => $this->request->getPost('telefone'),
+            'TELEFONE' => $this->request->getPost('telefone'),
         ];
 
         // 3. Upload da Foto de Perfil
@@ -158,18 +226,24 @@ class UsuarioController extends BaseController
             ]);
 
             if (!$validacao) {
+                if ($querJson) {
+                    return $this->response->setStatusCode(400)->setJSON([
+                        'message' => 'Arquivo inválido. Escolha uma imagem PNG, JPG ou WEBP de até 2MB.'
+                    ]);
+                }
                 return redirect()->to('/perfil')->with('erro', 'Arquivo inválido. Escolha uma imagem PNG, JPG ou WEBP de até 2MB.');
             }
 
             $novoNome = $foto->getRandomName();
             $foto->move(ROOTPATH . 'public/uploads/perfil/', $novoNome);
-            
+
             $usuarioAtual = $model->find($cpf);
             if (!empty($usuarioAtual['FOTO']) && file_exists(ROOTPATH . 'public/' . $usuarioAtual['FOTO'])) {
                 if (!unlink(ROOTPATH . 'public/' . $usuarioAtual['FOTO'])) {
                     log_message('warning', 'Não foi possível remover a foto antiga do usuário ' . $cpf . ': ' . $usuarioAtual['FOTO']);
                 }
             }
+
             $dados['FOTO'] = 'uploads/perfil/' . $novoNome;
         }
 
@@ -181,42 +255,76 @@ class UsuarioController extends BaseController
 
         // 5. Atualização no Banco de Dados
         $model->update($cpf, $dados);
+
+        if ($querJson) {
+            $usuarioAtualizado = $model->find($cpf);
+            unset($usuarioAtualizado['SENHA']);
+            return $this->response->setJSON($usuarioAtualizado);
+        }
+
         return redirect()->to('/perfil')
             ->with('sucesso', 'Perfil atualizado com sucesso!');
     }
 
+    // ---------------------------------------------------------------
+    // LOGIN VIA CARTÃO RFID (polling da tela de login)
+    // ---------------------------------------------------------------
+
+    /**
+     * ADICIONADO (item 8/9 do pedido — login automático por RFID).
+     *
+     * Chamado repetidamente (polling) pelo JavaScript da tela de login
+     * enquanto o botão "Entrar com cartão" está ativo. Não é a
+     * requisição do ESP32 — é a do PRÓPRIO NAVEGADOR verificando se
+     * algum cartão foi autorizado recentemente. É por isso que
+     * session()->set() aqui funciona: quem está fazendo esta
+     * requisição é o navegador que deve ficar logado, não o ESP32.
+     *
+     * Explicação completa do porquê esse modelo de polling existe (em
+     * vez do ESP32 "logar" o navegador diretamente, o que não é
+     * tecnicamente possível — são dois clientes HTTP sem cookie em
+     * comum) em WEB/app/Models/LoginCartaoModel.php.
+     *
+     * Sempre responde JSON — usado exclusivamente via JavaScript
+     * (fetch) na tela de login, nunca como submissão de formulário.
+     */
     public function loginPorCartao()
-{
-    $cartao = trim($this->request->getPost('cartao') ?? '');
+    {
+        $loginCartaoModel = new LoginCartaoModel();
+        $cpf = $loginCartaoModel->consumirMaisRecente();
 
-    if (empty($cartao)) {
-        return $this->response->setStatusCode(400)->setJSON([
-            'status'  => 'erro',
-            'message' => 'Por favor, informe ou aproxime o cartão.'
-        ]);
-    }
+        if (!$cpf) {
+            // Ainda esperando alguém aproximar um cartão autorizado —
+            // não é um erro, é o estado normal enquanto aguarda.
+            return $this->response->setJSON([
+                'autorizado' => false,
+            ]);
+        }
 
-    $model = new UsuarioModel();
-    $usuario = $model->where('CARTAO', $cartao)->first();
+        $usuarioModel = new UsuarioModel();
+        $usuario = $usuarioModel->find($cpf);
 
-    if ($usuario) {
-        // Cria a sessão de login
+        if (!$usuario) {
+            // Situação rara: o usuário foi removido entre o ESP32
+            // registrar a autorização e o navegador consumi-la.
+            return $this->response->setJSON([
+                'autorizado' => false,
+            ]);
+        }
+
+        // Mesmo mecanismo de sessão do login tradicional (ver
+        // AuthController::loginUsuario) — login por cartão não cria
+        // um segundo tipo de sessão nem um novo padrão de autenticação.
         session()->set([
-            'usuario_cpf'  => $usuario['CPF'],
-            'usuario_nome' => $usuario['NOME'],
-            'logado'       => true
+            'usuario_logado' => true,
+            'usuario_cpf'    => $usuario['CPF'],
+            'usuario_email'  => $usuario['EMAIL'],
+            'tipo'           => 'usuario',
         ]);
 
         return $this->response->setJSON([
-            'status'   => 'sucesso',
-            'redirect' => base_url('/inicio') // Altere para a rota inicial do seu sistema
+            'autorizado' => true,
+            'redirect'   => '/perfil',
         ]);
     }
-
-    // Se não encontrar o cartão no banco
-    return $this->response->setStatusCode(401)->setJSON([
-        'status'  => 'erro',
-        'message' => 'Cartão não cadastrado ou inválido!'
-    ]);
-}
 }

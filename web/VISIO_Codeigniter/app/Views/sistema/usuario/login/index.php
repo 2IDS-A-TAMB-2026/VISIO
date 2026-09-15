@@ -5,6 +5,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+<!-- Google Identity Services (login com Google) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
   .login-page {
     display: flex; 
@@ -494,6 +497,32 @@
           <i class="fa-solid fa-right-to-bracket"></i> Entrar com cartão
         </button>
 
+        <?php $googleClientId = env('GOOGLE_CLIENT_ID'); ?>
+        <?php if (!empty($googleClientId)): ?>
+          <!-- Botão oficial "Sign In With Google" — renderizado pela
+               própria biblioteca do Google (script no <head>), que
+               segue as diretrizes de marca deles. Ao ser clicado, o
+               ID token é enviado via POST para login/google
+               (AuthController::loginGoogle), configurado abaixo pelo
+               atributo data-login_uri. -->
+          <div style="margin-top: 12px; display: flex; justify-content: center;">
+            <div id="g_id_onload"
+                 data-client_id="<?= esc($googleClientId) ?>"
+                 data-login_uri="<?= base_url('/login/google') ?>"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="pill"
+                 data-theme="outline"
+                 data-text="continue_with"
+                 data-size="large"
+                 data-width="300"
+                 data-locale="pt-BR">
+            </div>
+          </div>
+        <?php endif; ?>
+
       </form>
 
       <div class="login-footer-links">
@@ -523,34 +552,73 @@
     });
   });
 
-  // Evento de clique exclusivo para o botão de cartão (encadeia alertas e redireciona)
+  // CORRIGIDO (item 8/9 do pedido — login automático por RFID): antes,
+  // este botão só mostrava um timer fixo de 2 segundos seguido de um
+  // erro falso, sem nunca chamar nenhuma API real. Agora consulta de
+  // verdade UsuarioController::loginPorCartao via polling. Explicação
+  // completa de por que esse modelo (navegador perguntando
+  // repetidamente) é necessário — em vez do ESP32 simplesmente "logar"
+  // o navegador direto, o que não é tecnicamente possível — em
+  // WEB/app/Models/LoginCartaoModel.php.
   btnCartao.addEventListener('click', function() {
-    let timerInterval;
+    const DURACAO_MAXIMA_MS = 30000;
+    const INTERVALO_POLLING_MS = 1500;
+
+    let intervaloId = null;
+
+    const pararPolling = () => {
+      if (intervaloId !== null) {
+        clearInterval(intervaloId);
+        intervaloId = null;
+      }
+    };
+
     Swal.fire({
       title: "Aguardando aproximação",
-      html: "Aguarde por <b></b> segundos.",
-      timer: 2000,
+      html: "Aproxime o cartão do leitor.",
+      timer: DURACAO_MAXIMA_MS,
       timerProgressBar: true,
+      allowOutsideClick: true,
       didOpen: () => {
         Swal.showLoading();
-        const timer = Swal.getPopup().querySelector("b");
-        timerInterval = setInterval(() => {
-          timer.textContent = `${Swal.getTimerLeft()}`;
-        }, 100);
+
+        intervaloId = setInterval(async () => {
+          try {
+            const resposta = await fetch("<?= base_url('login/cartao') ?>", {
+              method: 'POST',
+              headers: { 'Accept': 'application/json' },
+            });
+            const dados = await resposta.json();
+
+            if (dados.autorizado) {
+              pararPolling();
+              Swal.close();
+              window.location.href = dados.redirect || "<?= base_url('perfil') ?>";
+            }
+          } catch (erro) {
+            // Falha de rede pontual durante o polling não deve
+            // interromper a espera — só registra e tenta de novo no
+            // próximo intervalo.
+            console.error('Erro ao consultar login por cartão:', erro);
+          }
+        }, INTERVALO_POLLING_MS);
       },
       willClose: () => {
-        clearInterval(timerInterval);
+        pararPolling();
       }
-    }).then(() => {
-      // 2º Alerta exibido imediatamente após o término do timer
-      Swal.fire({
-        title: "Erro na leitura do cartão",
-        icon: "error",
-        confirmButtonColor: '#2563eb'
-      }).then(() => {
-        // Redireciona para a página /perfil ao fechar o alerta
-        window.location.href = "<?= base_url('perfil') ?>";
-      });
+    }).then((resultado) => {
+      // Só mostra "tempo esgotado" se o motivo do fechamento foi
+      // realmente o timer acabar — se fechamos programaticamente após
+      // um login bem-sucedido (Swal.close() acima), o dismiss não é
+      // "timer" e o redirecionamento já está em andamento.
+      if (resultado.dismiss === Swal.DismissReason.timer) {
+        Swal.fire({
+          title: "Nenhum cartão identificado",
+          text: "Não conseguimos identificar um cartão autorizado a tempo. Tente novamente.",
+          icon: "error",
+          confirmButtonColor: '#2563eb'
+        });
+      }
     });
   });
 

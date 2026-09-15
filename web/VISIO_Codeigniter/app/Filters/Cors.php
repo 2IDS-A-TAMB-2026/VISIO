@@ -34,7 +34,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * qualquer Origin recebida. Antes de expor a API além da rede local,
  * troque $origensPermitidas por uma lista fixa dos domínios reais do
  * Flutter Web em produção — ex.:
- *   private ?array $origensPermitidas = ['http://192.168.0.6:8080'];
+ *   private ?array $origensPermitidas = ['http://localhost:8080'];
  */
 class Cors implements FilterInterface
 {

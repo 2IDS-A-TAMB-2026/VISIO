@@ -16,6 +16,18 @@ use App\Models\ResetSenhaModel;
  */
 class RecuperacaoSenhaController extends BaseController
 {
+    // ACHADO NA AUDITORIA (Etapa 4): senha.dart (Flutter) foi escrito pra
+    // chamar api/usuario/esqueceu_senha e api/usuario/redefinir_senha —
+    // mesmo padrão de causa raiz do quiz/histórico/admin: essas rotas só
+    // existiam fora do grupo api, e solicitar()/redefinir() nunca
+    // respondiam em JSON (só view()/redirect()).
+    private function querJson(): bool
+    {
+        return $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+    }
+
     // ---------------------------------------------------------------
     // PASSO 1 — Exibir formulário de solicitação
     // ---------------------------------------------------------------
@@ -32,6 +44,11 @@ class RecuperacaoSenhaController extends BaseController
         $email = trim($this->request->getPost('email') ?? '');
 
         if (empty($email)) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Informe um e-mail válido.',
+                ]);
+            }
             return redirect()->to('/usuario/esqueceu_senha')
                 ->with('erro', 'Informe um e-mail válido.');
         }
@@ -53,9 +70,25 @@ class RecuperacaoSenhaController extends BaseController
             // Monta o link de redefinição completo
             $link = base_url('/usuario/redefinir_senha?token=' . $token);
 
+            if ($this->querJson()) {
+                return $this->response->setJSON([
+                    'message' => 'E-mail encontrado! Use o token abaixo para redefinir sua senha.',
+                    'link'    => $link,
+                    'token'   => $token,
+                ]);
+            }
+
             return view('sistema/usuario/esqueceu_senha/token', [
                 'link'  => $link,
                 'token' => $token,
+            ]);
+        }
+
+        if ($this->querJson()) {
+            return $this->response->setJSON([
+                'message' => 'Se o e-mail informado estiver cadastrado, as instruções foram geradas.',
+                'link'    => null,
+                'token'   => null,
             ]);
         }
 
@@ -101,16 +134,25 @@ class RecuperacaoSenhaController extends BaseController
         $confirma    = $this->request->getPost('confirma_senha') ?? '';
 
         if (empty($token) || empty($novaSenha)) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'Preencha todos os campos.']);
+            }
             return redirect()->back()
                 ->with('erro', 'Preencha todos os campos.');
         }
 
         if ($novaSenha !== $confirma) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'As senhas não coincidem.']);
+            }
             return redirect()->back()
                 ->with('erro', 'As senhas não coincidem.');
         }
 
         if (strlen($novaSenha) < 6) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'A senha deve ter pelo menos 6 caracteres.']);
+            }
             return redirect()->back()
                 ->with('erro', 'A senha deve ter pelo menos 6 caracteres.');
         }
@@ -119,6 +161,9 @@ class RecuperacaoSenhaController extends BaseController
         $registro   = $resetModel->buscarValido($token);
 
         if (!$registro) {
+            if ($this->querJson()) {
+                return $this->response->setStatusCode(410)->setJSON(['message' => 'Este link expirou ou já foi utilizado. Solicite um novo.']);
+            }
             return redirect()->to('/usuario/esqueceu_senha')
                 ->with('erro', 'Este link expirou ou já foi utilizado. Solicite um novo.');
         }
@@ -131,6 +176,12 @@ class RecuperacaoSenhaController extends BaseController
 
         // Invalida o token
         $resetModel->marcarUsado($token);
+
+        if ($this->querJson()) {
+            return $this->response->setJSON([
+                'message' => 'Senha redefinida com sucesso! Faça login com a nova senha.',
+            ]);
+        }
 
         return redirect()->to('/login')
             ->with('sucesso', 'Senha redefinida com sucesso! Faça login com a nova senha.');

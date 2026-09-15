@@ -30,7 +30,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => FontScaleController()),
-        
+
         ChangeNotifierProvider.value(value: TtsService.instance),
         ChangeNotifierProvider.value(value: AuthService.instance),
       ],
@@ -133,10 +133,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // CORRIGIDO: antes este botão sempre mostrava "Entrar", mesmo com uma
-    // sessão de usuário já ativa (o cookie salvo nunca era sequer
-    // restaurado ao reabrir o app — ver AuthService.carregarSessaoSalva em
-    // main()). Agora reage ao login em tempo real via ChangeNotifier.
+   
     final logado = context.watch<AuthService>().estaLogadoComoUsuario;
 
     return Scaffold(

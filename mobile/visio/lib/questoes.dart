@@ -4,14 +4,6 @@ import 'login.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
 
-/// Quiz — CORRIGIDO/INTEGRADO: antes eram 7 perguntas fixas no app, sem
-/// login e sem gravar nada. No site, o quiz exige login (filtro `userAuth`)
-/// e cada resposta é gravada em RESPONDE (fica disponível no histórico e
-/// nas estatísticas do admin). Esta versão segue exatamente o mesmo fluxo
-/// passo a passo do site — `GET /quiz` → `GET /quiz/pergunta` →
-/// `POST /quiz/responder` (feedback imediato, igual ao site) →
-/// `POST /quiz/avancar` → `GET /quiz/resultado` — usando o cookie de sessão
-/// já capturado no login (ver AuthService/ApiClient).
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
 
@@ -23,11 +15,11 @@ class _QuizPageState extends State<QuizPage> {
   bool _carregando = true;
   String? _erro;
 
-  Map<String, dynamic>? _pergunta; // {ID_PERGUNTA, DESCRICAO, NIVEL_DIFICULDADE, alternativas: [...]}
+  Map<String, dynamic>? _pergunta; 
   int _indice = 0;
   int _total = 0;
   bool _ultima = false;
-  Map<String, dynamic>? _feedback; // {id_pergunta, escolhida, correta_id, acertou}
+  Map<String, dynamic>? _feedback; 
   int? _opcaoSelecionadaId;
   bool _acaoEmAndamento = false;
 
@@ -35,9 +27,6 @@ class _QuizPageState extends State<QuizPage> {
   int _acertosFinal = 0;
   int _totalFinal = 0;
 
-  /// Acumulado localmente a cada resposta (pergunta + acertou ou não), só
-  /// para exibir o resumo por pergunta na tela de resultado — o backend
-  /// devolve apenas o total agregado em `GET /quiz/resultado`.
   final List<Map<String, dynamic>> _resumoRespostas = [];
 
   @override
@@ -72,7 +61,7 @@ class _QuizPageState extends State<QuizPage> {
     });
 
     try {
-      await ApiClient.get('quiz'); // inicia (ou reinicia) o quiz na sessão
+      await ApiClient.get('quiz'); 
       await _carregarPergunta();
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -270,7 +259,7 @@ class _QuizPageState extends State<QuizPage> {
                     context,
                     MaterialPageRoute(builder: (_) => const LoginPage()),
                   );
-                  // Ao voltar do login (com sucesso ou não), tenta de novo.
+                 
                   if (!mounted) return;
                   if (AuthService.instance.estaLogadoComoUsuario) {
                     _iniciarQuiz();
@@ -292,7 +281,11 @@ class _QuizPageState extends State<QuizPage> {
     final nivel = pergunta['NIVEL_DIFICULDADE'] as String?;
     final alternativas = (pergunta['alternativas'] as List).cast<Map<String, dynamic>>();
     final feedback = _feedback;
-    final corretaId = feedback?['correta_id'] as int?;
+   
+    final corretaIdRaw = feedback?['correta_id'];
+    final corretaId = corretaIdRaw == null
+        ? null
+        : (corretaIdRaw is int ? corretaIdRaw : int.parse(corretaIdRaw.toString()));
     final acertou = feedback?['acertou'] as bool? ?? false;
 
     return SingleChildScrollView(
@@ -424,7 +417,9 @@ class _QuizPageState extends State<QuizPage> {
     Map<String, dynamic> alt,
     int? corretaId,
   ) {
-    final idAlt = alt['ID_ALTERNATIVA'] as int;
+    final idAlt = alt['ID_ALTERNATIVA'] is int
+        ? alt['ID_ALTERNATIVA'] as int
+        : int.parse(alt['ID_ALTERNATIVA'].toString());
     final respondido = _feedback != null;
 
     Color borderColor = context.borderColor;

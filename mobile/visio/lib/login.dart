@@ -3,7 +3,6 @@ import 'appcolor.dart';
 import 'cadastro.dart';
 import 'perfil.dart';
 import 'senha.dart';
-import 'login_adm.dart';
 import 'services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -24,13 +23,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // ✓ Controllers inicializados em initState, não no construtor
     _emailCtrl = TextEditingController();
     _senhaCtrl = TextEditingController();
   }
 
   Future<void> _login() async {
-    // ✓ Impedir múltiplos cliques no mesmo botão
     final now = DateTime.now();
     if (_lastLoginAttempt != null &&
         now.difference(_lastLoginAttempt!).inSeconds < 1) {
@@ -40,7 +37,6 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    // ✓ Guard duplo contra múltiplos taps
     if (_loading) return;
 
     setState(() => _loading = true);
@@ -76,7 +72,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
-      // ✓ Tratamento de erro adequado
       if (mounted) {
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -164,7 +159,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 14),
 
-                      // ✓ Senha field com validação de verdade
                       TextFormField(
                         controller: _senhaCtrl,
                         obscureText: _obscure,
@@ -221,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 20),
 
-              // Links
+    
               _linkRow(
                 'Não tem conta?',
                 'Cadastre-se',
@@ -230,14 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                   MaterialPageRoute(builder: (_) => const CadastroPage()),
                 ),
               ),
-              _linkRow(
-                'É administrador?',
-                'Acesso ADM',
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginAdminPage()),
-                ),
-              ),
+           
             ],
           ),
         ),
@@ -266,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    // ✓ Sempre descartar controllers
+  
     _emailCtrl.dispose();
     _senhaCtrl.dispose();
     super.dispose();

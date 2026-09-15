@@ -296,7 +296,25 @@
 
     /* LER SITE */
 
+    let leituraEmAndamento = false;
+
+    function pararLeitura() {
+      speechSynthesis.cancel();
+      leituraEmAndamento = false;
+    }
+
     function readPage() {
+
+      // Segundo clique (ou clique enquanto já está lendo): apenas para.
+      if (leituraEmAndamento) {
+        pararLeitura();
+        return;
+      }
+
+      // Primeiro clique (ou reinício): cancela qualquer fala residual
+      // da fila do navegador antes de montar a nova leitura, garantindo
+      // que nunca existam duas leituras tocando ao mesmo tempo.
+      speechSynthesis.cancel();
 
       const text = document.body.innerText;
 
@@ -305,8 +323,13 @@
 
       speech.lang = 'pt-BR';
 
-      speechSynthesis.cancel();
+      // Quando a leitura termina sozinha (chegou ao fim do texto),
+      // o estado precisa voltar a "parado" para que o próximo clique
+      // seja tratado como um novo início, e não como um "parar".
+      speech.onend = () => { leituraEmAndamento = false; };
+      speech.onerror = () => { leituraEmAndamento = false; };
 
+      leituraEmAndamento = true;
       speechSynthesis.speak(speech);
     }
 

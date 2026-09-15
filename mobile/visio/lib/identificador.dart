@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:camera/camera.dart';
@@ -11,195 +9,109 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'appcolor.dart';
 import 'services/api_config.dart';
+import 'services/teachable_machine_service.dart';
+import 'services/tts_service.dart';
 import 'widgets/tts_button.dart';
 
 class SensorResult {
   final String nome;
   final String descricao;
+  final String circuito;
 
-  /// Pode ser um asset local (ex.: 'assets/images/Sensores/x.png') OU,
-  /// quando o dado vem da API real, uma URL http completa apontando para
-  /// o FOTO cadastrado no banco. Ver [_imagemResultado].
+  final double confianca;
+
   final String imagemUrl;
 
   const SensorResult({
     required this.nome,
     required this.descricao,
+    required this.circuito,
+    required this.confianca,
     required this.imagemUrl,
   });
 }
 
-class AiSensorService {
-  // Mesmo catálogo de 9 sensores exibido em sensores.dart, para manter
-  // consistência entre as duas telas.
-  static const List<SensorResult> _catalogo = [
-    SensorResult(
-      nome: 'Sensor de Temperatura',
-      descricao:
-          'Identifica variações de calor ou frio em um ambiente ou objeto.',
-      imagemUrl: 'assets/images/Sensores/sensor_temperatura.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Proximidade',
-      descricao: 'Detecta quando um objeto está próximo sem contato físico.',
-      imagemUrl: 'assets/images/Sensores/sensor_proximidade.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Umidade',
-      descricao: 'Mede a quantidade de vapor de água presente no ar.',
-      imagemUrl: 'assets/images/Sensores/sensor_umidade.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Luz (LDR)',
-      descricao: 'Mede a intensidade luminosa do ambiente.',
-      imagemUrl: 'assets/images/Sensores/sensor_luz.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Movimento (PIR)',
-      descricao:
-          'Detecta presença através da variação de calor corporal (PIR).',
-      imagemUrl: 'assets/images/Sensores/sensor_movimento.png',
-    ),
-    SensorResult(
-      nome: 'Sensor Ultrassônico (HC-SR04)',
-      descricao:
-          'Mede distâncias enviando ondas sonoras de alta frequência e '
-          'calculando o tempo que levam para retornar após colidir com um '
-          'objeto.',
-      imagemUrl: 'assets/images/Sensores/sensor_ultrassonico.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Gás / Fumaça',
-      descricao: 'Identifica gases inflamáveis ou fumaça no ambiente.',
-      imagemUrl: 'assets/images/Sensores/sensor_gas.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Pressão',
-      descricao: 'Mede a pressão atmosférica para indicar clima ou altitude.',
-      imagemUrl: 'assets/images/Sensores/sensor_pressao.png',
-    ),
-    SensorResult(
-      nome: 'Sensor de Toque',
-      descricao: 'Reconhece o contato físico direto na superfície.',
-      imagemUrl: 'assets/images/Sensores/sensor_toque.png',
-    ),
-  ];
+class IdentificacaoException implements Exception {
+  final String mensagem;
+  const IdentificacaoException(this.mensagem);
 
-  /// ATENÇÃO: isto NÃO é um modelo de visão computacional treinado — é uma
-  /// heurística simples baseada na cor/brilho médio da imagem, usada
-  /// apenas para escolher QUAL NOME buscar no catálogo. O backend não tem
-  /// nenhum endpoint de reconhecimento de imagem; o único endpoint
-  /// público disponível é a busca por NOME exato
-  /// (POST /identificador/buscar-sensor), então é isso que este método usa
-  /// depois de decidir o nome via heurística. Uma integração real de
-  /// IA/visão computacional (ex.: um modelo TFLite embarcado, ou uma
-  /// chamada a um serviço de inferência) deve substituir a lógica de
-  /// [_indicePorHeuristica] no futuro — a assinatura pública de
-  /// [analisarImagem] não precisa mudar para isso.
-  ///
-  /// Depois de escolher o nome, busca o sensor de verdade no banco via
-  /// API. Se a API não tiver esse nome cadastrado (ou estiver
-  /// indisponível), cai de volta no catálogo local fixo abaixo, para não
-  /// quebrar a tela.
-  ///
-  /// RISCO CONHECIDO, NÃO VERIFICADO: os 9 nomes abaixo ('Sensor de
-  /// Temperatura', etc.) precisam bater exatamente (sem diferenciar
-  /// maiúsculas/minúsculas) com a coluna NOME da tabela SENSOR no banco
-  /// real — o backend faz esse match com LOWER(NOME). Não tive acesso ao
-  /// conteúdo do banco para confirmar; vale conferir com uma consulta real
-  /// antes de considerar esta tela pronta para produção.
+  @override
+  String toString() => mensagem;
+}
+
+class AiSensorService {
+  static const double _confiancaMinima = 0.7;
+
   Future<SensorResult> analisarImagem(XFile imagem) async {
-    int indice = 0;
-    try {
-      final bytes = await imagem.readAsBytes();
-      indice = await _indicePorHeuristica(bytes);
-    } catch (_) {
-      // Se a decodificação falhar por qualquer motivo, cai para um
-      // resultado padrão em vez de propagar a exceção para a tela.
-      indice = 0;
+    if (!TeachableMachineService.instance.disponivel) {
+      throw const IdentificacaoException(
+        'Identificação por imagem está disponível apenas na versão Web '
+        'deste aplicativo.',
+      );
     }
 
-    final resultadoLocal = _catalogo[indice % _catalogo.length];
+    final bytes = await imagem.readAsBytes();
+    final previsao = await TeachableMachineService.instance.melhorPrevisao(
+      bytes,
+    );
 
+    if (previsao == null) {
+      throw const IdentificacaoException(
+        'Modelo de identificação não carregado. Tente novamente.',
+      );
+    }
+
+    if (previsao.probability < _confiancaMinima) {
+      throw const IdentificacaoException(
+        'Sensor não reconhecido com confiança suficiente.',
+      );
+    }
+    final nomeParaBusca = previsao.className.toLowerCase().trim();
+
+    http.Response resposta;
     try {
-      final resposta = await http.post(
+      resposta = await http.post(
         Uri.parse('${ApiConfig.baseUrl}/identificador/buscar-sensor'),
         headers: {'Accept': 'application/json'},
-        body: {'nome': resultadoLocal.nome},
+        body: {'nome': nomeParaBusca},
       );
-
-      if (resposta.statusCode == 200) {
-        final corpo = json.decode(resposta.body) as Map<String, dynamic>;
-
-        if (corpo['success'] == true && corpo['sensor'] is Map) {
-          final sensor = corpo['sensor'] as Map<String, dynamic>;
-          final foto = (sensor['FOTO'] as String?) ?? '';
-
-          return SensorResult(
-            nome: sensor['NOME'] as String? ?? resultadoLocal.nome,
-            descricao:
-                sensor['DESCRICAO'] as String? ?? resultadoLocal.descricao,
-            imagemUrl: foto.isNotEmpty
-                ? '${ApiConfig.baseUrl}/$foto'
-                : resultadoLocal.imagemUrl,
-          );
-        }
-        // success == false: banco não tem esse nome cadastrado ainda.
-        // Mantém o resultado local em vez de mostrar erro para o usuário.
-      }
     } catch (_) {
-      // Sem conexão ou API fora do ar: cai no catálogo local abaixo,
-      // igual ao comportamento anterior à integração.
+      throw const IdentificacaoException(
+        'Erro ao consultar o banco de dados. Verifique sua conexão e '
+        'tente novamente.',
+      );
     }
 
-    return resultadoLocal;
-  }
+    if (resposta.statusCode != 200) {
+      throw const IdentificacaoException(
+        'Erro ao consultar o banco de dados. Verifique sua conexão e '
+        'tente novamente.',
+      );
+    }
 
-  Future<int> _indicePorHeuristica(Uint8List bytes) async {
-    // Decodifica em uma miniatura minúscula (8x8) só para ler a cor média —
-    // suficiente para variar o resultado sem custo de processamento real.
-    final codec = await ui.instantiateImageCodec(
-      bytes,
-      targetWidth: 8,
-      targetHeight: 8,
+    final corpo = json.decode(resposta.body) as Map<String, dynamic>;
+
+    if (corpo['success'] != true || corpo['sensor'] is! Map) {
+      throw IdentificacaoException(
+        'Sensor identificado (${previsao.className}), mas não encontrado '
+        'no banco de dados.',
+      );
+    }
+
+    final sensor = corpo['sensor'] as Map<String, dynamic>;
+    final foto = sensor['FOTO'] as String?;
+
+    return SensorResult(
+      nome: sensor['NOME'] as String? ?? previsao.className,
+      descricao: sensor['DESCRICAO'] as String? ?? '',
+      circuito: sensor['CIRCUITO'] as String? ?? '',
+      confianca: previsao.probability,
+      imagemUrl: ApiConfig.resolverUrlImagem(foto) ?? '',
     );
-    final frame = await codec.getNextFrame();
-    final byteData = await frame.image.toByteData(
-      format: ui.ImageByteFormat.rawRgba,
-    );
-    frame.image.dispose();
-
-    if (byteData == null || byteData.lengthInBytes < 4) {
-      return bytes.length % _catalogo.length;
-    }
-
-    final pixels = byteData.buffer.asUint8List();
-    final totalPixels = pixels.length ~/ 4;
-    if (totalPixels == 0) return bytes.length % _catalogo.length;
-
-    var somaR = 0, somaG = 0, somaB = 0;
-    for (var i = 0; i + 3 < pixels.length; i += 4) {
-      somaR += pixels[i];
-      somaG += pixels[i + 1];
-      somaB += pixels[i + 2];
-    }
-
-    final mediaR = somaR ~/ totalPixels;
-    final mediaG = somaG ~/ totalPixels;
-    final mediaB = somaB ~/ totalPixels;
-
-    // Combina os canais de cor com o tamanho do arquivo para variar o
-    // índice escolhido de foto para foto.
-    return (mediaR + mediaG * 2 + mediaB * 3 + bytes.length) % _catalogo.length;
   }
 }
 
 class IdentificadorPage extends StatefulWidget {
-  /// Controlado pelo MainShell (ver main.dart): true apenas quando esta é
-  /// a aba atualmente visível. Usado para pausar a câmera quando o usuário
-  /// navega para outra aba — antes, por ficar em um IndexedStack, a câmera
-  /// permanecia ativa (capturando frames) mesmo em outras abas, pois seu
-  /// dispose() só era chamado ao fechar o app inteiro.
   final bool isActive;
 
   const IdentificadorPage({super.key, this.isActive = true});
@@ -217,7 +129,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
   bool _isPermissionDenied = false;
   bool _isLoading = false;
 
-  XFile? _imageFile; // <--- Alterado de File para XFile
+  XFile? _imageFile;
   SensorResult? _resultado;
   String? _errorMessage;
 
@@ -234,11 +146,8 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.isActive && !widget.isActive) {
-      // Usuário saiu desta aba: libera a câmera em vez de deixá-la
-      // capturando frames em segundo plano.
       _pausarCamera();
     } else if (!oldWidget.isActive && widget.isActive) {
-      // Usuário voltou para esta aba: reabre a câmera.
       _initCamera();
     }
   }
@@ -253,9 +162,8 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
   }
 
   Future<void> _initCamera() async {
-    if (_cameraController != null) return; // já inicializada
+    if (_cameraController != null) return; 
 
-    // Na Web, a permissão é solicitada automaticamente pelo navegador ao tentar acessar a câmera.
     if (!kIsWeb) {
       final status = await Permission.camera.request();
       if (!status.isGranted) {
@@ -287,7 +195,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
         setState(() {
           _isCameraInitialized = true;
           _isPermissionDenied = false;
-          _errorMessage = null; // Limpa erros anteriores se tiver sucesso
+          _errorMessage = null;
         });
       }
     } catch (e) {
@@ -307,6 +215,13 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
   @override
   void dispose() {
+    // CORRIGIDO (item 1 do pedido: leitura continuava em segundo plano
+    // após sair da tela): TtsService é um singleton que sobrevive além
+    // do ciclo de vida desta tela, então uma leitura em andamento nunca
+    // parava sozinha ao navegar para outra página. Chamado sem "await"
+    // de propósito — dispose() é síncrono e o widget já está sendo
+    // destruído, então só precisamos disparar o stop(), não esperá-lo.
+    TtsService.instance.stop();
     _cameraController?.dispose();
     super.dispose();
   }
@@ -327,8 +242,9 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
     } catch (e) {
       if (mounted) {
         setState(
-          () =>
-              _errorMessage = "Erro ao identificar o sensor. Tente novamente.",
+          () => _errorMessage = e is IdentificacaoException
+              ? e.mensagem
+              : "Erro ao identificar o sensor. Tente novamente.",
         );
       }
     } finally {
@@ -345,7 +261,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
     try {
       final XFile foto = await _cameraController!.takePicture();
-      await _processarImagem(foto); // <--- Passando o XFile diretamente
+      await _processarImagem(foto);
     } catch (e) {
       setState(() => _errorMessage = "Erro ao capturar a foto.");
     }
@@ -355,7 +271,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
     try {
       final XFile? foto = await _picker.pickImage(source: ImageSource.gallery);
       if (foto != null) {
-        await _processarImagem(foto); // <--- Passando o XFile diretamente
+        await _processarImagem(foto);
       }
     } catch (e) {
       setState(() => _errorMessage = "Erro ao abrir a galeria.");
@@ -419,10 +335,6 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
       ),
     );
   }
-
-  // ─────────────────────────────────────────────
-  // COMPONENTES PRESERVADOS E ADAPTADOS
-  // ─────────────────────────────────────────────
 
   Widget _buildCameraCard() {
     return Container(
@@ -492,7 +404,6 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
       );
     }
 
-    // Exibe a mensagem de erro da Web (ou mobile) no centro do quadro
     if (_errorMessage != null && !_isCameraInitialized) {
       return Center(
         child: Padding(
@@ -544,23 +455,15 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
     );
   }
 
-  /// FOTO cadastrada no banco (via API) é uma URL http; o catálogo local
-  /// de fallback usa assets do próprio app. Este helper escolhe o widget
-  /// certo conforme a origem, com o mesmo tratamento de erro de antes.
   Widget _imagemResultado(String caminho) {
     Widget errorBuilder(BuildContext c, Object e, StackTrace? s) =>
         const Icon(Icons.image_not_supported, size: 60, color: Colors.white54);
 
-    if (caminho.startsWith('http://') || caminho.startsWith('https://')) {
-      return Image.network(
-        caminho,
-        height: 120,
-        fit: BoxFit.contain,
-        errorBuilder: errorBuilder,
-      );
+    if (caminho.isEmpty) {
+      return errorBuilder(context, '', null);
     }
 
-    return Image.asset(
+    return Image.network(
       caminho,
       height: 120,
       fit: BoxFit.contain,
@@ -594,10 +497,17 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                 ),
               ),
               TtsButton(
-                text: '${_resultado!.nome}. ${_resultado!.descricao}',
+                text:
+                    '${_resultado!.nome}. ${_resultado!.descricao}'
+                    '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}',
                 tooltip: 'Ouvir resultado',
               ),
             ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Confiança: ${(_resultado!.confianca * 100).toStringAsFixed(1)}%',
+            style: TextStyle(color: context.textSoft, fontSize: 13),
           ),
           const SizedBox(height: 16),
           Center(
@@ -619,6 +529,21 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
             _resultado!.descricao,
             style: TextStyle(color: context.textSoft, height: 1.4),
           ),
+          if (_resultado!.circuito.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text(
+              'Circuito:',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryLight,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _resultado!.circuito,
+              style: TextStyle(color: context.textSoft, height: 1.4),
+            ),
+          ],
         ],
       ),
     );

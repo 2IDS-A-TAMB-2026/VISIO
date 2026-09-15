@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
+import 'services/api_config.dart';
 
 class SensoresPage extends StatefulWidget {
   const SensoresPage({super.key});
@@ -42,7 +43,7 @@ class _SensoresPageState extends State<SensoresPage> {
     try {
       final resposta = await ApiClient.get('sensores') as Map<String, dynamic>;
 
-      // Verifica se a API informou erro
+     
       if (resposta['erro'] == true) {
         if (!mounted) return;
 
@@ -56,7 +57,6 @@ class _SensoresPageState extends State<SensoresPage> {
         return;
       }
 
-      // Pega somente o conteúdo de "dados"
       final dados = resposta['dados'];
 
       if (dados is! List) {
@@ -227,7 +227,7 @@ class _SensoresPageState extends State<SensoresPage> {
                                     crossAxisCount: 2,
                                     crossAxisSpacing: 12,
                                     mainAxisSpacing: 12,
-                                    childAspectRatio: 0.5,
+                                    childAspectRatio: 0.4,
                                   ),
                               itemCount: _filtrados.length,
                               itemBuilder: (_, i) =>
@@ -299,13 +299,7 @@ class _SensoresPageState extends State<SensoresPage> {
               borderRadius: BorderRadius.circular(8),
 
               child: (foto != null && foto.isNotEmpty)
-                  ? Image.asset(
-                      foto,
-                      height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => _semFoto(color),
-                    )
+                  ? _imagemSensor(foto, color)
                   : _semFoto(color),
             ),
             const SizedBox(height: 7),
@@ -320,6 +314,29 @@ class _SensoresPageState extends State<SensoresPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _imagemSensor(String foto, Color color) {
+    Widget errorBuilder(BuildContext c, Object e, StackTrace? s) =>
+        _semFoto(color);
+
+  
+    final urlResolvida = ApiConfig.resolverUrlImagem(foto);
+    if (urlResolvida == null) {
+      return _semFoto(color);
+    }
+
+    final ImageProvider provider = urlResolvida.startsWith('assets/')
+        ? AssetImage(urlResolvida)
+        : NetworkImage(urlResolvida);
+
+    return Image(
+      image: provider,
+      height: 150,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (c, e, s) => errorBuilder(c, e, s),
     );
   }
 
@@ -339,11 +356,18 @@ class _SensoresPageState extends State<SensoresPage> {
     final id = sensorResumo['ID_SENSOR'];
     final color = _corDoSensor(sensorResumo['NOME'] as String? ?? '');
 
+ 
     Map<String, dynamic> sensor = sensorResumo;
     try {
       final corpo = await ApiClient.get('sensor/$id') as Map<String, dynamic>;
-      sensor = corpo;
-    } catch (_) {}
+
+      final dados = corpo['dados'];
+      if (corpo['erro'] != true && dados is Map) {
+        sensor = Map<String, dynamic>.from(dados);
+      }
+     
+    } catch (_) {
+    }
 
     if (!mounted) return;
 
