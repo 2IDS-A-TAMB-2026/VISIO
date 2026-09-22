@@ -112,15 +112,21 @@ class AuthService extends ChangeNotifier {
       );
     }
 
+    // emailValido() já ignora espaços nas pontas (usa trim), então um
+    // e-mail digitado com espaço no fim (comum no autocorrect do teclado
+    // do celular) passa na validação — mas precisa ir limpo para o
+    // servidor, que compara o e-mail exatamente como recebido.
+    final emailLimpo = email.trim();
+
     final client = criarHttpClient();
     try {
       final resposta = await client.post(
-        Uri.parse('${ApiConfig.baseUrl.replaceAll('', '')}/login'),
+        Uri.parse('${ApiConfig.baseUrl.replaceAll('/api', '')}/login'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: json.encode({'email': email, 'senha': senha}),
+        body: json.encode({'email': emailLimpo, 'senha': senha}),
       );
 
       Map<String, dynamic>? corpo;
@@ -161,6 +167,9 @@ class AuthService extends ChangeNotifier {
       );
     }
 
+    // Mesmo motivo do loginUsuario: enviar o e-mail sem espaços nas pontas.
+    final emailLimpo = email.trim();
+
     final client = criarHttpClient();
     try {
       final resposta = await client.post(
@@ -169,7 +178,7 @@ class AuthService extends ChangeNotifier {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: json.encode({'email': email, 'senha': senha}),
+        body: json.encode({'email': emailLimpo, 'senha': senha}),
       );
 
       Map<String, dynamic>? corpo;

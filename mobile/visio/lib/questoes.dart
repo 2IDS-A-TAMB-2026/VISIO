@@ -106,8 +106,9 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> _confirmarResposta() async {
-    if (_opcaoSelecionadaId == null || _feedback != null || _acaoEmAndamento)
+    if (_opcaoSelecionadaId == null || _feedback != null || _acaoEmAndamento) {
       return;
+    }
 
     setState(() => _acaoEmAndamento = true);
 
@@ -437,7 +438,7 @@ class _QuizPageState extends State<QuizPage> {
             border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 6),
               ),
@@ -464,10 +465,10 @@ class _QuizPageState extends State<QuizPage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _nivelCor(nivel).withOpacity(0.1),
+                        color: _nivelCor(nivel).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: _nivelCor(nivel).withOpacity(0.3),
+                          color: _nivelCor(nivel).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
@@ -512,13 +513,13 @@ class _QuizPageState extends State<QuizPage> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: acertou
-                        ? AppColors.success.withOpacity(0.1)
-                        : AppColors.danger.withOpacity(0.1),
+                        ? AppColors.success.withValues(alpha: 0.1)
+                        : AppColors.danger.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: acertou
-                          ? AppColors.success.withOpacity(0.3)
-                          : AppColors.danger.withOpacity(0.3),
+                          ? AppColors.success.withValues(alpha: 0.3)
+                          : AppColors.danger.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -609,14 +610,14 @@ class _QuizPageState extends State<QuizPage> {
     if (respondido) {
       if (idAlt == corretaId) {
         itemBorderColor = AppColors.success;
-        itemBgColor = AppColors.success.withOpacity(0.1);
+        itemBgColor = AppColors.success.withValues(alpha: 0.1);
       } else if (selecionado) {
         itemBorderColor = AppColors.danger;
-        itemBgColor = AppColors.danger.withOpacity(0.1);
+        itemBgColor = AppColors.danger.withValues(alpha: 0.1);
       }
     } else if (selecionado) {
       itemBorderColor = const Color(0xFF007BFF);
-      itemBgColor = const Color(0xFF007BFF).withOpacity(0.1);
+      itemBgColor = const Color(0xFF007BFF).withValues(alpha: 0.1);
     }
 
     return GestureDetector(
@@ -704,7 +705,7 @@ class _QuizPageState extends State<QuizPage> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: cor.withOpacity(0.1),
+                  color: cor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Text(

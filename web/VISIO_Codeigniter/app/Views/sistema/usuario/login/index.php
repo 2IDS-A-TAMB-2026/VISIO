@@ -463,9 +463,9 @@
     <!-- LADO ESQUERDO: Marca VISIO (Logo Dinâmica) -->
     <div class="login-branding">
       <img class="theme-img logo-img" 
-           src="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>"
-           data-light="<?= base_url('assets/images/logos/Icone/IconeLight.png') ?>"
-           data-dark="<?= base_url('assets/images/logos/Icone/IconeDark.png') ?>" 
+           src="<?= base_url('assets/images/logos/Icone/IconeDark2.png') ?>"
+           data-light="<?= base_url('assets/images/logos/Icone/IconeLight2.png') ?>"
+           data-dark="<?= base_url('assets/images/logos/Icone/IconeDark2.png') ?>" 
            alt="Logo VISIO">
       
       <h2>Bem-vindo!</h2>
@@ -497,30 +497,26 @@
           <i class="fa-solid fa-right-to-bracket"></i> Entrar com cartão
         </button>
 
-        <?php $googleClientId = env('GOOGLE_CLIENT_ID'); ?>
-        <?php if (!empty($googleClientId)): ?>
-          <!-- Botão oficial "Sign In With Google" — renderizado pela
-               própria biblioteca do Google (script no <head>), que
-               segue as diretrizes de marca deles. Ao ser clicado, o
-               ID token é enviado via POST para login/google
-               (AuthController::loginGoogle), configurado abaixo pelo
-               atributo data-login_uri. -->
-          <div style="margin-top: 12px; display: flex; justify-content: center;">
-            <div id="g_id_onload"
-                 data-client_id="<?= esc($googleClientId) ?>"
-                 data-login_uri="<?= base_url('/login/google') ?>"
-                 data-auto_prompt="false">
-            </div>
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="pill"
-                 data-theme="outline"
-                 data-text="continue_with"
-                 data-size="large"
-                 data-width="300"
-                 data-locale="pt-BR">
-            </div>
-          </div>
+       <?php $googleClientId = env('GOOGLE_CLIENT_ID'); ?>
+
+<?php if (!empty($googleClientId)): ?>
+    <div class="google-login">
+        <div id="g_id_onload"
+             data-client_id="<?= esc($googleClientId) ?>"
+             data-login_uri="<?= base_url('/login/google') ?>"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="pill"
+             data-theme="outline"
+             data-text="continue_with"
+             data-size="large"
+             data-width="300"
+             data-locale="pt-BR">
+        </div>
+    </div>
         <?php endif; ?>
 
       </form>
@@ -696,9 +692,9 @@ btnCartao.addEventListener('click', function() {
     if (resultado.dismiss === Swal.DismissReason.timer) {
 
       Swal.fire({
-        title: "Nenhum cartão identificado",
-        text: "Aproxime um cartão do leitor.",
-        icon: "warning",
+        title: "Erro ao identificar cartão",
+        text: "Tente novamente.",
+        icon: "error",
         confirmButtonText: "OK",
         confirmButtonColor: "#2563eb"
       });

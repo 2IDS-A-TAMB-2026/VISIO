@@ -1,4 +1,3 @@
-
 <?php
 
 use CodeIgniter\Router\RouteCollection;
@@ -123,7 +122,7 @@ $routes->group(
         // --------------------------------------------------------
         // AUTENTICAÇÃO API
         // --------------------------------------------------------
-
+    
         $routes->post(
             'login',
             '\App\Controllers\AuthController::loginUsuario'
@@ -143,7 +142,7 @@ $routes->group(
         // --------------------------------------------------------
         // USUÁRIOS
         // --------------------------------------------------------
-
+    
         // Apenas administrador
         $routes->get(
             'usuarios',
@@ -164,7 +163,7 @@ $routes->group(
         // --------------------------------------------------------
         // PERFIL DO USUÁRIO
         // --------------------------------------------------------
-
+    
         $routes->get(
             'perfil',
             '\App\Controllers\UsuarioController::perfil'
@@ -179,7 +178,7 @@ $routes->group(
         // --------------------------------------------------------
         // CARTÃO
         // --------------------------------------------------------
-
+    
         $routes->post(
             'cartao/verificar',
             'APICartaoController::verificar'
@@ -189,7 +188,7 @@ $routes->group(
         // --------------------------------------------------------
         // SENSORES
         // --------------------------------------------------------
-
+    
         // Público
         $routes->get(
             'sensores',
@@ -228,9 +227,19 @@ $routes->group(
 
 
         // --------------------------------------------------------
+        // ESTATÍSTICAS — TELA INICIAL DO MOBILE
+        // --------------------------------------------------------
+    
+        $routes->get(
+            'estatisticas',
+            'APIEstatisticaController::index'
+        );
+
+
+        // --------------------------------------------------------
         // QUIZ — FLUTTER / API
         // --------------------------------------------------------
-
+    
         // Fluxo baseado em sessão
         $routes->get(
             'quiz',
@@ -273,7 +282,7 @@ $routes->group(
         // --------------------------------------------------------
         // HISTÓRICO
         // --------------------------------------------------------
-
+    
         $routes->get(
             'historico',
             '\App\Controllers\RespostaController::historico'
@@ -288,7 +297,7 @@ $routes->group(
         // --------------------------------------------------------
         // ADMIN — DASHBOARD
         // --------------------------------------------------------
-
+    
         $routes->get(
             'admin/dashboard',
             'AdminController::dashboard',
@@ -311,7 +320,7 @@ $routes->group(
         // --------------------------------------------------------
         // ADMIN — USUÁRIOS
         // --------------------------------------------------------
-
+    
         $routes->get(
             'admin/usuarios',
             'AdminController::usuarios',
@@ -334,7 +343,7 @@ $routes->group(
         // --------------------------------------------------------
         // ADMIN — SENSORES
         // --------------------------------------------------------
-
+    
         $routes->get(
             'admin/sensores',
             'AdminController::sensores',
@@ -363,7 +372,7 @@ $routes->group(
         // --------------------------------------------------------
         // ADMIN — PERGUNTAS
         // --------------------------------------------------------
-
+    
         $routes->get(
             'admin/perguntas',
             'AdminController::perguntas',
@@ -392,7 +401,7 @@ $routes->group(
         // --------------------------------------------------------
         // RECUPERAÇÃO DE SENHA — API
         // --------------------------------------------------------
-
+    
         $routes->post(
             'usuario/esqueceu_senha',
             '\App\Controllers\RecuperacaoSenhaController::solicitar'
@@ -407,7 +416,7 @@ $routes->group(
         // --------------------------------------------------------
         // IDENTIFICADOR — API
         // --------------------------------------------------------
-
+    
         $routes->post(
             'identificador/buscar-sensor',
             '\App\Controllers\IdentificadorController::buscarSensor'
@@ -417,7 +426,7 @@ $routes->group(
         // --------------------------------------------------------
         // CONTATO — API
         // --------------------------------------------------------
-
+    
         $routes->post(
             'contato/enviar',
             '\App\Controllers\ContatoController::enviar'
@@ -504,7 +513,7 @@ $routes->group(
         // --------------------------------------------------------
         // DASHBOARD
         // --------------------------------------------------------
-
+    
         $routes->get(
             'dashboard',
             'AdminController::dashboard'
@@ -524,7 +533,7 @@ $routes->group(
         // --------------------------------------------------------
         // USUÁRIOS
         // --------------------------------------------------------
-
+    
         $routes->get(
             'usuarios',
             'AdminController::usuarios'
@@ -544,7 +553,7 @@ $routes->group(
         // --------------------------------------------------------
         // SENSORES
         // --------------------------------------------------------
-
+    
         $routes->get(
             'sensores',
             'AdminController::sensores'
@@ -579,7 +588,7 @@ $routes->group(
         // --------------------------------------------------------
         // PERGUNTAS
         // --------------------------------------------------------
-
+    
         $routes->get(
             'perguntas',
             'AdminController::perguntas'
@@ -613,24 +622,28 @@ $routes->group(
 );
 
 
-// ============================================================
-// CORS / OPTIONS / PREFLIGHT
-// ============================================================
-
 $routes->options(
-    'api/(:any)',
+    '(:any)',
     static function () {
-        return service('response')
-            ->setHeader('Access-Control-Allow-Origin', '*')
-            ->setHeader(
-                'Access-Control-Allow-Headers',
-                'Content-Type, Authorization, X-Requested-With, Accept'
-            )
-            ->setHeader(
-                'Access-Control-Allow-Methods',
-                'GET, POST, PUT, DELETE, OPTIONS'
-            )
-            ->setStatusCode(204);
+        $origem = service('request')->getHeaderLine('Origin');
+        $response = service('response')->setStatusCode(204);
+
+        if ($origem !== '') {
+            $response
+                ->setHeader('Access-Control-Allow-Origin', $origem)
+                ->setHeader('Access-Control-Allow-Credentials', 'true')
+                ->setHeader(
+                    'Access-Control-Allow-Headers',
+                    'Content-Type, Authorization, X-Requested-With, Accept'
+                )
+                ->setHeader(
+                    'Access-Control-Allow-Methods',
+                    'GET, POST, PUT, DELETE, OPTIONS'
+                )
+                ->setHeader('Vary', 'Origin');
+        }
+
+        return $response;
     }
 );
 $routes->post('/login/cartao/enviar', 'AuthController::receberCartao');

@@ -318,7 +318,7 @@ class _SensoresPageState extends State<SensoresPage> {
                   : _semFoto(),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 25),
           Text(
             nome,
             textAlign: TextAlign.center,
@@ -365,12 +365,16 @@ class _SensoresPageState extends State<SensoresPage> {
     final urlResolvida = ApiConfig.resolverUrlImagem(foto);
     if (urlResolvida == null) return _semFoto();
 
-    final ImageProvider provider = urlResolvida.startsWith('assets/')
-        ? AssetImage(urlResolvida)
-        : NetworkImage(urlResolvida);
-
+    // No Flutter Web (porta 5000) as fotos vêm de outra origem (Apache,
+    // porta 80), que não envia cabeçalhos CORS para arquivos estáticos.
+    // Com a estratégia padrão o Flutter baixa os bytes via XHR e o
+    // navegador bloqueia; com "prefer" ele usa um <img> — o mesmo que a
+    // versão Web já usa e que não depende de CORS. Fora da web é ignorado.
     return Image(
-      image: provider,
+      image: NetworkImage(
+        urlResolvida,
+        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+      ),
       fit: BoxFit.contain,
       errorBuilder: (c, e, s) => _semFoto(),
     );

@@ -480,9 +480,9 @@
     <!-- LADO DIREITO: Branding -->
     <div class="login-branding">
       <img class="theme-img logo"
-           src="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
-           data-light="<?= base_url('assets/images/logos/Logo/LogoLight.png') ?>"
-           data-dark="<?= base_url('assets/images/logos/Logo/LogoDark.png') ?>"
+           src="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>"
+           data-light="<?= base_url('assets/images/logos/Logo/LogoLight2.png') ?>"
+           data-dark="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>"
            alt="Logo VISIO">
       
       <h2>Painel Administrativo</h2>

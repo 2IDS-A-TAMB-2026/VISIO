@@ -388,4 +388,4 @@ INSERT INTO RESPONDE (FK_CPF_USUARIO, FK_ID_ALTERNATIVA) VALUES
 -- flutter run -d web-server --web-hostname (ip) --web-port 5000
 
 -- Acesso pelo navegador:
--- https://(ip)
+-- https://(ip):5000

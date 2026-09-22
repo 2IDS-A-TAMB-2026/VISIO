@@ -140,8 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                         border: Border.all(color: mainCardBorder),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(
-                              isDark ? 0.4 : 0.08,
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.4 : 0.08,
                             ),
                             blurRadius: 30,
                             offset: const Offset(0, 10),
@@ -295,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
         border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -334,8 +334,9 @@ class _LoginPageState extends State<LoginPage> {
               decoration: _inputStyle('seu@email.com', inputBg, inputBorder),
               validator: (v) {
                 if (v == null || v.isEmpty) return 'Campo obrigatório';
-                if (!AuthService.instance.emailValido(v))
+                if (!AuthService.instance.emailValido(v)) {
                   return 'E-mail inválido';
+                }
                 return null;
               },
             ),

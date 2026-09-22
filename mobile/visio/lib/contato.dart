@@ -20,8 +20,8 @@ class _ContactPageState extends State<ContactPage> {
   bool _enviado = false;
 
   // Estados de acessibilidade locais
-  double _textScale = 1.0;
-  bool _highContrast = false;
+  final double _textScale = 1.0;
+  final bool _highContrast = false;
 
   Future<void> _enviar() async {
     if (!_formKey.currentState!.validate()) return;
@@ -41,9 +41,9 @@ class _ContactPageState extends State<ContactPage> {
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.mensagem)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.mensagem)));
     } catch (_) {
       if (!mounted) return;
       setState(() => _loading = false);
@@ -53,146 +53,42 @@ class _ContactPageState extends State<ContactPage> {
     }
   }
 
-  void _showAccessibilityDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final isDark = Theme.of(context).brightness == Brightness.dark;
-            return Container(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.accessibility_new, color: AppColors.primary),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Acessibilidade',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 24),
-
-                  // Ajuste de Tamanho da Fonte
-                  const Text(
-                    'Tamanho do Texto',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                  ),
-                  Row(
-                    children: [
-                      const Text('A-', style: TextStyle(fontSize: 12)),
-                      Expanded(
-                        child: Slider(
-                          value: _textScale,
-                          min: 0.85,
-                          max: 1.3,
-                          divisions: 3,
-                          label: '${(_textScale * 100).round()}%',
-                          onChanged: (value) {
-                            setModalState(() => _textScale = value);
-                            setState(() => _textScale = value);
-                          },
-                        ),
-                      ),
-                      const Text('A+', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Switch Alto Contraste
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Alto Contraste'),
-                    value: _highContrast,
-                    onChanged: (val) {
-                      setModalState(() => _highContrast = val);
-                      setState(() => _highContrast = val);
-                    },
-                  ),
-
-                  // Atalho Alternar Tema
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-                    title: Text(isDark ? 'Ativar Tema Claro' : 'Ativar Tema Escuro'),
-                    onTap: () {
-                      if (widget.onToggleTheme != null) {
-                        widget.onToggleTheme!();
-                      }
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(_textScale),
-      ),
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(_textScale)),
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 32),
-              const SizedBox(width: 10),
-              const Text(
-                'Contato',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+              Image.asset(
+                isDark
+                    ? 'assets/images/logos/Logo/LogoDark2.png'
+                    : 'assets/images/logos/Logo/LogoLight2.png',
+                height: 28,
               ),
+              const SizedBox(width: 10),
             ],
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.accessibility_new_rounded),
-              tooltip: 'Acessibilidade',
-              onPressed: () => _showAccessibilityDialog(context),
-            ),
-            IconButton(
-              icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-              ),
-              tooltip: isDark ? 'Tema Claro' : 'Tema Escuro',
-              onPressed: () {
-                if (widget.onToggleTheme != null) {
-                  widget.onToggleTheme!();
-                }
-              },
-            ),
-            const SizedBox(width: 8),
-          ],
         ),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: _enviado ? _buildSucesso(context) : _buildConteudo(context),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
+                child: _enviado
+                    ? _buildSucesso(context)
+                    : _buildConteudo(context),
               ),
             ),
           ),
@@ -251,7 +147,11 @@ class _ContactPageState extends State<ContactPage> {
         const SizedBox(height: 12),
         const Text(
           'Entre em Contato',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.5,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -331,7 +231,10 @@ class _ContactPageState extends State<ContactPage> {
             TextFormField(
               controller: msgCtrl,
               maxLines: 4,
-              decoration: _inputDecoration('Sua mensagem', Icons.chat_bubble_outline),
+              decoration: _inputDecoration(
+                'Sua mensagem',
+                Icons.chat_bubble_outline,
+              ),
               validator: (v) => v!.isEmpty ? 'Escreva sua mensagem' : null,
             ),
             const SizedBox(height: 24),
@@ -353,7 +256,10 @@ class _ContactPageState extends State<ContactPage> {
                       icon: const Icon(Icons.send_rounded, size: 18),
                       label: const Text(
                         'Enviar Mensagem',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
             ),
@@ -468,7 +374,11 @@ class _ContactPageState extends State<ContactPage> {
           Text(
             'Obrigado pelo contato. Nossa equipe analisará sua mensagem e responderá o mais breve possível.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: context.textMuted, fontSize: 14, height: 1.5),
+            style: TextStyle(
+              color: context.textMuted,
+              fontSize: 14,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 32),
           SizedBox(
@@ -478,7 +388,9 @@ class _ContactPageState extends State<ContactPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () => Navigator.pop(context),
               child: const Text('Voltar'),

@@ -10,7 +10,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * Cors
  *
  * Permite que o Flutter Web (rodando em uma origem diferente da API — ex.:
- * http://10.141.130.113:PORTA durante `flutter run -d chrome`, ou onde o build
+ * http://10.141.129.9:PORTA durante `flutter run -d chrome`, ou onde o build
  * web final for hospedado) consulte este backend mantendo a sessão PHP
  * (cookie), que é como AuthController/QuizController/etc. autenticam hoje.
  *
@@ -34,7 +34,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * qualquer Origin recebida. Antes de expor a API além da rede local,
  * troque $origensPermitidas por uma lista fixa dos domínios reais do
  * Flutter Web em produção — ex.:
- *   private ?array $origensPermitidas = ['http://10.141.130.113:8080'];
+ *   private ?array $origensPermitidas = ['http://10.141.129.9:8080'];
  */
 class Cors implements FilterInterface
 {

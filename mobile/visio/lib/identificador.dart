@@ -202,8 +202,24 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
         setState(() {
           _isCameraInitialized = false;
           if (kIsWeb) {
-            _errorMessage =
-                "Câmera bloqueada ou indisponível.\nCertifique-se de permitir o acesso no navegador.";
+            // getUserMedia() só funciona em "contexto seguro": HTTPS, ou
+            // http://localhost / http://127.0.0.1. Rodando em qualquer
+            // outro endereço (ex.: o IP da rede, http://10.x.x.x:5000) o
+            // navegador bloqueia a câmera por conta própria — não é algo
+            // que o app consiga contornar. Ver:
+            // https://developer.mozilla.org/docs/Web/API/MediaDevices/getUserMedia
+            final origemInsegura = !Uri.base.isScheme('https') &&
+                Uri.base.host != 'localhost' &&
+                Uri.base.host != '127.0.0.1';
+
+            final porta = Uri.base.hasPort ? ':${Uri.base.port}' : '';
+            final urlLocalhost = 'http://localhost$porta';
+
+            _errorMessage = origemInsegura
+                ? "O navegador bloqueia a câmera neste endereço (${Uri.base.host}) "
+                    "porque não é uma conexão segura.\n"
+                    "Abra o app por $urlLocalhost nesta mesma máquina, ou publique com HTTPS."
+                : "Câmera bloqueada ou indisponível.\nCertifique-se de permitir o acesso no navegador.";
           } else {
             _errorMessage = "Erro ao carregar câmera: $e";
           }
@@ -339,7 +355,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                                     Shadow(
                                       color: const Color(
                                         0xFF2563EB,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 20,
                                       offset: const Offset(0, 4),
                                     ),
@@ -355,7 +371,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.only(bottom: 20),
                                 decoration: BoxDecoration(
-                                  color: AppColors.danger.withOpacity(0.2),
+                                  color: AppColors.danger.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(color: AppColors.danger),
                                 ),
@@ -454,7 +470,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF030712).withOpacity(0.8) : Colors.white,
+        color: isDark ? const Color(0xFF030712).withValues(alpha: 0.8) : Colors.white,
         border: Border(
           bottom: BorderSide(
             color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
@@ -485,7 +501,7 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
         border: Border.all(color: const Color(0xFF2563EB), width: 2),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2563EB).withOpacity(0.2),
+            color: const Color(0xFF2563EB).withValues(alpha: 0.2),
             blurRadius: 16,
             spreadRadius: 2,
           ),
@@ -588,10 +604,13 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
       return errorBuilder(context, '', null);
     }
 
+    // Foto do sensor vem do Apache (outra origem que o Flutter Web, sem
+    // CORS em arquivos estáticos): usa <img> em vez de baixar os bytes.
     return Image.network(
       caminho,
       height: 140,
       fit: BoxFit.contain,
+      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
       errorBuilder: errorBuilder,
     );
   }
@@ -608,10 +627,10 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0B132B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF2563EB).withOpacity(0.5)),
+        border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -634,11 +653,35 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                   ),
                 ),
               ),
-              TtsButton(
-                text:
-                    '${_resultado!.nome}. ${_resultado!.descricao}'
-                    '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}',
-                tooltip: 'Ouvir resultado',
+              // TtsButton some sozinho quando o "Modo fala" está desligado
+              // (comportamento esperado — ver TtsButton.build). Em vez de
+              // simplesmente sumir sem explicação, mostra uma dica curta
+              // apontando para onde ativar. ListenableBuilder reage caso o
+              // usuário ligue o "Modo fala" pelo painel de acessibilidade
+              // (mesmo Stack, ver AccessibilityPanel logo abaixo) sem sair
+              // desta tela.
+              ListenableBuilder(
+                listenable: TtsService.instance,
+                builder: (context, _) {
+                  if (TtsService.instance.enabled) {
+                    return TtsButton(
+                      text:
+                          '${_resultado!.nome}. ${_resultado!.descricao}'
+                          '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}',
+                      tooltip: 'Ouvir resultado',
+                    );
+                  }
+                  return Tooltip(
+                    message:
+                        'Ative "Modo fala" no painel de acessibilidade '
+                        '(canto inferior direito) para ouvir o resultado.',
+                    child: Icon(
+                      Icons.volume_off_outlined,
+                      size: 20,
+                      color: textColor.withValues(alpha: 0.5),
+                    ),
+                  );
+                },
               ),
             ],
           ),

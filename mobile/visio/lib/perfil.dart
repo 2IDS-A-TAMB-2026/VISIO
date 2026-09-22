@@ -432,18 +432,42 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 
   Widget _buildFoto(BuildContext context) {
-    ImageProvider? imagem;
+    // Foto recém-escolhida (ainda não enviada): está em memória.
+    ImageProvider? imagemLocal;
+    // Foto já salva no servidor: carregada pela URL.
+    String? urlRemota;
 
     if (_novaFotoBytes != null) {
-      imagem = MemoryImage(_novaFotoBytes!);
+      imagemLocal = MemoryImage(_novaFotoBytes!);
     } else if (!_fotoFalhouAoCarregar) {
-     
-      final urlResolvida = ApiConfig.resolverUrlImagem(_fotoAtualPath);
-      if (urlResolvida != null) {
-        imagem = urlResolvida.startsWith('assets/')
-            ? AssetImage(urlResolvida)
-            : NetworkImage(urlResolvida);
-      }
+      urlRemota = ApiConfig.resolverUrlImagem(_fotoAtualPath);
+    }
+
+    // A foto do servidor NÃO pode ir num DecorationImage: no Flutter Web ela
+    // vem de outra origem (Apache, porta 80) sem CORS para arquivos
+    // estáticos, então precisa ser exibida como <img>
+    // (webHtmlElementStrategy.prefer), e só o widget Image sabe fazer isso.
+    Widget? conteudo;
+    if (urlRemota != null) {
+      conteudo = ClipRRect(
+        borderRadius: BorderRadius.circular(52),
+        child: Image.network(
+          urlRemota,
+          fit: BoxFit.cover,
+          webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+          errorBuilder: (ctx, erro, stack) {
+            // O errorBuilder roda durante o build: não dá para chamar
+            // setState aqui, então marca a falha logo após o frame.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || _fotoFalhouAoCarregar) return;
+              setState(() => _fotoFalhouAoCarregar = true);
+            });
+            return const Icon(Icons.person, size: 40);
+          },
+        ),
+      );
+    } else if (imagemLocal == null) {
+      conteudo = const Icon(Icons.person, size: 40);
     }
 
     return GestureDetector(
@@ -458,20 +482,11 @@ class _PerfilPageState extends State<PerfilPage> {
               shape: BoxShape.circle,
               color: AppColors.primary.withValues(alpha: 0.15),
               border: Border.all(color: context.borderColor),
-              image: imagem != null
-                  ? DecorationImage(
-                      image: imagem,
-                      fit: BoxFit.cover,
-                   
-                      onError: (exception, stackTrace) {
-                        if (!mounted) return;
-                        if (_fotoFalhouAoCarregar) return;
-                        setState(() => _fotoFalhouAoCarregar = true);
-                      },
-                    )
+              image: imagemLocal != null
+                  ? DecorationImage(image: imagemLocal, fit: BoxFit.cover)
                   : null,
             ),
-            child: imagem == null ? const Icon(Icons.person, size: 40) : null,
+            child: conteudo,
           ),
           Positioned(
             bottom: 0,

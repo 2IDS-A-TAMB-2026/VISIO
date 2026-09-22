@@ -25,9 +25,11 @@ class _ForgotPageState extends State<ForgotPage> {
     setState(() => _loading = true);
 
     try {
-      final corpo = await ApiClient.postForm(_rotaSolicitar, {
-        'email': emailCtrl.text.trim(),
-      }) as Map<String, dynamic>;
+      final corpo =
+          await ApiClient.postForm(_rotaSolicitar, {
+                'email': emailCtrl.text.trim(),
+              })
+              as Map<String, dynamic>;
 
       if (!mounted) return;
       setState(() {
@@ -61,19 +63,31 @@ class _ForgotPageState extends State<ForgotPage> {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
     // CORES ADAPTÁVEIS AO TEMA
-    final backgroundColor = isDark ? const Color(0xFF030712) : const Color(0xFFF1F5F9);
+    final backgroundColor = isDark
+        ? const Color(0xFF030712)
+        : const Color(0xFFF1F5F9);
     final mainCardGradient = isDark
         ? const [Color(0xFF0B132B), Color(0xFF1C2A4A)]
         : [Colors.white, const Color(0xFFE2E8F0)];
-    final mainCardBorder = isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1);
+    final mainCardBorder = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFCBD5E1);
 
     final formBgColor = isDark ? const Color(0xFF0D1B3A) : Colors.white;
-    final formBorderColor = isDark ? const Color(0xFF1E3A8A) : const Color(0xFFE2E8F0);
+    final formBorderColor = isDark
+        ? const Color(0xFF1E3A8A)
+        : const Color(0xFFE2E8F0);
 
     final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final bodyTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
-    final inputBgColor = isDark ? const Color(0xFF070F26) : const Color(0xFFF8FAFC);
-    final inputBorderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1);
+    final bodyTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
+    final inputBgColor = isDark
+        ? const Color(0xFF070F26)
+        : const Color(0xFFF8FAFC);
+    final inputBorderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFCBD5E1);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -88,7 +102,10 @@ class _ForgotPageState extends State<ForgotPage> {
               Expanded(
                 child: Center(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 24,
+                    ),
                     child: Container(
                       width: 900,
                       decoration: BoxDecoration(
@@ -101,7 +118,9 @@ class _ForgotPageState extends State<ForgotPage> {
                         border: Border.all(color: mainCardBorder),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(isDark ? 0.4 : 0.08),
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.4 : 0.08,
+                            ),
                             blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
@@ -113,18 +132,36 @@ class _ForgotPageState extends State<ForgotPage> {
                               children: [
                                 Expanded(
                                   child: _enviado
-                                      ? _buildSuccessSide(titleTextColor, bodyTextColor)
-                                      : _buildFormSide(formBgColor, formBorderColor, titleTextColor, bodyTextColor, inputBgColor, inputBorderColor),
+                                      ? _buildSuccessSide(
+                                          titleTextColor,
+                                          bodyTextColor,
+                                        )
+                                      : _buildFormSide(
+                                          formBgColor,
+                                          formBorderColor,
+                                          titleTextColor,
+                                          bodyTextColor,
+                                          inputBgColor,
+                                          inputBorderColor,
+                                        ),
                                 ),
-                                Expanded(child: _buildBannerSide(titleTextColor, bodyTextColor, isDark)),
                               ],
                             )
                           : Column(
                               children: [
                                 _enviado
-                                    ? _buildSuccessSide(titleTextColor, bodyTextColor)
-                                    : _buildFormSide(formBgColor, formBorderColor, titleTextColor, bodyTextColor, inputBgColor, inputBorderColor),
-                                _buildBannerSide(titleTextColor, bodyTextColor, isDark),
+                                    ? _buildSuccessSide(
+                                        titleTextColor,
+                                        bodyTextColor,
+                                      )
+                                    : _buildFormSide(
+                                        formBgColor,
+                                        formBorderColor,
+                                        titleTextColor,
+                                        bodyTextColor,
+                                        inputBgColor,
+                                        inputBorderColor,
+                                      ),
                               ],
                             ),
                     ),
@@ -141,13 +178,22 @@ class _ForgotPageState extends State<ForgotPage> {
     );
   }
 
-  Widget _buildTopNavBar(BuildContext context, bool isDark, Color titleColor, Color textColor) {
+  Widget _buildTopNavBar(
+    BuildContext context,
+    bool isDark,
+    Color titleColor,
+    Color textColor,
+  ) {
     return Container(
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF030712) : Colors.white,
-        border: Border(bottom: BorderSide(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))),
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -162,81 +208,20 @@ class _ForgotPageState extends State<ForgotPage> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _navButton(Icons.home, 'Início', () => Navigator.pop(context), textColor),
-                  _navButton(Icons.info_outline, 'Sobre Nós', () {}, textColor),
-                  _navButton(Icons.developer_board, 'Sensores', () {}, textColor),
-                  _navButton(Icons.help_outline, 'Questões', () {}, textColor),
-                  _navButton(Icons.login, 'Login', () => Navigator.pop(context), textColor, isActive: true),
-                  const SizedBox(width: 8),
-                  Icon(Icons.settings, color: textColor, size: 20),
-                ],
-              ),
-            ),
-          ),
+         
         ],
       ),
     );
   }
 
-  Widget _navButton(IconData icon, String label, VoidCallback onTap, Color textColor, {bool isActive = false}) {
-    final activeColor = const Color(0xFF0284C7);
-    return TextButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 16, color: isActive ? activeColor : textColor),
-      label: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? activeColor : textColor,
-          fontSize: 12,
-          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBannerSide(Color titleColor, Color bodyColor, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Image.asset(
-              isDark ? 'assets/images/logos/Logo/LogoDarkD.png' : 'assets/images/logos/Logo/LogoDark.png',
-              height: 160,
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Redefinição Segura',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: titleColor,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Enviaremos um link de acesso direto para você criar uma nova senha com segurança.',
-            style: TextStyle(
-              fontSize: 13,
-              color: bodyColor,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFormSide(Color bgColor, Color borderColor, Color titleColor, Color bodyColor, Color inputBg, Color inputBorder) {
+  Widget _buildFormSide(
+    Color bgColor,
+    Color borderColor,
+    Color titleColor,
+    Color bodyColor,
+    Color inputBg,
+    Color inputBorder,
+  ) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(24),
@@ -246,7 +231,7 @@ class _ForgotPageState extends State<ForgotPage> {
         border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -303,7 +288,11 @@ class _ForgotPageState extends State<ForgotPage> {
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton.icon(
                       onPressed: _recuperar,
-                      icon: const Icon(Icons.send_rounded, size: 16, color: Colors.white),
+                      icon: const Icon(
+                        Icons.send_rounded,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                       label: const Text(
                         'Enviar link de recuperação',
                         style: TextStyle(
@@ -326,7 +315,11 @@ class _ForgotPageState extends State<ForgotPage> {
             Center(
               child: TextButton.icon(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back, size: 14, color: Color(0xFF0284C7)),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  size: 14,
+                  color: Color(0xFF0284C7),
+                ),
                 label: const Text(
                   'Lembrou a senha? Entrar',
                   style: TextStyle(
@@ -372,7 +365,8 @@ class _ForgotPageState extends State<ForgotPage> {
           ),
           const SizedBox(height: 12),
           Text(
-            _mensagem ?? 'Se o e-mail informado estiver cadastrado, as instruções foram geradas.',
+            _mensagem ??
+                'Se o e-mail informado estiver cadastrado, as instruções foram geradas.',
             textAlign: TextAlign.center,
             style: TextStyle(color: bodyColor, fontSize: 13, height: 1.5),
           ),
@@ -388,7 +382,11 @@ class _ForgotPageState extends State<ForgotPage> {
                     builder: (_) => RedefinirSenhaPage(token: _token!),
                   ),
                 ),
-                icon: const Icon(Icons.lock_reset, size: 18, color: Colors.white),
+                icon: const Icon(
+                  Icons.lock_reset,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 label: const Text('Definir nova senha agora'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0284C7),
@@ -487,18 +485,22 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
     setState(() => _loading = true);
 
     try {
-      final corpo = await ApiClient.postForm(_rotaRedefinir, {
-        'token': widget.token,
-        'senha': _senhaCtrl.text,
-        'confirma_senha': _confirmaCtrl.text,
-      }) as Map<String, dynamic>;
+      final corpo =
+          await ApiClient.postForm(_rotaRedefinir, {
+                'token': widget.token,
+                'senha': _senhaCtrl.text,
+                'confirma_senha': _confirmaCtrl.text,
+              })
+              as Map<String, dynamic>;
 
       if (!mounted) return;
       setState(() => _loading = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(corpo['message'] as String? ?? 'Senha redefinida com sucesso!'),
+          content: Text(
+            corpo['message'] as String? ?? 'Senha redefinida com sucesso!',
+          ),
         ),
       );
       Navigator.popUntil(context, (route) => route.isFirst);
@@ -525,19 +527,31 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final backgroundColor = isDark ? const Color(0xFF030712) : const Color(0xFFF1F5F9);
+    final backgroundColor = isDark
+        ? const Color(0xFF030712)
+        : const Color(0xFFF1F5F9);
     final mainCardGradient = isDark
         ? const [Color(0xFF0B132B), Color(0xFF1C2A4A)]
         : [Colors.white, const Color(0xFFE2E8F0)];
-    final mainCardBorder = isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1);
+    final mainCardBorder = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFCBD5E1);
 
     final formBgColor = isDark ? const Color(0xFF0D1B3A) : Colors.white;
-    final formBorderColor = isDark ? const Color(0xFF1E3A8A) : const Color(0xFFE2E8F0);
+    final formBorderColor = isDark
+        ? const Color(0xFF1E3A8A)
+        : const Color(0xFFE2E8F0);
 
     final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final bodyTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
-    final inputBgColor = isDark ? const Color(0xFF070F26) : const Color(0xFFF8FAFC);
-    final inputBorderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1);
+    final bodyTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF475569);
+    final inputBgColor = isDark
+        ? const Color(0xFF070F26)
+        : const Color(0xFFF8FAFC);
+    final inputBorderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFCBD5E1);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -558,7 +572,9 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                   border: Border.all(color: mainCardBorder),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.4 : 0.08),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.4 : 0.08,
+                      ),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
@@ -598,9 +614,20 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
 
                         Row(
                           children: [
-                            const Icon(Icons.lock_outline, size: 15, color: Color(0xFF0284C7)),
+                            const Icon(
+                              Icons.lock_outline,
+                              size: 15,
+                              color: Color(0xFF0284C7),
+                            ),
                             const SizedBox(width: 6),
-                            Text('Nova senha', style: TextStyle(color: titleTextColor, fontSize: 13, fontWeight: FontWeight.w600)),
+                            Text(
+                              'Nova senha',
+                              style: TextStyle(
+                                color: titleTextColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 6),
@@ -612,17 +639,40 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                             hintText: '••••••••',
                             filled: true,
                             fillColor: inputBgColor,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: inputBorderColor)),
-                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: inputBorderColor)),
-                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: Color(0xFF0284C7))),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: inputBorderColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: inputBorderColor),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF0284C7),
+                              ),
+                            ),
                             suffixIcon: IconButton(
-                              icon: Icon(_obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: bodyTextColor, size: 18),
-                              onPressed: () => setState(() => _obscure = !_obscure),
+                              icon: Icon(
+                                _obscure
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: bodyTextColor,
+                                size: 18,
+                              ),
+                              onPressed: () =>
+                                  setState(() => _obscure = !_obscure),
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Campo obrigatório';
+                            if (v == null || v.isEmpty) {
+                              return 'Campo obrigatório';
+                            }
                             if (v.length < 6) return 'Mínimo 6 caracteres';
                             return null;
                           },
@@ -631,9 +681,20 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
 
                         Row(
                           children: [
-                            const Icon(Icons.lock_outline, size: 15, color: Color(0xFF0284C7)),
+                            const Icon(
+                              Icons.lock_outline,
+                              size: 15,
+                              color: Color(0xFF0284C7),
+                            ),
                             const SizedBox(width: 6),
-                            Text('Confirmar nova senha', style: TextStyle(color: titleTextColor, fontSize: 13, fontWeight: FontWeight.w600)),
+                            Text(
+                              'Confirmar nova senha',
+                              style: TextStyle(
+                                color: titleTextColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 6),
@@ -645,14 +706,32 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                             hintText: '••••••••',
                             filled: true,
                             fillColor: inputBgColor,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: inputBorderColor)),
-                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: inputBorderColor)),
-                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: Color(0xFF0284C7))),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: inputBorderColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: inputBorderColor),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF0284C7),
+                              ),
+                            ),
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Campo obrigatório';
-                            if (v != _senhaCtrl.text) return 'As senhas não coincidem';
+                            if (v == null || v.isEmpty) {
+                              return 'Campo obrigatório';
+                            }
+                            if (v != _senhaCtrl.text) {
+                              return 'As senhas não coincidem';
+                            }
                             return null;
                           },
                         ),
@@ -667,9 +746,17 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                                   onPressed: _redefinir,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF0284C7),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
                                   ),
-                                  child: const Text('Redefinir senha', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  child: const Text(
+                                    'Redefinir senha',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                         ),
                       ],

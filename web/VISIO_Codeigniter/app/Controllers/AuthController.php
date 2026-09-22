@@ -99,6 +99,88 @@ class AuthController extends BaseController
     }
 
     // ---------------------------------------------------------------
+    // LOGIN COM GOOGLE (WEB)
+    // ---------------------------------------------------------------
+
+    /**
+     * Recebe o ID token que a biblioteca "Sign In With Google" envia via
+     * POST (formulário, não JSON — é assim que o próprio Google configura
+     * o data-login_uri, ver view de login) e faz login do usuário cujo
+     * EMAIL bate com o e-mail verificado do token.
+     *
+     * IMPORTANTE: USUARIO.CPF é a chave primária da tabela e o Google não
+     * fornece CPF nenhum. Por isso este método NUNCA cria um usuário novo
+     * — ele só autentica quem já tem cadastro feito pelo formulário
+     * tradicional (que exige CPF). Se o e-mail do Google não estiver
+     * cadastrado, a pessoa é orientada a se cadastrar primeiro.
+     */
+    public function loginGoogle()
+    {
+        $credential = $this->request->getPost('credential');
+
+        if (empty($credential)) {
+            return redirect()->to('/login')
+                ->with('erro', 'Não foi possível entrar com o Google. Tente novamente.');
+        }
+
+        // Verificação do ID token seguindo o método oficial do Google
+        // (endpoint tokeninfo), citado no comentário da rota em
+        // Config/Routes.php. Evita depender de uma lib externa (JWT/
+        // google/apiclient) que pode não estar instalada via Composer
+        // neste projeto — ver https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+        $client = \Config\Services::curlrequest();
+
+        try {
+            $resposta = $client->get('https://oauth2.googleapis.com/tokeninfo', [
+                'query' => ['id_token' => $credential],
+                'http_errors' => false,
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Erro ao verificar ID token do Google: {msg}', ['msg' => $e->getMessage()]);
+            return redirect()->to('/login')
+                ->with('erro', 'Erro ao verificar o login do Google. Tente novamente.');
+        }
+
+        if ($resposta->getStatusCode() !== 200) {
+            // Token inválido, expirado ou malformado.
+            return redirect()->to('/login')
+                ->with('erro', 'Login com Google inválido ou expirado. Tente novamente.');
+        }
+
+        $payload = json_decode($resposta->getBody(), true);
+
+        $googleClientId = env('GOOGLE_CLIENT_ID');
+        $audienceOk = !empty($googleClientId)
+            && ($payload['aud'] ?? null) === $googleClientId;
+
+        $emailVerificado = ($payload['email_verified'] ?? 'false') === 'true';
+
+        if (!$audienceOk || !$emailVerificado || empty($payload['email'])) {
+            // 'aud' diferente do nosso Client ID é sinal de um token emitido
+            // para outra aplicação — não pode ser aceito aqui.
+            return redirect()->to('/login')
+                ->with('erro', 'Login com Google inválido. Tente novamente.');
+        }
+
+        $model = new UsuarioModel();
+        $usuario = $model->buscarPorEmail($payload['email']);
+
+        if (!$usuario) {
+            return redirect()->to('/usuario/cadastro')
+                ->with('erro', 'Não encontramos uma conta com este e-mail do Google. Complete o cadastro para continuar.');
+        }
+
+        session()->set([
+            'usuario_logado' => true,
+            'usuario_cpf'    => $usuario['CPF'],
+            'usuario_email'  => $usuario['EMAIL'],
+            'tipo'           => 'usuario',
+        ]);
+
+        return redirect()->to('/perfil');
+    }
+
+    // ---------------------------------------------------------------
     // LOGIN DO ADMINISTRADOR
     // ---------------------------------------------------------------
 

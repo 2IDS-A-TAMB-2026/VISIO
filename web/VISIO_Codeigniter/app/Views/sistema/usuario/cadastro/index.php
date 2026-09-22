@@ -1,29 +1,6 @@
 <?= view('sistema/layout/header') ?>
 <br><br>
 
-<?php
-// Se o formulário for enviado (clicou no botão de cadastrar)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    // Pega os dados digitados
-    $cpf = $_POST['cpf'] ?? '';
-    $nome = $_POST['nome'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $senha = password_hash($_POST['senha'] ?? '', PASSWORD_BCRYPT);
-    $cartao = $_POST['cartao'] ?? ''; // <--- PEGA O NÚMERO GERADO NA TELA
-    $dataNascimento = $_POST['data_nascimento'] ?? '';
-    $telefone = $_POST['telefone'] ?? '';
-
-    // Salva no banco de dados BD_VISIO
-    $sql = "INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
-    
-    if ($stmt->execute([$cpf, $nome, $email, $senha, $cartao, $dataNascimento, $telefone])) {
-        echo "<script>alert('Usuário e Cartão cadastrados com sucesso!');</script>";
-    }
-}
-?>
-
 <!-- SweetAlert & FontAwesome -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

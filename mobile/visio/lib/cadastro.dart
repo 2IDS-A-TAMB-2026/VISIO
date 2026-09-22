@@ -20,7 +20,6 @@ class _CadastroPageState extends State<CadastroPage> {
   final emailCtrl = TextEditingController();
   final dataNascCtrl = TextEditingController();
   final telefoneCtrl = TextEditingController();
-  final cartaoCtrl = TextEditingController();
   final senhaCtrl = TextEditingController();
 
   bool _obscureSenha = true;
@@ -41,11 +40,6 @@ class _CadastroPageState extends State<CadastroPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  final cartaoMask = MaskTextInputFormatter(
-    mask: '#### #### #### ####',
-    filter: {"#": RegExp(r'[0-9]')},
-  );
-
   Future<void> _cadastrar() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -58,7 +52,6 @@ class _CadastroPageState extends State<CadastroPage> {
         'email': emailCtrl.text.trim(),
         'data_nascimento': _brParaIso(dataNascCtrl.text) ?? '',
         'telefone': telefoneCtrl.text.trim(),
-        'cartao': cartaoCtrl.text.trim(),
         'senha': senhaCtrl.text,
       });
 
@@ -127,7 +120,6 @@ class _CadastroPageState extends State<CadastroPage> {
     emailCtrl.dispose();
     dataNascCtrl.dispose();
     telefoneCtrl.dispose();
-    cartaoCtrl.dispose();
     senhaCtrl.dispose();
     super.dispose();
   }
@@ -140,10 +132,13 @@ class _CadastroPageState extends State<CadastroPage> {
     // Definição dinâmicas de cores para Dark/Light Mode
     final bgColor = isDark ? const Color(0xFF030712) : const Color(0xFFF1F5F9);
     final cardBgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
-    final infoBgColor = isDark ? const Color(0xFF030712).withOpacity(0.5) : const Color(0xFFF8FAFC);
-    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
     final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final bodyTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final bodyTextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -151,10 +146,19 @@ class _CadastroPageState extends State<CadastroPage> {
         children: [
           Column(
             children: [
-              _buildTopNavBar(context, isDark, titleTextColor, bodyTextColor, borderColor),
+              _buildTopNavBar(
+                context,
+                isDark,
+                titleTextColor,
+                bodyTextColor,
+                borderColor,
+              ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 24,
+                  ),
                   child: Center(
                     child: Container(
                       constraints: const BoxConstraints(maxWidth: 1000),
@@ -165,7 +169,9 @@ class _CadastroPageState extends State<CadastroPage> {
                         border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(isDark ? 0.4 : 0.05),
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.4 : 0.05,
+                            ),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -178,16 +184,27 @@ class _CadastroPageState extends State<CadastroPage> {
                               ? Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(flex: 6, child: _buildFormSide(isDark, titleTextColor, bodyTextColor, borderColor)),
+                                    Expanded(
+                                      flex: 6,
+                                      child: _buildFormSide(
+                                        isDark,
+                                        titleTextColor,
+                                        bodyTextColor,
+                                        borderColor,
+                                      ),
+                                    ),
                                     const SizedBox(width: 32),
-                                    Expanded(flex: 5, child: _buildInfoSide(isDark, infoBgColor, titleTextColor, bodyTextColor, borderColor)),
                                   ],
                                 )
                               : Column(
                                   children: [
-                                    _buildFormSide(isDark, titleTextColor, bodyTextColor, borderColor),
+                                    _buildFormSide(
+                                      isDark,
+                                      titleTextColor,
+                                      bodyTextColor,
+                                      borderColor,
+                                    ),
                                     const SizedBox(height: 32),
-                                    _buildInfoSide(isDark, infoBgColor, titleTextColor, bodyTextColor, borderColor),
                                   ],
                                 );
                         },
@@ -222,41 +239,18 @@ class _CadastroPageState extends State<CadastroPage> {
         children: [
           Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 28),
           const SizedBox(width: 8),
-          
-          const SizedBox(width: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _navButton(Icons.home, 'Início', () => Navigator.pop(context), textColor),
-                  _navButton(Icons.info_outline, 'Sobre Nós', () {}, textColor),
-                  _navButton(Icons.developer_board, 'Sensores', () {}, textColor),
-                  _navButton(Icons.help_outline, 'Questões', () {}, textColor),
-                  _navButton(Icons.login, 'Login', () => Navigator.pop(context), textColor),
-                  const SizedBox(width: 8),
-                  Icon(Icons.settings, color: textColor, size: 20),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _navButton(IconData icon, String label, VoidCallback onTap, Color textColor) {
-    return TextButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 16, color: textColor),
-      label: Text(
-        label,
-        style: TextStyle(color: textColor, fontSize: 13),
-      ),
-    );
-  }
 
-  Widget _buildFormSide(bool isDark, Color titleColor, Color bodyColor, Color borderColor) {
+  Widget _buildFormSide(
+    bool isDark,
+    Color titleColor,
+    Color bodyColor,
+    Color borderColor,
+  ) {
     return Form(
       key: _formKey,
       child: Column(
@@ -395,17 +389,6 @@ class _CadastroPageState extends State<CadastroPage> {
                       titleColor: titleColor,
                       borderColor: borderColor,
                     ),
-                    _buildCustomField(
-                      controller: cartaoCtrl,
-                      label: 'Nº do Cartão',
-                      hint: '5087 8630 9749 7718',
-                      icon: Icons.credit_card_outlined,
-                      required: false,
-                      inputFormatters: [cartaoMask],
-                      isDark: isDark,
-                      titleColor: titleColor,
-                      borderColor: borderColor,
-                    ),
                   ],
                 );
               }
@@ -425,19 +408,6 @@ class _CadastroPageState extends State<CadastroPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildCustomField(
-                      controller: cartaoCtrl,
-                      label: 'Nº do Cartão',
-                      hint: '5087 8630 9749 7718',
-                      icon: Icons.credit_card_outlined,
-                      required: false,
-                      inputFormatters: [cartaoMask],
-                      isDark: isDark,
-                      titleColor: titleColor,
-                      borderColor: borderColor,
-                    ),
-                  ),
                 ],
               );
             },
@@ -457,7 +427,10 @@ class _CadastroPageState extends State<CadastroPage> {
                     icon: const Icon(Icons.person_add, size: 18),
                     label: const Text(
                       'Finalizar Cadastro',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0284C7),
@@ -475,57 +448,17 @@ class _CadastroPageState extends State<CadastroPage> {
           Center(
             child: TextButton.icon(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back, size: 16, color: Color(0xFF0284C7)),
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 16,
+                color: Color(0xFF0284C7),
+              ),
               label: const Text(
                 'Voltar para o login',
                 style: TextStyle(color: Color(0xFF0284C7), fontSize: 13),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoSide(
-    bool isDark,
-    Color infoBg,
-    Color titleColor,
-    Color bodyColor,
-    Color borderColor,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: infoBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 20),
-          Image.asset('assets/images/logos/Logo/LogoDark2.png', height: 140),
-          const SizedBox(height: 32),
-          Text(
-            'Plataforma VISIO',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: titleColor,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Gerenciamento de dispositivos e inteligência de dados centralizados em tempo real.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: bodyColor,
-              fontSize: 14,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     );
@@ -544,9 +477,13 @@ class _CadastroPageState extends State<CadastroPage> {
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
-    final inputFillColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final inputFillColor = isDark
+        ? const Color(0xFF020617)
+        : const Color(0xFFF8FAFC);
     final inputTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final hintColor = isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8);
+    final hintColor = isDark
+        ? const Color(0xFF475569)
+        : const Color(0xFF94A3B8);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -578,7 +515,10 @@ class _CadastroPageState extends State<CadastroPage> {
               hintStyle: TextStyle(color: hintColor, fontSize: 13),
               filled: true,
               fillColor: inputFillColor,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: borderColor),
@@ -596,7 +536,8 @@ class _CadastroPageState extends State<CadastroPage> {
                 borderSide: BorderSide(color: AppColors.danger),
               ),
             ),
-            validator: validator ??
+            validator:
+                validator ??
                 (required
                     ? (v) => v == null || v.isEmpty ? 'Campo obrigatório' : null
                     : null),
@@ -607,9 +548,13 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 
   Widget _buildPasswordField(bool isDark, Color titleColor, Color borderColor) {
-    final inputFillColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final inputFillColor = isDark
+        ? const Color(0xFF020617)
+        : const Color(0xFFF8FAFC);
     final inputTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final hintColor = isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8);
+    final hintColor = isDark
+        ? const Color(0xFF475569)
+        : const Color(0xFF94A3B8);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -640,10 +585,15 @@ class _CadastroPageState extends State<CadastroPage> {
               hintStyle: TextStyle(color: hintColor, fontSize: 13),
               filled: true,
               fillColor: inputFillColor,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscureSenha ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscureSenha
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   size: 18,
                   color: hintColor,
                 ),

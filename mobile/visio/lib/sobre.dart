@@ -238,10 +238,10 @@ class AboutPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF007BFF).withOpacity(0.1),
+              color: const Color(0xFF007BFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: const Color(0xFF007BFF).withOpacity(0.3),
+                color: const Color(0xFF007BFF).withValues(alpha: 0.3),
               ),
             ),
             child: const Text(

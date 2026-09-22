@@ -11,6 +11,7 @@ import 'controllers/theme_controller.dart';
 import 'controllers/font_scale_controller.dart';
 import 'services/auth_service.dart';
 import 'services/tts_service.dart';
+import 'services/api_client.dart';
 import 'theme/app_theme.dart';
 import 'widgets/accessibility_panel.dart';
 
@@ -138,10 +139,50 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final VoidCallback onIdentificar;
 
   const HomePage({super.key, required this.onIdentificar});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // Enquanto carrega (ou se a chamada falhar), os cards mostram "—" em vez
+  // de travar a tela inicial ou de exibir um número inventado.
+  String _sensoresCadastrados = '—';
+  String _tiposDeSensores = '—';
+  String _usuariosCadastrados = '—';
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarEstatisticas();
+  }
+
+  Future<void> _carregarEstatisticas() async {
+    try {
+      final resposta =
+          await ApiClient.get('estatisticas') as Map<String, dynamic>;
+
+      if (resposta['erro'] == true) return;
+
+      final dados = resposta['dados'];
+      if (dados is! Map) return;
+
+      if (!mounted) return;
+      setState(() {
+        _sensoresCadastrados = '${dados['SENSORES_CADASTRADOS'] ?? '—'}';
+        _tiposDeSensores = '${dados['TIPOS_DE_SENSORES'] ?? '—'}';
+        _usuariosCadastrados = '${dados['USUARIOS_CADASTRADOS'] ?? '—'}';
+      });
+    } catch (_) {
+      // Falha de rede/servidor: mantém "—" — a tela inicial continua
+      // usável mesmo sem estatísticas, igual às outras telas do app
+      // quando a API está fora do ar.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +289,7 @@ class HomePage extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0284C7).withOpacity(0.15),
+                  color: const Color(0xFF0284C7).withValues(alpha: 0.15),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -283,12 +324,7 @@ class HomePage extends StatelessWidget {
             style: TextStyle(fontSize: 13, color: subtextColor, height: 1.5),
           ),
           const SizedBox(height: 24),
-          RotatingLedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const IdentificadorPage()),
-            ),
-          ),
+          RotatingLedButton(onPressed: widget.onIdentificar),
         ],
       ),
     );
@@ -299,11 +335,26 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          _statCard('128+', 'Sensores\ncadastrados', isDark, subtextColor),
+          _statCard(
+            _sensoresCadastrados,
+            'Sensores\ncadastrados',
+            isDark,
+            subtextColor,
+          ),
           const SizedBox(width: 8),
-          _statCard('92%', 'Precisão\nde IA', isDark, subtextColor),
+          _statCard(
+            _usuariosCadastrados,
+            'Usuários\ncadastrados',
+            isDark,
+            subtextColor,
+          ),
           const SizedBox(width: 8),
-          _statCard('9', 'Tipos de\nsensores', isDark, subtextColor),
+          _statCard(
+            _tiposDeSensores,
+            'Tipos de\nsensores',
+            isDark,
+            subtextColor,
+          ),
         ],
       ),
     );
@@ -458,7 +509,7 @@ class HomePage extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0284C7).withOpacity(0.15),
+                  color: const Color(0xFF0284C7).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -559,7 +610,9 @@ class HomePage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0284C7).withOpacity(0.4)),
+        border: Border.all(
+          color: const Color(0xFF0284C7).withValues(alpha: 0.4),
+        ),
         image: DecorationImage(image: AssetImage(imagePath), fit: BoxFit.cover),
       ),
       child: Stack(
@@ -570,8 +623,8 @@ class HomePage extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   Colors.transparent,
-                  (isDark ? const Color(0xFF020617) : Colors.black).withOpacity(
-                    0.85,
+                  (isDark ? const Color(0xFF020617) : Colors.black).withValues(
+                    alpha: 0.85,
                   ),
                 ],
                 begin: Alignment.topCenter,
@@ -701,7 +754,7 @@ class _RotatingLedButtonState extends State<RotatingLedButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF38BDF8).withOpacity(0.35),
+                color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
                 blurRadius: 15,
                 spreadRadius: 1,
               ),
