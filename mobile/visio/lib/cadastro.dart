@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
+import 'services/tts_service.dart';
 import 'widgets/accessibility_panel.dart';
 
 class CadastroPage extends StatefulWidget {
@@ -126,6 +127,11 @@ class _CadastroPageState extends State<CadastroPage> {
 
   @override
   Widget build(BuildContext context) {
+    TtsService.instance.definirTextoDaPagina(
+      'Tela de cadastro. Preencha nome, CPF, e-mail, telefone, data de '
+      'nascimento e senha para criar sua conta VISIO.',
+    );
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

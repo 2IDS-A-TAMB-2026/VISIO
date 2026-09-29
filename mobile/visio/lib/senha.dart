@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
+import 'services/tts_service.dart';
 import 'widgets/accessibility_panel.dart';
 
 class ForgotPage extends StatefulWidget {
@@ -58,6 +59,11 @@ class _ForgotPageState extends State<ForgotPage> {
 
   @override
   Widget build(BuildContext context) {
+    TtsService.instance.definirTextoDaPagina(
+      'Tela de recuperação de senha. Informe seu e-mail cadastrado para '
+      'gerar o link de redefinição.',
+    );
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isDesktop = MediaQuery.of(context).size.width > 800;
@@ -524,6 +530,10 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
 
   @override
   Widget build(BuildContext context) {
+    TtsService.instance.definirTextoDaPagina(
+      'Tela para definir uma nova senha. Digite a nova senha e confirme.',
+    );
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

@@ -4,6 +4,7 @@ import 'cadastro.dart';
 import 'perfil.dart';
 import 'senha.dart';
 import 'services/auth_service.dart';
+import 'services/tts_service.dart';
 import 'widgets/accessibility_panel.dart';
 
 class LoginPage extends StatefulWidget {
@@ -82,6 +83,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    TtsService.instance.definirTextoDaPagina(
+      'Tela de login. Informe e-mail e senha para entrar na sua conta VISIO.',
+    );
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isDesktop = MediaQuery.of(context).size.width > 800;

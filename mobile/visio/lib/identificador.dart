@@ -297,6 +297,16 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isActive) {
+      TtsService.instance.definirTextoDaPagina(
+        _resultado != null
+            ? '${_resultado!.nome}. ${_resultado!.descricao}'
+                '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}'
+            : 'Tela de identificação de sensores por câmera. Aponte a câmera '
+                'para um sensor ou escolha uma imagem da galeria para identificar.',
+      );
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final titleTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -653,35 +663,18 @@ class _IdentificadorPageState extends State<IdentificadorPage> {
                   ),
                 ),
               ),
-              // TtsButton some sozinho quando o "Modo fala" está desligado
-              // (comportamento esperado — ver TtsButton.build). Em vez de
-              // simplesmente sumir sem explicação, mostra uma dica curta
-              // apontando para onde ativar. ListenableBuilder reage caso o
-              // usuário ligue o "Modo fala" pelo painel de acessibilidade
-              // (mesmo Stack, ver AccessibilityPanel logo abaixo) sem sair
-              // desta tela.
-              ListenableBuilder(
-                listenable: TtsService.instance,
-                builder: (context, _) {
-                  if (TtsService.instance.enabled) {
-                    return TtsButton(
-                      text:
-                          '${_resultado!.nome}. ${_resultado!.descricao}'
-                          '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}',
-                      tooltip: 'Ouvir resultado',
-                    );
-                  }
-                  return Tooltip(
-                    message:
-                        'Ative "Modo fala" no painel de acessibilidade '
-                        '(canto inferior direito) para ouvir o resultado.',
-                    child: Icon(
-                      Icons.volume_off_outlined,
-                      size: 20,
-                      color: textColor.withValues(alpha: 0.5),
-                    ),
-                  );
-                },
+              // ATUALIZADO — o painel de acessibilidade não tem mais o
+              // switch "Modo fala" (virou o botão "Ler página em voz alta",
+              // que lê a tela inteira via TtsService.textoPagina, veja
+              // AccessibilityPanel). TtsService.enabled não tem mais
+              // nenhum controle de UI que o desligue, então este botão de
+              // ouvir o resultado agora aparece sempre — TtsButton já
+              // observa TtsService sozinho para atualizar o ícone.
+              TtsButton(
+                text:
+                    '${_resultado!.nome}. ${_resultado!.descricao}'
+                    '${_resultado!.circuito.isNotEmpty ? '. Circuito: ${_resultado!.circuito}' : ''}',
+                tooltip: 'Ouvir resultado',
               ),
             ],
           ),

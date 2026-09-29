@@ -365,7 +365,7 @@
         <div class="campo-grupo">
           <label>Número do cartão IoT</label>
           <input type="text" name="cartao"
-                 value="<?= esc($usuario['CARTAO'] ?? '') ?>">
+                 value="<?= esc($usuario['CARTAO'] ?? '') ?>" readonly>
         </div>
 
         <div class="campo-grupo">

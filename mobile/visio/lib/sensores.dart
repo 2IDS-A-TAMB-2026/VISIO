@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'appcolor.dart';
 import 'services/api_client.dart';
 import 'services/api_config.dart';
+import 'services/tts_service.dart';
 import 'widgets/accessibility_panel.dart';
 
 class SensoresPage extends StatefulWidget {
-  const SensoresPage({super.key});
+  final bool isActive;
+  const SensoresPage({super.key, this.isActive = true});
 
   @override
   State<SensoresPage> createState() => _SensoresPageState();
@@ -84,6 +86,20 @@ class _SensoresPageState extends State<SensoresPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isActive) {
+      TtsService.instance.definirTextoDaPagina(
+        _carregando
+            ? 'Carregando lista de sensores.'
+            : _erro != null
+                ? 'Não foi possível carregar a lista de sensores.'
+                : _sensores.isEmpty
+                    ? 'Nenhum sensor cadastrado ainda.'
+                    : 'Lista de sensores cadastrados: ${_sensores.length} '
+                        '${_sensores.length == 1 ? 'sensor' : 'sensores'}. '
+                        'Toque em um sensor para ver nome, descrição e circuito.',
+      );
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isDesktop = MediaQuery.of(context).size.width > 900;
@@ -295,7 +311,7 @@ class _SensoresPageState extends State<SensoresPage> {
         border: Border.all(color: cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

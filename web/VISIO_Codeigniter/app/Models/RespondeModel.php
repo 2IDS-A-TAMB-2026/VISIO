@@ -85,6 +85,28 @@ class RespondeModel extends Model
     }
 
     // ---------------------------------------------------------------
+    // ADICIONADO — TAXA MÉDIA DE ACERTOS GERAL (todas as respostas, de
+    // todos os usuários, desde sempre). Usado no card "Taxa média de
+    // acertos" da tela inicial do Mobile (antes era "Tipos de
+    // sensores"). Mesmo padrão de perguntasPorTaxaAcerto()/
+    // rankingUsuarios() logo abaixo, só que sem agrupar por pergunta
+    // ou usuário — um único percentual geral.
+    // ---------------------------------------------------------------
+    public function taxaMediaAcertos(): float
+    {
+        $row = $this->db->table('RESPONDE r')
+            ->select('COUNT(*) AS total, SUM(a.IS_CORRETA) AS acertos')
+            ->join('ALTERNATIVA a', 'a.ID_ALTERNATIVA = r.FK_ID_ALTERNATIVA')
+            ->get()
+            ->getRowArray();
+
+        $total   = (int) ($row['total'] ?? 0);
+        $acertos = (int) ($row['acertos'] ?? 0);
+
+        return $total > 0 ? round(($acertos / $total) * 100) : 0;
+    }
+
+    // ---------------------------------------------------------------
     // DESEMPENHO DE UMA JANELA DE 7 DIAS (para o gráfico "Desempenho dos alunos")
     // Retorna um array com 7 posições (mais antigo -> mais recente),
     // cada uma com a taxa de acerto (%) do dia.

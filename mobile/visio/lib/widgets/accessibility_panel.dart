@@ -95,18 +95,12 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
               onChanged: (_) => theme.toggleTheme(),
             ),
             const SizedBox(height: 10),
-            _buildLinhaControle(
-              context,
-              icon: Icons.record_voice_over_rounded,
-              label: 'Modo fala',
-              value: tts.enabled,
-              onChanged: (valor) => TtsService.instance.setEnabled(valor),
-            ),
+            _buildLinhaLeitura(context, tts),
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 26),
               child: Text(
-                'Ative para mostrar botões de ouvir os resultados em voz alta.',
+                'Lê em voz alta o conteúdo desta tela. Toque de novo para parar.',
                 style: TextStyle(fontSize: 11, color: context.textMuted),
               ),
             ),
@@ -272,10 +266,58 @@ class _AccessibilityPanelState extends State<AccessibilityPanel> {
           child: Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
           ),
         ),
       ],
+    );
+  }
+
+  // ADICIONADO — substitui o switch "Modo fala": um botão de ação em
+  // vez de um controle liga/desliga. Como o flutter_tts não permite
+  // retomar de onde parou, o "ciclo de 3 cliques" (ler → parar → ler
+  // de novo) é, na prática, um alternar simples: toca e não está
+  // lendo → começa a ler `tts.textoPagina` do início; toca e já está
+  // lendo → para. Tocar de novo depois de parar sempre lê do começo.
+  Widget _buildLinhaLeitura(BuildContext context, TtsService tts) {
+    final lendo = tts.isSpeaking;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: () {
+        if (lendo) {
+          TtsService.instance.stop();
+        } else {
+          TtsService.instance.speak(tts.textoPagina);
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                lendo ? Icons.stop_circle_rounded : Icons.record_voice_over_rounded,
+                size: 18,
+                color: lendo ? AppColors.primary : context.textMuted,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                lendo ? 'Parar leitura' : 'Ler página em voz alta',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: lendo ? AppColors.primary : context.textPrimary,
+                  fontWeight: lendo ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+          Icon(
+            lendo ? Icons.stop_rounded : Icons.play_arrow_rounded,
+            size: 20,
+            color: lendo ? AppColors.primary : context.textMuted,
+          ),
+        ],
+      ),
     );
   }
 

@@ -3,10 +3,12 @@ import 'appcolor.dart';
 import 'login.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
+import 'services/tts_service.dart';
 import 'widgets/accessibility_panel.dart';
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key});
+  final bool isActive;
+  const QuizPage({super.key, this.isActive = true});
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -191,6 +193,20 @@ class _QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isActive) {
+      TtsService.instance.definirTextoDaPagina(
+        !AuthService.instance.estaLogadoComoUsuario
+            ? 'Quiz educativo sobre sensores. Faça login para jogar.'
+            : _finalizado
+                ? 'Quiz finalizado. Você acertou $_acertosFinal de $_totalFinal '
+                    'perguntas.'
+                : _pergunta != null
+                    ? 'Questão ${_indice + 1} de $_total. '
+                        '${_pergunta!['DESCRICAO'] ?? ''}'
+                    : 'Quiz educativo sobre sensores.',
+      );
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

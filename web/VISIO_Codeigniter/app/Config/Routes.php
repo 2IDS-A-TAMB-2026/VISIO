@@ -96,6 +96,21 @@ $routes->get(
     'AuthController::esqueceuSenhaAdmForm'
 );
 
+$routes->post(
+    'admin/esqueceu_senha',
+    'AuthController::esqueceuSenhaAdmSolicitar'
+);
+
+$routes->get(
+    'admin/redefinir_senha',
+    'AuthController::redefinirSenhaAdmForm'
+);
+
+$routes->post(
+    'admin/redefinir_senha',
+    'AuthController::redefinirSenhaAdmRedefinir'
+);
+
 
 // ============================================================
 // LOGIN POR CARTÃO

@@ -163,7 +163,7 @@ class _ContactPageState extends State<ContactPage> {
           context,
           Icons.email_outlined,
           'E-mail',
-          'visio@gmail.com',
+          'visio.suporte1@gmail.com',
         ),
         const SizedBox(height: 12),
         _contactInfoCard(

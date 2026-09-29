@@ -27,18 +27,14 @@ class APIUsuarioController extends ResourceController
         return $this->respond($usuarios, 200);
     }
 
-    /**
-     * Retorna os dados de um usuário pelo CPF ou cartão
-     * GET /api/usuarios/(:any)
-     */
     public function show($id = null)
     {
         $model = new UsuarioModel();
 
-        // 🔴 ALTERADO: primeiro procura pelo CPF
+       
         $usuario = $model->where('CPF', $id)->first();
 
-        // 🔴 ALTERADO: se não encontrou pelo CPF, procura pelo CARTAO
+       
         if (!$usuario) {
             $usuario = $model->where('CARTAO', $id)->first();
         }
@@ -47,7 +43,7 @@ class APIUsuarioController extends ResourceController
             return $this->failNotFound('Usuário não encontrado.');
         }
 
-        // Oculta o hash de senha por segurança
+        
         unset($usuario['SENHA']);
 
         return $this->respond($usuario, 200);

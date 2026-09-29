@@ -5,6 +5,7 @@ namespace App\Controllers\api_controller;
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\SensorModel;
 use App\Models\UsuarioModel;
+use App\Models\RespondeModel;
 
 /**
  * APIEstatisticaController
@@ -19,24 +20,18 @@ class APIEstatisticaController extends ResourceController
     // GET /api/estatisticas
     public function index()
     {
-        $sensorModel  = new SensorModel();
-        $usuarioModel = new UsuarioModel();
+        $sensorModel   = new SensorModel();
+        $usuarioModel  = new UsuarioModel();
+        $respondeModel = new RespondeModel();
 
         $sensoresCadastrados = $sensorModel->countAllResults();
-
-        // IMPORTANTE: esta contagem precisa vir DEPOIS da anterior — select()
-        // e distinct() alteram o builder interno do model, então se a ordem
-        // for invertida a contagem de $sensoresCadastrados sairia errada.
-        //
-        // Não existe coluna de "tipo" em SENSOR — cada NOME já é único na
-        // prática (não há dois sensores com o mesmo nome cadastrados), então
-        // contamos nomes distintos como proxy para "tipos de sensores".
-        $tiposDeSensores = $sensorModel
-            ->select('NOME')
-            ->distinct()
-            ->countAllResults();
-
         $usuariosCadastrados = $usuarioModel->countAllResults();
+
+        // ATUALIZADO — o terceiro card era "tipos de sensores" (não existe
+        // coluna de "tipo" em SENSOR, então era só uma contagem de nomes
+        // distintos usada como proxy). Trocado para a taxa média de
+        // acertos do quiz, calculada em RespondeModel::taxaMediaAcertos().
+        $taxaMediaAcertos = $respondeModel->taxaMediaAcertos();
 
         return $this->respond([
             'status'   => 200,
@@ -44,7 +39,7 @@ class APIEstatisticaController extends ResourceController
             'mensagem' => 'Estatísticas recuperadas com sucesso.',
             'dados'    => [
                 'SENSORES_CADASTRADOS' => $sensoresCadastrados,
-                'TIPOS_DE_SENSORES'    => $tiposDeSensores,
+                'TAXA_MEDIA_ACERTOS'   => $taxaMediaAcertos,
                 'USUARIOS_CADASTRADOS' => $usuariosCadastrados,
             ],
         ], 200);

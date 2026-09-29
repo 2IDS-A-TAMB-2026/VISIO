@@ -4,7 +4,7 @@
     /* Estilo Base - Gradiente azul mantido para todos os temas */
     body {
         background-color: #000000 !important;
-        background-image: 
+        background-image:
             radial-gradient(circle at top right, #0055ff6f 0%, transparent 40%),
             radial-gradient(circle at bottom left, #0055ff6f 0%, transparent 40%) !important;
         background-attachment: fixed !important;
@@ -94,8 +94,18 @@
         object-fit: cover;
     }
 
+    /* Container para alinhar os botões lado a lado */
+    .identificador-acoes {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        width: 100%;
+        max-width: 700px;
+    }
+
     .identificador-btn {
-        padding: 16px 48px;
+        flex: 1;
+        padding: 16px 24px;
         border-radius: 12px;
         font-size: 1.125rem;
         font-weight: 700;
@@ -105,12 +115,26 @@
         background: var(--color-primary);
         color: #ffffff;
         box-shadow: 0 4px 20px rgba(30, 107, 231, 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
 
     .identificador-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 30px rgba(30, 107, 231, 0.4);
         background: var(--color-primary-dark);
+    }
+
+    /* Variação secundária para o botão de upload */
+    .identificador-btn-secondary {
+        background: var(--color-surface-btn);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .identificador-btn-secondary:hover {
+        background: var(--color-surface-btn-hover);
     }
 
     #result {
@@ -168,9 +192,12 @@
             max-width: 100%;
         }
 
+        .identificador-acoes {
+            flex-direction: column;
+        }
+
         .identificador-btn {
             width: 100%;
-            padding: 16px 24px;
         }
     }
 </style>
@@ -184,9 +211,19 @@
         <canvas id="canvas" style="display:none;"></canvas>
     </section>
 
-    <button id="btn-identificar" class="identificador-btn">
-        <i class="fa-solid fa-camera"></i> Identificar
-    </button>
+    <!-- Grupo de Botões -->
+    <div class="identificador-acoes">
+        <button id="btn-identificar" class="identificador-btn">
+            <i class="fa-solid fa-camera"></i> Identificar Câmera
+        </button>
+
+        <button id="btn-upload" class="identificador-btn identificador-btn-secondary">
+            <i class="fa-solid fa-folder-open"></i> Selecionar Foto
+        </button>
+
+        <!-- Input invisível para carregar arquivo -->
+        <input type="file" id="input-foto" accept="image/*" style="display: none;">
+    </div>
 
     <section id="result">
         Aguardando...
@@ -204,6 +241,7 @@
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const result = document.getElementById("result");
+    const inputFoto = document.getElementById("input-foto");
 
     async function startCamera() {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -220,7 +258,8 @@
         );
     }
 
-    async function identificar() {
+    // Função central para executar o modelo e buscar no banco
+    async function processarEntrada(elemento) {
         if (!model) {
             result.textContent = "Modelo não carregado";
             return;
@@ -228,15 +267,9 @@
 
         result.textContent = "Analisando...";
 
-        console.log("videoWidth:", video.videoWidth, "videoHeight:", video.videoHeight);
-
-        canvas.width = video.videoWidth || 224;
-        canvas.height = video.videoHeight || 224;
-        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-
         let prediction;
         try {
-            prediction = await model.predict(canvas);
+            prediction = await model.predict(elemento);
             console.log("prediction:", prediction);
         } catch (err) {
             console.error("Erro no predict:", err);
@@ -292,6 +325,45 @@
             result.textContent = "Erro ao consultar o banco de dados.";
         }
     }
+
+    // Identificação via Câmera
+    async function identificar() {
+        console.log("videoWidth:", video.videoWidth, "videoHeight:", video.videoHeight);
+        canvas.width = video.videoWidth || 224;
+        canvas.height = video.videoHeight || 224;
+        canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        await processarEntrada(canvas);
+    }
+
+    // Clique no botão personalizado de Upload
+    document.getElementById("btn-upload").addEventListener("click", () => {
+        inputFoto.click();
+    });
+
+    // Processamento da imagem selecionada do computador
+    inputFoto.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = new Image();
+            img.onload = async function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                await processarEntrada(canvas);
+
+                // Reseta o input para permitir reselecionar o mesmo arquivo se quiser
+                inputFoto.value = "";
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
 
     document.getElementById("btn-identificar").addEventListener("click", identificar);
 

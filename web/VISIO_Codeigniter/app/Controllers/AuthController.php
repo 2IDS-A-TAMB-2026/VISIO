@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\AdminModel;
 use App\Models\UsuarioModel;
+use App\Models\ResetSenhaAdminModel;
 
 /**
  * AuthController
@@ -192,6 +193,166 @@ class AuthController extends BaseController
     public function esqueceuSenhaAdmForm(): string
     {
         return view('sistema/admin/esqueceu_senha_adm/index');
+    }
+
+    /**
+     * ADICIONADO — processa o pedido de recuperação de senha do admin.
+     * Mesmo padrão "Opção B" (sem envio de e-mail) já usado em
+     * RecuperacaoSenhaController::solicitar() para o usuário comum: o
+     * link de redefinição é exibido direto na tela, em vez de enviado
+     * por e-mail (o projeto ainda não tem SMTP configurado no .env).
+     */
+    public function esqueceuSenhaAdmSolicitar()
+    {
+        $querJson = $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+
+        $email = trim($this->request->getPost('email') ?? '');
+
+        if (empty($email)) {
+            if ($querJson) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'message' => 'Informe um e-mail válido.',
+                ]);
+            }
+            return redirect()->to('/admin/esqueceu_senha')
+                ->with('erro', 'Informe um e-mail válido.');
+        }
+
+        $adminModel = new AdminModel();
+        $admin      = $adminModel->buscarPorEmail($email);
+
+        // Por segurança não revelamos se o e-mail existe ou não — o
+        // token só aparece se o e-mail bater com um admin cadastrado.
+        if ($admin) {
+            $resetModel = new ResetSenhaAdminModel();
+            $resetModel->limparExpirados();
+            $token = $resetModel->gerarToken($admin['CNPJ']);
+
+            $link = base_url('/admin/redefinir_senha?token=' . $token);
+
+            if ($querJson) {
+                return $this->response->setJSON([
+                    'message' => 'E-mail encontrado! Use o link abaixo para redefinir a senha.',
+                    'link'    => $link,
+                    'token'   => $token,
+                ]);
+            }
+
+            return view('sistema/admin/esqueceu_senha_adm/token', [
+                'link'  => $link,
+                'token' => $token,
+            ]);
+        }
+
+        if ($querJson) {
+            return $this->response->setJSON([
+                'message' => 'Se o e-mail informado estiver cadastrado, as instruções foram geradas.',
+                'link'    => null,
+                'token'   => null,
+            ]);
+        }
+
+        return view('sistema/admin/esqueceu_senha_adm/token', [
+            'link'  => null,
+            'token' => null,
+        ]);
+    }
+
+    /**
+     * ADICIONADO — exibe o formulário de nova senha do admin (via
+     * ?token=... gerado por esqueceuSenhaAdmSolicitar).
+     */
+    public function redefinirSenhaAdmForm()
+    {
+        $token = $this->request->getGet('token') ?? '';
+
+        if (empty($token)) {
+            return redirect()->to('/admin/esqueceu_senha')
+                ->with('erro', 'Token inválido ou ausente.');
+        }
+
+        $resetModel = new ResetSenhaAdminModel();
+        $registro   = $resetModel->buscarValido($token);
+
+        if (!$registro) {
+            return redirect()->to('/admin/esqueceu_senha')
+                ->with('erro', 'Este link expirou ou já foi utilizado. Solicite um novo.');
+        }
+
+        $adminModel = new AdminModel();
+        $admin      = $adminModel->find($registro['FK_CNPJ']);
+
+        return view('sistema/admin/esqueceu_senha_adm/redefinir', [
+            'token' => $token,
+            'email' => $admin['EMAIL'] ?? '',
+        ]);
+    }
+
+    /**
+     * ADICIONADO — salva a nova senha do admin.
+     */
+    public function redefinirSenhaAdmRedefinir()
+    {
+        $querJson = $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'json')
+            || str_contains($this->request->getHeaderLine('Content-Type'), 'json');
+
+        $token     = trim($this->request->getPost('token') ?? '');
+        $novaSenha = $this->request->getPost('senha') ?? '';
+        $confirma  = $this->request->getPost('confirma_senha') ?? '';
+
+        if (empty($token) || empty($novaSenha)) {
+            if ($querJson) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'Preencha todos os campos.']);
+            }
+            return redirect()->back()
+                ->with('erro', 'Preencha todos os campos.');
+        }
+
+        if ($novaSenha !== $confirma) {
+            if ($querJson) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'As senhas não coincidem.']);
+            }
+            return redirect()->back()
+                ->with('erro', 'As senhas não coincidem.');
+        }
+
+        if (strlen($novaSenha) < 6) {
+            if ($querJson) {
+                return $this->response->setStatusCode(400)->setJSON(['message' => 'A senha deve ter pelo menos 6 caracteres.']);
+            }
+            return redirect()->back()
+                ->with('erro', 'A senha deve ter pelo menos 6 caracteres.');
+        }
+
+        $resetModel = new ResetSenhaAdminModel();
+        $registro   = $resetModel->buscarValido($token);
+
+        if (!$registro) {
+            if ($querJson) {
+                return $this->response->setStatusCode(410)->setJSON(['message' => 'Este link expirou ou já foi utilizado. Solicite um novo.']);
+            }
+            return redirect()->to('/admin/esqueceu_senha')
+                ->with('erro', 'Este link expirou ou já foi utilizado. Solicite um novo.');
+        }
+
+        $adminModel = new AdminModel();
+        $adminModel->update($registro['FK_CNPJ'], [
+            'SENHA' => password_hash($novaSenha, PASSWORD_BCRYPT),
+        ]);
+
+        $resetModel->marcarUsado($token);
+
+        if ($querJson) {
+            return $this->response->setJSON([
+                'message' => 'Senha redefinida com sucesso! Faça login com a nova senha.',
+            ]);
+        }
+
+        return redirect()->to('/login/admin')
+            ->with('sucesso', 'Senha redefinida com sucesso! Faça login com a nova senha.');
     }
 
     public function loginAdmin()

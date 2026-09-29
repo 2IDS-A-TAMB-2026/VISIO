@@ -8,7 +8,7 @@
     RewriteEngine On
 
     # Garante que o caminho base está correto quando o projeto está em subpasta
-    # Exemplo: se acessar em 10.141.129.9/visio/public/, descomentar a linha abaixo
+    # Exemplo: se acessar em 10.141.131.63/visio/public/, descomentar a linha abaixo
     # e ajustar o caminho:
     # RewriteBase /visio/public/
 

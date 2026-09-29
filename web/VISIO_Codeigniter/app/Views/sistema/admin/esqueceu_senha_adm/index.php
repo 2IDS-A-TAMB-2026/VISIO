@@ -451,7 +451,7 @@
         Digite seu e-mail cadastrado. Você receberá um link para redefinir sua senha.
       </p>
 
-      <form action="<?= base_url('/usuario/esqueceu_senha') ?>" method="post" id="form" novalidate>
+      <form action="<?= base_url('/admin/esqueceu_senha') ?>" method="post" id="form" novalidate>
         <?= csrf_field() ?>
 
         <div class="input-group">
@@ -478,7 +478,7 @@
       </form>
 
       <div class="auth-footer">
-        <a href="<?= base_url('/login') ?>" class="link-auth">
+        <a href="<?= base_url('/login/admin') ?>" class="link-auth">
           <i class="fa-solid fa-arrow-left"></i>
           Lembrou a senha? Entrar
         </a>

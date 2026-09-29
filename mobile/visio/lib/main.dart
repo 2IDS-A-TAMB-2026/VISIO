@@ -77,16 +77,17 @@ class _MainShellState extends State<MainShell> {
 
   List<Widget> _buildScreens() => [
     HomePage(
+      isActive: _currentIndex == 0,
       onIdentificar: () {
         setState(() {
           _currentIndex = 2;
         });
       },
     ),
-    const SensoresPage(),
+    SensoresPage(isActive: _currentIndex == 1),
     IdentificadorPage(isActive: _currentIndex == 2),
-    const QuizPage(),
-    const AboutPage(),
+    QuizPage(isActive: _currentIndex == 3),
+    AboutPage(isActive: _currentIndex == 4),
   ];
 
   @override
@@ -141,8 +142,9 @@ class _MainShellState extends State<MainShell> {
 
 class HomePage extends StatefulWidget {
   final VoidCallback onIdentificar;
+  final bool isActive;
 
-  const HomePage({super.key, required this.onIdentificar});
+  const HomePage({super.key, required this.onIdentificar, this.isActive = true});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -152,7 +154,7 @@ class _HomePageState extends State<HomePage> {
   // Enquanto carrega (ou se a chamada falhar), os cards mostram "—" em vez
   // de travar a tela inicial ou de exibir um número inventado.
   String _sensoresCadastrados = '—';
-  String _tiposDeSensores = '—';
+  String _taxaMediaAcertos = '—';
   String _usuariosCadastrados = '—';
 
   @override
@@ -174,7 +176,12 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() {
         _sensoresCadastrados = '${dados['SENSORES_CADASTRADOS'] ?? '—'}';
-        _tiposDeSensores = '${dados['TIPOS_DE_SENSORES'] ?? '—'}';
+        // ATUALIZADO — este card era "tipos de sensores"; agora mostra a
+        // taxa média de acertos do quiz (TAXA_MEDIA_ACERTOS), já vinda do
+        // backend como número inteiro de 0 a 100. O "%" é acrescentado só
+        // aqui na exibição, nunca no placeholder "—".
+        final taxa = dados['TAXA_MEDIA_ACERTOS'];
+        _taxaMediaAcertos = taxa == null ? '—' : '$taxa%';
         _usuariosCadastrados = '${dados['USUARIOS_CADASTRADOS'] ?? '—'}';
       });
     } catch (_) {
@@ -186,6 +193,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isActive) {
+      TtsService.instance.definirTextoDaPagina(
+        _sensoresCadastrados == '—'
+            ? 'Tela inicial do VISIO, sistema de identificação de sensores '
+                'IoT por imagem.'
+            : 'Tela inicial do VISIO. $_sensoresCadastrados sensores '
+                'cadastrados, $_usuariosCadastrados usuários cadastrados, e '
+                'taxa média de acertos no quiz de $_taxaMediaAcertos.',
+      );
+    }
+
     final logado = context.watch<AuthService>().estaLogadoComoUsuario;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -350,8 +368,8 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(width: 8),
           _statCard(
-            _tiposDeSensores,
-            'Tipos de\nsensores',
+            _taxaMediaAcertos,
+            'Taxa média\nde acertos',
             isDark,
             subtextColor,
           ),

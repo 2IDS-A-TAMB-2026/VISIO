@@ -72,38 +72,51 @@ CREATE TABLE RESET_SENHA (
         ON DELETE CASCADE
 );
 
+CREATE TABLE RESET_SENHA_ADMIN (
+    ID_RESET INT AUTO_INCREMENT PRIMARY KEY,
+    FK_CNPJ VARCHAR(18) NOT NULL,
+    TOKEN VARCHAR(64) NOT NULL UNIQUE,
+    USADO TINYINT(1) NOT NULL DEFAULT 0,
+    CRIADO_EM DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    EXPIRA_EM DATETIME NOT NULL,
+    FOREIGN KEY (FK_CNPJ)
+        REFERENCES ADMIN (CNPJ)
+        ON DELETE CASCADE
+);
+
 -- ===== ADMIN  =====
 INSERT INTO ADMIN (CNPJ, NOME, EMAIL, TELEFONE, SENHA) VALUES
-('12.345.678/0001-01', 'Administrador VISIO', 'admin@visio.com', '(11) 98765-4321', '$2b$12$up2lvf2xBzAw6C6PVUIQW.IXCAviqwpyOGpEMNiSArmiQGgZO.kl.'), -- Senha: Admin@123,
-('23.456.789/0001-02','Ana Paula Ferreira','admin2@iotlab.com','(11) 98765-4322','$2b$10$Sy9d/eZE42sP6cji2Dy4tuyRCKx2/f.UHWfeW95MFUzyQTQIn8cva'), -- Senha: Admin@102,
-('34.567.890/0001-03','Carlos Eduardo Souza','admin3@iotlab.com','(11) 98765-4323','$2b$10$oSP4wF/QG/mNBnmKv6BKh.QquEWaxtsAJijSoSzTr181IkOW2n9lC'), -- Senha: Admin@103,
-('45.678.901/0001-04','Mariana Lima Santos','admin4@iotlab.com','(11) 98765-4324','$2b$10$CLvX7RTpDU0kftGDRaSIY.MWv0bIFZH07kLUInYLNg4D5SDq5s/pm'), -- Senha: Admin@104,
-('56.789.012/0001-05','Roberto Carlos Pereira','admin5@iotlab.com','(11) 98765-4325','$2b$10$QCFdDzcIha01.TVKTMY8Ru90ZDwNwQ2KIB9K9GFhdZmfYeKOUmS/6'), -- Senha: Admin@105,
-('67.890.123/0001-06','Fernanda Costa Oliveira','admin6@iotlab.com','(11) 98765-4326','$2b$10$HXyDtPnua2OyyB7jPy8rGO49cWyzi42RqDY3..eew4MlzNGMVKYbO'), -- Senha: Admin@106,
-('78.901.234/0001-07','Bruno Henrique Almeida','admin7@iotlab.com','(11) 98765-4327','$2b$10$g3SeUDh.kFiMenLQakSsSOAkWfkM84ZqERPx8sx1jGbqWNgVb.GZ2'), -- Senha: Admin@107,
-('89.012.345/0001-08','Juliana Rodrigues Martins','admin8@iotlab.com','(11) 98765-4328','$2b$10$5pCNIWOhykmet/CJqLxodOP.WZnv7eGxLz3YUAjrV39kmqIIh70y2'), -- Senha: Admin@108,
-('90.123.456/0001-09','Rafael Augusto Barbosa','admin9@iotlab.com','(11) 98765-4329','$2b$10$7juJcZu9Wea1Q1BNyPnso.LkD/.lWOHSPKse.dvPYQXvvW/GvGJK.'), -- Senha: Admin@109,
-('11.234.567/0001-10','Patrícia Gomes Ribeiro','admin10@iotlab.com','(11) 98765-4330','$2b$10$n9MCzMeqsD967AzXKZDpVe.BceckwP4iTPsAQuClp.ilRVIDF0Neu'), -- Senha: Admin@110,
-('12.345.678/0001-90','Lucas Gabriel Carvalho','admin11@iotlab.com','(11) 91234-5678','$2b$10$piyqIYdRmste6TEIwJE3IuT.shPJPHliySZ2/yIl6JJ34KRmAloIu'), -- Senha: Admin@111,
-('98.765.432/0001-10','Camila Andrade Nascimento','admin12@iotlab.com','(21) 92345-6789','$2b$10$C0B/PNL/JAApdrcFqaAQie1pDNwlNmcziYXFidvWePiWR7noaOR2C'), -- Senha: Admin@112,
-('45.678.123/0001-55','Diego Fernandes Araújo','admin13@iotlab.com','(31) 93456-7890','$2b$10$QTLkde4oK6aUFZNpG5NvPu3fClrP2aKS5PNSZSlzrht8V.GTCxJPi'), -- Senha: Admin@113,
-('67.890.234/0001-21','Larissa Mendes Cardoso','admin14@iotlab.com','(41) 94567-8901','$2b$10$1S7CJyGtAfuM2z0ExDLqFeFEmSqidK2B3dwO/nDvzD2JuaXeFA/XW'), -- Senha: Admin@114,
-('23.456.789/0001-87','Thiago Vieira Rocha','admin15@iotlab.com','(51) 95678-9012','$2b$10$2nNarr6SGoM01LmLdXNIeudq1QQi5PUh/oUR17GKAv7Q5.K.hTHme'), -- Senha: Admin@115,
-('34.567.890/0001-66','Beatriz Correia Dias','admin16@iotlab.com','(61) 96789-0123','$2b$10$vEZvadvtGn4S9hhQ7GRDuuFelPgZ.yFeRqqiivj.X4qvgKciAAMdm'), -- Senha: Admin@116,
-('56.789.012/0001-44','Felipe Moreira Castro','admin17@iotlab.com','(71) 97890-1234','$2b$10$lBsY7I4KHWcmgj.NxwJcwuBSCoOA/S76OMpIubDTw7zzqrxG4zM9S'), -- Senha: Admin@117,
-('78.901.234/0001-32','Gabriela Teixeira Pinto','admin18@iotlab.com','(81) 98901-2345','$2b$10$dMpAq6EnP3U/gl41CnQXcO4EAtt/dX5gjDduYu8XlJFCIczsFd0Fm'), -- Senha: Admin@118,
-('89.012.345/0001-11','Eduardo Henrique Ramos','admin19@iotlab.com','(91) 99123-3456','$2b$10$yYwCTNgV.rlNJx5yyngqEeZxTJpiCxhodvO.t1jjmiGCVsnKozoOa'), -- Senha: Admin@119,
-('90.123.456/0001-99','Vanessa Cunha Monteiro','admin20@iotlab.com','(19) 90234-4567','$2b$10$0Na9cHHsG9vpjHBMof1cx.u8m3C3gBGbGkreeef6uWXpRVZLqP0.q'), -- Senha: Admin@120,
-('11.222.333/0001-45','Marcelo Augusto Lopes','admin21@iotlab.com','(27) 91345-5678','$2b$10$eU4/qFPdEkuebPHbfAVBreynfDCphsQUMdIqd.6H1fu5k.tENTNrq'), -- Senha: Admin@121,
-('22.333.444/0001-78','Aline Cristina Batista','admin22@iotlab.com','(48) 92456-6789','$2b$10$iuFC5UBWjbccpwYpGp23tOvmeTMYPdhQ.Svye.PWYFQpr1JQdKGOC'), -- Senha: Admin@122,
-('33.444.555/0001-12','Rodrigo Nunes Freitas','admin23@iotlab.com','(85) 93567-7890','$2b$10$TwarGTvH0qHFzWPNGUiTQ.lyM.J8wivj8YYvfvTXXrN7Ygkd1Bogi'), -- Senha: Admin@123,
-('44.555.666/0001-34','Tatiane Borges Cavalcante','admin24@iotlab.com','(92) 94678-8901','$2b$10$8TcnW2tXoDjK9bVC/e7RIuUT.OM8Jpow44rypuiMc1GlZ/xaG1LT2'), -- Senha: Admin@124,
-('55.666.777/0001-56','Leonardo Pires Tavares','admin25@iotlab.com','(98) 95789-9012','$2b$10$WXWRE20urHhtOowuW3LZUegzdh27E4Gp.aKHq5257WPPAap.BLX5a'), -- Senha: Admin@125,
-('66.777.888/0001-67','Renata Duarte Farias','admin26@iotlab.com','(62) 96890-0123','$2b$10$28oCTES/XlDQylbNp88YW.9aRPUgsIrGMOkKaKXP38WJt1NJDhmj.'), -- Senha: Admin@126,
-('77.888.999/0001-23','Vinicius Campos Moraes','admin27@iotlab.com','(64) 97901-1234','$2b$10$MZL.UkKVS3mDqUPixPnASeVa3AbpOCGLjkv8rxXZoHE6Nayihmuk6'), -- Senha: Admin@127,
-('88.999.000/0001-88','Priscila Azevedo Macedo','admin28@iotlab.com','(65) 98012-2345','$2b$10$M44VzS.j2/prr2CjKqJDweaWUYgJWqg92Hz6W4J5oSXlaKKm89jOa'), -- Senha: Admin@128,
-('99.000.111/0001-77','André Luiz Nogueira','admin29@iotlab.com','(67) 99123-4567','$2b$10$mmIfaimTs.sjYniXkL4BU.XiQui/v/JAskCD5MY8Q6rMyDfN6V4FW'), -- Senha: Admin@129,
-('10.101.202/0001-33','Cláudia Regina Pacheco','admin30@iotlab.com','(68) 90234-5678','$2b$10$Vn6yx.8szHGdbDzD9pFA8OGZHuYTM7.2cZjz23/.F839QCg1P4ST6'); -- Senha: Admin@130;
+('23.456.789/0001-02','Matheus Neri','matheus@admin.com','(19) 99315-1477','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+('34.567.890/0001-03','Emily Maiara','emily@admin.com','(19) 99123-4567','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'),
+('45.678.901/0001-04','Fernanda Amaral','fernanda@admin.com','(19) 99234-5678','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+('56.789.012/0001-05','Sophia Perom','sophia@admin.com','(19) 99345-6789','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+('67.890.123/0001-06','Guilherme Staconi','guilherme@admin.com','(19) 99456-7890','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+('78.901.234/0001-07','Isabela Tessarin','isabela@admin.com','(19) 99508-3585','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+('89.012.345/0001-08','Lorrana Generoso','lorrana@admin.com','(19) 99890-8934','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni'), 
+
+('12.345.678/0001-01', 'Administrador VISIO', 'admin@visio.com', '(11) 98765-4321', '$2b$12$up2lvf2xBzAw6C6PVUIQW.IXCAviqwpyOGpEMNiSArmiQGgZO.kl.'), 
+('90.123.456/0001-09','Rafael Augusto Barbosa','admin9@iotlab.com','(11) 98765-4329','$2b$10$7juJcZu9Wea1Q1BNyPnso.LkD/.lWOHSPKse.dvPYQXvvW/GvGJK.'), 
+('11.234.567/0001-10','Patrícia Gomes Ribeiro','admin10@iotlab.com','(11) 98765-4330','$2b$10$n9MCzMeqsD967AzXKZDpVe.BceckwP4iTPsAQuClp.ilRVIDF0Neu'),
+('12.345.678/0001-90','Lucas Gabriel Carvalho','admin11@iotlab.com','(11) 91234-5678','$2b$10$piyqIYdRmste6TEIwJE3IuT.shPJPHliySZ2/yIl6JJ34KRmAloIu'),
+('98.765.432/0001-10','Camila Andrade Nascimento','admin12@iotlab.com','(21) 92345-6789','$2b$10$C0B/PNL/JAApdrcFqaAQie1pDNwlNmcziYXFidvWePiWR7noaOR2C'), 
+('45.678.123/0001-55','Diego Fernandes Araújo','admin13@iotlab.com','(31) 93456-7890','$2b$10$QTLkde4oK6aUFZNpG5NvPu3fClrP2aKS5PNSZSlzrht8V.GTCxJPi'), 
+('67.890.234/0001-21','Larissa Mendes Cardoso','admin14@iotlab.com','(41) 94567-8901','$2b$10$1S7CJyGtAfuM2z0ExDLqFeFEmSqidK2B3dwO/nDvzD2JuaXeFA/XW'), 
+('23.456.789/0001-87','Thiago Vieira Rocha','admin15@iotlab.com','(51) 95678-9012','$2b$10$2nNarr6SGoM01LmLdXNIeudq1QQi5PUh/oUR17GKAv7Q5.K.hTHme'), 
+('34.567.890/0001-66','Beatriz Correia Dias','admin16@iotlab.com','(61) 96789-0123','$2b$10$vEZvadvtGn4S9hhQ7GRDuuFelPgZ.yFeRqqiivj.X4qvgKciAAMdm'), 
+('56.789.012/0001-44','Felipe Moreira Castro','admin17@iotlab.com','(71) 97890-1234','$2b$10$lBsY7I4KHWcmgj.NxwJcwuBSCoOA/S76OMpIubDTw7zzqrxG4zM9S'), 
+('78.901.234/0001-32','Gabriela Teixeira Pinto','admin18@iotlab.com','(81) 98901-2345','$2b$10$dMpAq6EnP3U/gl41CnQXcO4EAtt/dX5gjDduYu8XlJFCIczsFd0Fm'),
+('89.012.345/0001-11','Eduardo Henrique Ramos','admin19@iotlab.com','(91) 99123-3456','$2b$10$yYwCTNgV.rlNJx5yyngqEeZxTJpiCxhodvO.t1jjmiGCVsnKozoOa'), 
+('90.123.456/0001-99','Vanessa Cunha Monteiro','admin20@iotlab.com','(19) 90234-4567','$2b$10$0Na9cHHsG9vpjHBMof1cx.u8m3C3gBGbGkreeef6uWXpRVZLqP0.q'), 
+('11.222.333/0001-45','Marcelo Augusto Lopes','admin21@iotlab.com','(27) 91345-5678','$2b$10$eU4/qFPdEkuebPHbfAVBreynfDCphsQUMdIqd.6H1fu5k.tENTNrq'),
+('22.333.444/0001-78','Aline Cristina Batista','admin22@iotlab.com','(48) 92456-6789','$2b$10$iuFC5UBWjbccpwYpGp23tOvmeTMYPdhQ.Svye.PWYFQpr1JQdKGOC'),
+('33.444.555/0001-12','Rodrigo Nunes Freitas','admin23@iotlab.com','(85) 93567-7890','$2b$10$TwarGTvH0qHFzWPNGUiTQ.lyM.J8wivj8YYvfvTXXrN7Ygkd1Bogi'),
+('44.555.666/0001-34','Tatiane Borges Cavalcante','admin24@iotlab.com','(92) 94678-8901','$2b$10$8TcnW2tXoDjK9bVC/e7RIuUT.OM8Jpow44rypuiMc1GlZ/xaG1LT2'), 
+('55.666.777/0001-56','Leonardo Pires Tavares','admin25@iotlab.com','(98) 95789-9012','$2b$10$WXWRE20urHhtOowuW3LZUegzdh27E4Gp.aKHq5257WPPAap.BLX5a'), 
+('66.777.888/0001-67','Renata Duarte Farias','admin26@iotlab.com','(62) 96890-0123','$2b$10$28oCTES/XlDQylbNp88YW.9aRPUgsIrGMOkKaKXP38WJt1NJDhmj.'), 
+('77.888.999/0001-23','Vinicius Campos Moraes','admin27@iotlab.com','(64) 97901-1234','$2b$10$MZL.UkKVS3mDqUPixPnASeVa3AbpOCGLjkv8rxXZoHE6Nayihmuk6'), 
+('88.999.000/0001-88','Priscila Azevedo Macedo','admin28@iotlab.com','(65) 98012-2345','$2b$10$M44VzS.j2/prr2CjKqJDweaWUYgJWqg92Hz6W4J5oSXlaKKm89jOa'), 
+('99.000.111/0001-77','André Luiz Nogueira','admin29@iotlab.com','(67) 99123-4567','$2b$10$mmIfaimTs.sjYniXkL4BU.XiQui/v/JAskCD5MY8Q6rMyDfN6V4FW'), 
+('10.101.202/0001-33','Cláudia Regina Pacheco','admin30@iotlab.com','(68) 90234-5678','$2b$10$Vn6yx.8szHGdbDzD9pFA8OGZHuYTM7.2cZjz23/.F839QCg1P4ST6'); 
 
 -- ===== SENSOR  =====
 INSERT INTO SENSOR (NOME, FOTO, DESCRICAO, CIRCUITO) VALUES
@@ -275,19 +288,21 @@ INSERT INTO ALTERNATIVA (DESCRICAO, IS_CORRETA, FK_ID_PERGUNTA) VALUES
 ('Um protocolo de comunicação wireless',0,30),
 ('Um tipo de sensor analógico',0,30);
 
-
+-- ===== USUARIOS  =====
 INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE, FOTO) VALUES
-('123.456.789-01','Pedro Henrique Alves','user1@email.com','$2b$10$ygfUJ3b3ezvzVGcRgCT7OuVZUqcdVuPjSfQB0M8AQUqvbf.4.gqba','0000000000000001','1998-03-12','(11) 98765-1231',''),
-('123.456.789-02','Mariana Souza Costa','user2@email.com','$2b$10$AEQR0We9OvzgeC/8jPaviuoAcT86uGegEqasnCUK3yll.kVxwDkSq','0000000000000002','1995-07-25','(11) 98765-1232',''),
-('123.456.789-03','João Vitor Pereira','user3@email.com','$2b$10$N3Aalag.5RBVgucKxJIuNOYK9gcoJnnRoUarcnCHvnw4yYnYdO4Si','0000000000000003','2000-11-09','(11) 98765-1233',''),
-('123.456.789-04','Carla Beatriz Lima','user4@email.com','$2b$10$1JpCs.EPg4m9h9Hgfc.XUOnXPe7QKRmeip1zS67XQuts3h8oQgxHu','0000000000000004','1997-01-17','(11) 98765-1234',''),
-('123.456.789-05','Gustavo Henrique Rocha','user5@email.com','$2b$10$IRC7dOO6Pa89G5H.MJZd6eAfystDKRJEUvcNguCcif3SlsWunHrvm','0000000000000005','1999-06-30','(11) 98765-1235',''),
-('123.456.789-06','Amanda Cristina Silva','user6@email.com','$2b$10$nU8OE9K0swmly.EQ7o8CkehPH14B52jTyVriFMzMn3XIaIvDiHv0K','0000000000000006','1996-09-14','(11) 98765-1236',''),
+('446.213.508-38','Matheus Neri','matheus@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','FC93DB06','2008-08-02','(19) 99315-1477','assets/images/Grupo/matheus.png'),
+('531.427.148-63','Emily Maiara','emily@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','56171506','2008-08-07','(19) 99508-3585','assets/images/Grupo/emily.png'),
+('459.829.728-00','Fernanda Amaral','fernanda@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','0000000000000002','2008-06-22','(19) 99890-8934','assets/images/Grupo/fernanda.png'),
+('010.121.232-33','Sophia Perom','sophia@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','0000000000000003','2008-08-03','(19) 99372-9443','assets/images/Grupo/sophia.png'),
+('101.202.303-44','Guilherme Staconi','guilherme@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','0000000000000004','2008-08-04','(19) 98993-0927','assets/images/Grupo/guilherme.png'),
+('123.456.789-00','Isabela Tessarin','isabela@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','0000000000000005','2008-08-05','(19) 98953-5385','assets/images/Grupo/isabela.png'),
+('123.456.789-01','Lorrana Generoso','lorrana@gmail.com','$2a$12$RKMfDeHF4W7ngIWuDBm9buhlwMTYikgwTVkyskwDtOQxrVc5MfIni','0000000000000006','2008-08-06','(19) 99740-8006','assets/images/Grupo/lorrana.png'),
+
 ('123.456.789-07','Eduardo Santos Barros','user7@email.com','$2b$10$WYO0ELrEVqMoq1wbi7XfGO7mUiUHoQGt0uBltQwQ2.55Jx7syCKYq','0000000000000007','2001-12-22','(11) 98765-1237',''),
 ('123.456.789-08','Bianca Oliveira Reis','user8@email.com','$2b$10$UafH2zKBfkpXxFZw8eafm.PlPJT1Jrtupb2q/K2KauimsfvkaCnsK','0000000000000008','1994-05-05','(11) 98765-1238',''),
 ('123.456.789-09','Rafael Augusto Dias','user9@email.com','$2b$10$.VJWTAWV65FrRDVAqdJ5TuNx24Pgb6FjIorSGUGjl8Suhzwhv9gSK','0000000000000009','1998-08-18','(11) 98765-1239',''),
 ('123.456.789-10','Letícia Fernandes Cruz','user10@email.com','$2b$10$sRmndqtp5jYSbMOnSjx7TusFOmVuq.ypqE5o5BBWFrb6bQ7Jzdb8y','0000000000000010','2002-02-27','(11) 98765-1240',''),
-('123.456.789-00','Vinícius Almeida Teixeira','user11@email.com','$2b$10$VX7d6hyIQAfHBOE3IUHLP.faE0oUPgKq/xRaHmZgsviQy.8pdnqmq','0000000000000011','1990-03-12','(11) 99876-5432',''),
+('123.456.789-11','Vinícius Almeida Teixeira','user11@email.com','$2b$10$VX7d6hyIQAfHBOE3IUHLP.faE0oUPgKq/xRaHmZgsviQy.8pdnqmq','0000000000000011','1990-03-12','(11) 99876-5432',''),
 ('987.654.321-00','Camila Rodrigues Nunes','user12@email.com','$2b$10$hSSTLdOsD/dZTRHwAE7TXOu9BuZ9ZmkTme7z8dC/go5zLt01FaypC','0000000000000012','1990-03-12','(12) 98765-4321',''),
 ('111.222.333-44','Felipe Martins Araújo','user13@email.com','$2b$10$JL/yxtoEI43ti.NMGQftxetayna3N5Zcc5a4DuMtJSLNhdTgYP4pK','0000000000000013','1992-11-08','(13) 97654-3210',''),
 ('222.333.444-55','Daniela Carvalho Pinto','user14@email.com','$2b$10$kFrx2Yi.5ty62eQZCpWfPuUvpmsHTLpbvBCzA71QY4mOwBUnqFJ7.','0000000000000014','1978-01-30','(14) 96543-2109',''),
@@ -297,7 +312,7 @@ INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE,
 ('666.777.888-99','Tatiane Andrade Lopes','user18@email.com','$2b$10$/85nQQKbQPewcTZkyt0v3u4savVIF8XdH1bXCAqa4mi9RbWt.jvY6','0000000000000018','1993-06-17','(18) 92109-8765',''),
 ('777.888.999-00','Diego Souza Tavares','user19@email.com','$2b$10$ICQm1hjTEVJSzRYc8GfiMexDeS2yLHRcsaFUX4CSt7bfsBefuSDeO','0000000000000019','1980-04-09','(19) 91098-7654',''),
 ('888.999.000-11','Aline Pereira Cavalcante','user20@email.com','$2b$10$mDaZ6dokJfk7o3Z.q2Nhu.hwpFtuq2Zwbifgf/mZ/6KWgVBHqDfP2','0000000000000020','2002-08-28','(21) 99911-2233',''),
-('101.202.303-44','Renato Marques Duarte','user21@email.com','$2b$10$7WSLuGhPTy7KpdQufQ/xce3WC.PXTGD2Gx0kV9o9Y6kCZirxeoLR.','0000000000000021','1998-02-11','(22) 98822-3344',''),
+('101.202.303-54','Renato Marques Duarte','user21@email.com','$2b$10$7WSLuGhPTy7KpdQufQ/xce3WC.PXTGD2Gx0kV9o9Y6kCZirxeoLR.','0000000000000021','1998-02-11','(22) 98822-3344',''),
 ('202.303.404-55','Fernanda Lima Batista','user22@email.com','$2b$10$F6xdvZoyuU/d7XaJkp5G0uZugYYdTQdPEK0Iw9hutgvfUqfbT0X8a','0000000000000022','1983-10-05','(24) 97733-4455',''),
 ('303.404.505-66','Lucas Gabriel Freitas','user23@email.com','$2b$10$VUcOizaaPAwEblC8.HRBvOpETOGSjz79gTaMDDQjU7scrK1wRrS4.','0000000000000023','1991-07-19','(37) 98921-2233',''),
 ('404.505.606-77','Patrícia Nascimento Moreira','user24@email.com','$2b$10$cDzTVW98pgqVWyYqf1S9YuZOMRreK6NKgktKWXLxpO6IMWCva.aze','0000000000000024','1975-03-23','(35) 90010-1122',''),
@@ -306,16 +321,16 @@ INSERT INTO USUARIO (CPF, NOME, EMAIL, SENHA, CARTAO, DATA_NASCIMENTO, TELEFONE,
 ('707.808.909-00','Henrique Vieira Macedo','user27@email.com','$2b$10$/KOPM.WeEz1Ucy9QTDUSWeKUp4yo4BpDiXc02pff4hmjKbaTbiziy','0000000000000027','1996-09-29','(28) 95555-6677',''),
 ('808.909.010-11','Juliana Cunha Pacheco','user28@email.com','$2b$10$IXBZxF.zuJMsnI7QyPA7sOZOsmk024GfIdm4wG7Sq8N6UuhbSrfOe','0000000000000028','1982-06-04','(27) 96644-5566',''),
 ('909.010.121-22','Marcelo Borges Monteiro','user29@email.com','$2b$10$VkvrCIDArk62ZRSR.w.QGu6BfXaXeFlUwS9SeELvnRvRXyEqUyeHS','0000000000000029','1999-12-21','(34) 91199-0011',''),
-('010.121.232-33','Sabrina Nogueira Campos','user30@email.com','$2b$10$7Zar8Ht6MFeXZauDAxFIjO59IveLjoXihDNVTpIcy2/HgXJl5hgwm','0000000000000030','1994-08-10','(32) 93377-8899','');
+('010.121.232-34','Sabrina Nogueira Campos','user30@email.com','$2b$10$7Zar8Ht6MFeXZauDAxFIjO59IveLjoXihDNVTpIcy2/HgXJl5hgwm','0000000000000030','1994-08-10','(32) 93377-8899','');
 
 -- ===== RESPONDE  =====
 INSERT INTO RESPONDE (FK_CPF_USUARIO, FK_ID_ALTERNATIVA) VALUES
-('123.456.789-01',1),
-('123.456.789-02',6),
-('123.456.789-03',11),
-('123.456.789-04',16),
-('123.456.789-05',17),
-('123.456.789-06',22),
+('446.213.508-38',1),
+('531.427.148-63',6),
+('459.829.728-00',11),
+('010.121.232-33',16),
+('101.202.303-44',17),
+('123.456.789-00',22),
 ('123.456.789-07',27),
 ('123.456.789-08',32),
 ('123.456.789-09',33),

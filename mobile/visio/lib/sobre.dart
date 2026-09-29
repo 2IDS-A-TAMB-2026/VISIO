@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'contato.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'services/tts_service.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+  final bool isActive;
+  const AboutPage({super.key, this.isActive = true});
 
   Future<void> _openLink(BuildContext context, String url) async {
     final uri = Uri.parse(url);
@@ -23,6 +25,14 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isActive) {
+      TtsService.instance.definirTextoDaPagina(
+        'Sobre o aplicativo VISIO: tecnologias utilizadas, integrantes da '
+        'equipe, e a missão e os valores do projeto — inovação, segurança, '
+        'educação e eficiência.',
+      );
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

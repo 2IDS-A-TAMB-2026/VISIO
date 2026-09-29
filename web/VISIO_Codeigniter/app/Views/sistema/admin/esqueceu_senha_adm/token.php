@@ -412,7 +412,7 @@
       <?php endif; ?>
 
       <div class="forgot-footer">
-        <a href="<?= base_url('/login') ?>" class="link-voltar-login">
+        <a href="<?= base_url('/login/admin') ?>" class="link-voltar-login">
           <i class="fa-solid fa-arrow-left"></i> Voltar ao login
         </a>
       </div>

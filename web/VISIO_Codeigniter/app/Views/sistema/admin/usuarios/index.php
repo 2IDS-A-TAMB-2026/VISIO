@@ -3,8 +3,6 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
 
-/* Tema claro é o padrão (alinhado com header_adm.php) */
-/* body.dark é adicionado pelo footer_adm.php ao alternar */
 body.dark {
     --bg:#0b1120;
     --card:#111827;
@@ -174,7 +172,6 @@ body.dark tbody tr:hover { background: rgba(38, 98, 217, 0.1); }
         <div class="alert alert-danger"><?= session()->getFlashdata('erro') ?></div>
       <?php endif; ?>
 
-      <!-- CAMPO DE PESQUISA EXPANDIDO E COM MAXLENGTH ELEVADO -->
       <div class="search-container">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" 
