@@ -10,79 +10,11 @@
   <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
   <link href="<?= base_url('assets/css/botao_style.css') ?>" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/js/swiffy-slider.min.js" crossorigin="anonymous"
-    defer></script>
-  <link href="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/css/swiffy-slider.min.css" rel="stylesheet"
-    crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/js/swiffy-slider.min.js" crossorigin="anonymous" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/swiffy-slider@1.6.0/dist/css/swiffy-slider.min.css" rel="stylesheet" crossorigin="anonymous">
 </head>
 
 <style>
-  header {
-    height: 90px;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 30px;
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  }
-
-  .top-nav {
-    width: 100%;
-    max-width: 1600px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .nav-left h1 {
-    font-size: 24px;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    text-decoration: none;
-    color: var(--text);
-    font-weight: 600;
-    transition: 0.3s;
-  }
-
-  .nav-links a:hover {
-    color: var(--primary);
-  }
-
-  #theme-toggle {
-    width: 42px;
-    height: 42px;
-    border: none;
-    border-radius: 12px;
-    background: var(--bg);
-    color: var(--text);
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 16px;
-  }
-
-  #theme-toggle:hover {
-    transform: scale(1.05);
-  }
-
   * {
     margin: 0;
     padding: 0;
@@ -118,38 +50,78 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    transition: .3s;
+    transition: background-color .3s, color .3s;
   }
 
-  .layout{ display:flex; }
+  .layout {
+    display: flex;
+  }
 
-.sidebar {
+  .sidebar {
     width: 280px;
     height: 100vh;
     position: fixed;
-    left: 0; top: 0;
+    left: 0;
+    top: 0;
     padding: 25px;
     background: linear-gradient(180deg, var(--sidebar), var(--sidebar2));
     overflow-y: auto;
     z-index: 1000;
-}
+  }
 
-.logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
-.logo-area h2 { color: white; font-size: 28px; font-weight: 700; }
-.menu-title { color: #64748b; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; letter-spacing: 1px; }
-.menu { list-style: none; }
-.menu li { margin-bottom: 10px; }
-.menu a { display: flex; align-items: center; gap: 14px; padding: 15px; border-radius: 14px; text-decoration: none; color: #e2e8f0; font-weight: 500; transition: .3s; }
-.menu a:hover, .menu a.active { background: rgba(37,99,235,.2); }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
 
+  .logo-area h2 {
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+  }
 
- 
+  .menu-title {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+  }
+
+  .menu {
+    list-style: none;
+  }
+
+  .menu li {
+    margin-bottom: 10px;
+  }
+
+  .menu a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #e2e8f0;
+    font-weight: 500;
+    transition: .3s;
+    font-size: 15px;
+  }
+
+  .menu a:hover,
+  .menu a.active {
+    background: rgba(37, 99, 235, .2);
+  }
 
   .main {
     width: calc(100% - 280px);
     margin-left: 280px;
   }
 
+  /* HEADER FIXO - Não altera o tamanho com o controle de fonte */
   header {
     height: 90px;
     background: var(--card);
@@ -162,6 +134,11 @@
     top: 0;
     z-index: 999;
     box-shadow: 0 4px 20px rgba(0, 0, 0, .04);
+    font-size: 16px !important;
+  }
+
+  header * {
+    font-size: initial;
   }
 
   .nav-right {
@@ -170,15 +147,77 @@
     gap: 20px;
   }
 
-  #theme-toggle {
-    width: 42px;
-    height: 42px;
-    border: none;
-    border-radius: 12px;
-    background: var(--bg);
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    list-style: none;
+    position: relative;
+  }
+
+  .nav-links a {
+    text-decoration: none;
     color: var(--text);
-    cursor: pointer;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 15px !important;
+    transition: 0.3s;
+  }
+
+  .nav-links a:hover {
+    color: var(--primary);
+  }
+
+  /* Rotação do ícone de engrenagem */
+  #accessibility-btn i {
+    transition: transform 0.4s ease-in-out;
+    display: inline-block;
+  }
+
+  #accessibility-btn.ativo i {
+    transform: rotate(180deg);
+  }
+
+  /* Botões do painel de acessibilidade */
+  #accessibility-panel .btn-panel-access {
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+    padding: 0 16px !important;
+    margin: 0 0 10px 0 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    background: #111827 !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    white-space: nowrap !important;
+    transition: background 0.2s ease, transform 0.1s ease !important;
+  }
+
+  #accessibility-panel .btn-panel-access span {
+    font-size: 14px !important;
+  }
+
+  #accessibility-panel .btn-panel-access:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  #accessibility-panel .btn-panel-access:hover {
+    background: #1f2937 !important;
+  }
+
+  #accessibility-panel .btn-panel-access i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
   }
 
   .profile-btn {
@@ -191,6 +230,7 @@
     align-items: center;
     gap: 8px;
     font-weight: 600;
+    font-size: 14px !important;
   }
 
   .content {
@@ -204,12 +244,13 @@
   }
 
   .topbar h1 {
-    font-size: 34px;
+    font-size: 2.125rem;
     margin-bottom: 8px;
   }
 
   .topbar p {
     color: var(--text2);
+    font-size: 1rem;
   }
 
   .top-actions {
@@ -227,6 +268,7 @@
     align-items: center;
     gap: 10px;
     box-shadow: var(--shadow);
+    font-size: 1rem;
   }
 
   .card {
@@ -244,6 +286,7 @@
 
   label {
     font-weight: 600;
+    font-size: 1rem;
   }
 
   input,
@@ -253,7 +296,7 @@
     border-radius: 14px;
     border: 1px solid var(--border);
     outline: none;
-    font-size: 15px;
+    font-size: 0.9375rem;
     background: var(--bg);
     color: var(--text);
   }
@@ -273,6 +316,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    font-size: 1rem;
   }
 
   .table-wrapper {
@@ -282,6 +326,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 1rem;
   }
 
   thead {
@@ -292,11 +337,13 @@
     padding: 18px;
     color: white;
     text-align: left;
+    font-size: 1rem;
   }
 
   tbody td {
     padding: 18px;
     border-bottom: 1px solid var(--border);
+    font-size: 1rem;
   }
 
   .sensor-img {
@@ -319,6 +366,7 @@
     align-items: center;
     gap: 6px;
     font-weight: 600;
+    font-size: 0.875rem;
   }
 
   .btn-delete {
@@ -333,6 +381,7 @@
     align-items: center;
     gap: 6px;
     font-weight: 600;
+    font-size: 0.875rem;
   }
 </style>
 
@@ -341,84 +390,62 @@
   <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo</a>
 
   <header>
-    <nav>
-      <img src="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>" class="logo" alt="Logo plataforma VISIO"
-        id="logo" data-dark="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>"
-        data-light="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>">
+    <nav style="width: 100%; display: flex; justify-content: space-between; align-items: center; position: relative;">
+      <img src="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>" class="logo" alt="Logo plataforma VISIO" id="logo" data-dark="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>" data-light="<?= base_url('assets/images/logos/Logo/LogoDark2.png') ?>">
 
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu de navegação" aria-expanded="false"
-        aria-controls="nav-links">
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="nav-links">
         <span></span><span></span><span></span>
       </button>
 
       <ul class="nav-links" id="nav-links" role="navigation" aria-label="Menu principal">
         <li>
-          <a href="<?= base_url('/admin/perfil') ?>" style="
-    background:#2563eb;
-    color:white;
-    padding:12px 18px;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    text-decoration:none;
-    font-weight:600;
-">
-            <i class="fa-solid fa-user-shield" style="color:white;"></i>
+          <a href="<?= base_url('/admin/perfil') ?>" style="background:#2563eb; color:white; padding:12px 18px; border-radius:10px; display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:600; font-size:14px !important;">
+            <i class="fa-solid fa-user-shield" style="color:white; font-size:14px !important;"></i>
             Perfil
           </a>
         </li>
-        <li>
-          <button id="accessibility-btn" aria-label="Abrir menu de acessibilidade" aria-expanded="false"
-            aria-controls="accessibility-panel" style="width:40px;height:40px;border:none;border-radius:12px;
-                       background:#2563eb;color:white;font-size:18px;cursor:pointer;">
-            <i class="fa-solid fa-gear"></i>
+        <li style="position: relative;">
+          <button id="accessibility-btn" aria-label="Abrir menu de acessibilidade" aria-expanded="false" aria-controls="accessibility-panel" style="width:40px; height:40px; border:none; border-radius:12px; background:#2563eb; color:white; font-size:18px; cursor:pointer;">
+            <i class="fa-solid fa-gear" style="font-size:18px !important;"></i>
           </button>
+
+          <!-- PAINEL DE ACESSIBILIDADE -->
+          <div id="accessibility-panel" aria-hidden="true" style="position:absolute; top:50px; right:0; width:260px; background:var(--card, #fff); border-radius:16px; padding:16px; display:none; z-index:9999; box-shadow:0 10px 25px rgba(0,0,0,.25); border: 1px solid var(--border);">
+
+            <!-- AUMENTAR FONTE -->
+            <button type="button" onclick="changeFontSize(1)" aria-label="Aumentar tamanho da fonte" class="btn-panel-access">
+              <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+              <span>Aumentar Fonte</span>
+            </button>
+
+            <!-- DIMINUIR FONTE -->
+            <button type="button" onclick="changeFontSize(-1)" aria-label="Diminuir tamanho da fonte" class="btn-panel-access">
+              <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+              <span>Diminuir Fonte</span>
+            </button>
+
+            <!-- ALTERAR TEMA -->
+            <button type="button" id="theme-toggle-btn" class="btn-panel-access">
+              <i class="fa-solid fa-moon" id="icon-moon"></i>
+              <i class="fa-solid fa-sun" id="icon-sun" style="display:none; color:#fff"></i>
+              <span>Alterar Tema</span>
+            </button>
+
+            <!-- ALTO CONTRASTE -->
+            <button type="button" onclick="toggleContrast()" id="btn-contraste" class="btn-panel-access">
+              <i class="fa-solid fa-adjust"></i>
+              <span>Alto Contraste</span>
+            </button>
+
+            <!-- LER PAGINA -->
+            <button type="button" onclick="readPage()" class="btn-panel-access">
+              <i class="fa-solid fa-volume-high"></i>
+              <span>Ler Página</span>
+            </button>
+
+          </div>
         </li>
       </ul>
-
-      <div id="accessibility-panel" aria-hidden="true" style="position:absolute;top:70px;right:20px;width:260px;
-                background:var(--color-bg-card,#fff);border-radius:16px;
-                padding:18px;display:none;z-index:9999;
-                box-shadow:0 10px 25px rgba(0,0,0,.25);">
-
-
-        <!--AUMENTAR FONTE-->
-        <button onclick="changeFontSize(2)"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-magnifying-glass-plus"></i> Aumentar Fonte
-        </button>
-
-        <!--DIMINUIR FONTE-->
-        <button onclick="changeFontSize(-2)"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-magnifying-glass-minus"></i> Diminuir Fonte
-        </button>
-
-
-        <!--ALTERAR TEMA-->
-        <button id="theme-toggle"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-moon" id="icon-moon"></i>
-          <i class="fa-solid fa-sun" id="icon-sun" style="display:none; color:#fff"></i>
-          Alterar Tema
-        </button>
-
-
-        <!--ALTO CONTRASTE-->
-        <button onclick="toggleContrast()" id="btn-contraste"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-adjust"></i> Alto Contraste
-        </button>
-
-
-        <!--LER PAGINA-->
-        <button onclick="readPage()"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-volume-high"></i> Ler Página
-        </button>
-
-      </div>
     </nav>
   </header>
 
@@ -435,7 +462,10 @@
       const aberto = navLinks.classList.toggle('aberta');
       hamburger.classList.toggle('aberto', aberto);
       hamburger.setAttribute('aria-expanded', aberto);
-      if (aberto) { accessibilityPanel.style.display = 'none'; }
+      if (aberto) { 
+        accessibilityPanel.style.display = 'none'; 
+        accessibilityBtn.classList.remove('ativo');
+      }
     });
 
     navLinks.querySelectorAll('a').forEach(link => {
@@ -462,15 +492,18 @@
       }
     });
 
-    /* ── Painel de acessibilidade ── */
+    /* ── Painel de acessibilidade com rotação da engrenagem (180 deg) ── */
     const accessibilityBtn = document.getElementById('accessibility-btn');
     const accessibilityPanel = document.getElementById('accessibility-panel');
 
     accessibilityBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const visivel = accessibilityPanel.style.display === 'block';
+      
       accessibilityPanel.style.display = visivel ? 'none' : 'block';
       accessibilityBtn.setAttribute('aria-expanded', !visivel);
+      accessibilityBtn.classList.toggle('ativo', !visivel);
+
       if (!visivel) {
         navLinks.classList.remove('aberta');
         hamburger.classList.remove('aberto');
@@ -482,32 +515,49 @@
       if (!accessibilityBtn.contains(e.target) && !accessibilityPanel.contains(e.target)) {
         accessibilityPanel.style.display = 'none';
         accessibilityBtn.setAttribute('aria-expanded', 'false');
+        accessibilityBtn.classList.remove('ativo');
       }
     });
 
-    /* ── Fonte (com transição suave, compatível com qualquer navegador) ── */
-    let currentFontSize = parseInt(localStorage.getItem('visio_fontsize') || '16');
-    document.body.style.zoom = currentFontSize / 16;
+    /* ── Alternar Tema Claro/Escuro ── */
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const iconMoon = document.getElementById('icon-moon');
+    const iconSun = document.getElementById('icon-sun');
 
-    function animarZoom(de, para) {
-      const duracao = 250;
-      const inicio = performance.now();
-      function passo(agora) {
-        const t = Math.min((agora - inicio) / duracao, 1);
-        const ease = 1 - Math.pow(1 - t, 3); // ease-out cúbico
-        document.body.style.zoom = de + (para - de) * ease;
-        if (t < 1) requestAnimationFrame(passo);
+    function updateThemeIcons(isDark) {
+      if (iconMoon && iconSun) {
+        iconMoon.style.display = isDark ? 'none' : 'inline-block';
+        iconSun.style.display = isDark ? 'inline-block' : 'none';
       }
-      requestAnimationFrame(passo);
     }
+
+    if (localStorage.getItem('visio_theme') === 'dark') {
+      document.body.classList.add('dark');
+      updateThemeIcons(true);
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem('visio_theme', isDark ? 'dark' : 'light');
+        updateThemeIcons(isDark);
+      });
+    }
+
+    /* ── Fonte (Altera font-size do <html>; elementos com px ficam intactos) ── */
+    let currentFontSize = parseInt(localStorage.getItem('visio_fontsize') || '16');
+
+    function applyFontSize(size) {
+      document.documentElement.style.fontSize = size + 'px';
+    }
+
+    applyFontSize(currentFontSize);
 
     function changeFontSize(delta) {
       const novo = currentFontSize + delta;
-      if (novo < 12 || novo > 26) return;
-      const zoomAntigo = currentFontSize / 16;
+      if (novo < 12 || novo > 24) return;
       currentFontSize = novo;
-      const zoomNovo = currentFontSize / 16;
-      animarZoom(zoomAntigo, zoomNovo);
+      applyFontSize(currentFontSize);
       localStorage.setItem('visio_fontsize', currentFontSize);
     }
 
@@ -519,12 +569,11 @@
     function toggleContrast() {
       const ativo = document.body.classList.toggle('high-contrast');
       localStorage.setItem('visio_contraste', ativo ? '1' : '0');
-      const btnTema = document.getElementById('theme-toggle');
-      if (btnTema) {
-        btnTema.disabled = ativo;
-        btnTema.style.opacity = ativo ? '0.4' : '1';
-        btnTema.style.cursor = ativo ? 'not-allowed' : 'pointer';
-        btnTema.title = ativo
+      if (themeToggleBtn) {
+        themeToggleBtn.disabled = ativo;
+        themeToggleBtn.style.opacity = ativo ? '0.4' : '1';
+        themeToggleBtn.style.cursor = ativo ? 'not-allowed' : 'pointer';
+        themeToggleBtn.title = ativo
           ? 'Desative o alto contraste para trocar o tema'
           : 'Alternar tema claro/escuro';
       }
@@ -532,8 +581,11 @@
 
     (function () {
       if (document.body.classList.contains('high-contrast')) {
-        const b = document.getElementById('theme-toggle');
-        if (b) { b.disabled = true; b.style.opacity = '0.4'; b.style.cursor = 'not-allowed'; }
+        if (themeToggleBtn) { 
+          themeToggleBtn.disabled = true; 
+          themeToggleBtn.style.opacity = '0.4'; 
+          themeToggleBtn.style.cursor = 'not-allowed'; 
+        }
       }
     })();
 
@@ -546,15 +598,11 @@
     }
 
     function readPage() {
-      // Segundo clique (ou clique enquanto já está lendo): apenas para.
       if (leituraEmAndamento) {
         pararLeitura();
         return;
       }
 
-      // Primeiro clique (ou reinício): cancela qualquer fala residual
-      // da fila do navegador antes de montar a nova leitura, garantindo
-      // que nunca existam duas leituras tocando ao mesmo tempo.
       window.speechSynthesis.cancel();
 
       let text = '';
@@ -567,9 +615,6 @@
       const fala = new SpeechSynthesisUtterance(text);
       fala.lang = 'pt-BR';
 
-      // Quando a leitura termina sozinha (chegou ao fim do texto),
-      // o estado precisa voltar a "parado" para que o próximo clique
-      // seja tratado como um novo início, e não como um "parar".
       fala.onend = () => { leituraEmAndamento = false; };
       fala.onerror = () => { leituraEmAndamento = false; };
 
@@ -577,7 +622,7 @@
       window.speechSynthesis.speak(fala);
     }
   </script>
-  
+
   <div vw class="enabled">
     <div vw-access-button class="active"></div>
     <div vw-plugin-wrapper>
@@ -588,3 +633,6 @@
   <script>
     new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
+</body>
+
+</html>

@@ -123,7 +123,6 @@
                 <a href="<?= base_url('/') ?>">Início</a>
                 <a href="<?= base_url('/sobre') ?>">Sobre</a>
                 <a href="<?= base_url('/sensor') ?>">Sensores</a>
-                <a href="<?= base_url('/quiz') ?>">Questões</a>
                 <a href="<?= base_url('/login/admin') ?>">Login ADM</a>
             </div>
             <div class="footer-contact">

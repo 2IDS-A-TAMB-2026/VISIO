@@ -1,5 +1,4 @@
 <?= view('sistema/layout/header_adm') ?>
-
 <style>
     /* === RESETS & SCROLL FIX === */
     * {
@@ -40,10 +39,9 @@
     body {
         background: var(--bg-color);
         color: var(--text-color);
-        transition: background-color 0.3s ease;
+        
     }
 
-    /* === LAYOUT E ESTRUTURA === */
     .layout {
         display: flex;
         min-height: 100vh;
@@ -75,7 +73,6 @@
         margin: 0 auto;
     }
 
-    /* === CABEÇALHO DA PÁGINA === */
     .page-header {
         display: flex;
         align-items: center;
@@ -97,7 +94,6 @@
         margin-top: 4px;
     }
 
-    /* Botão Voltar Padronizado (Azul) */
     .btn-back {
         display: inline-flex;
         align-items: center;
@@ -109,17 +105,14 @@
         text-decoration: none;
         font-weight: 600;
         font-size: 14px;
-        transition: all 0.2s ease;
         box-shadow: 0 2px 8px rgba(30, 107, 231, 0.2);
     }
 
     .btn-back:hover {
         background: var(--primary-dark);
-        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(30, 107, 231, 0.35);
     }
 
-    /* === CARD E FORMULÁRIO === */
     .card {
         background: var(--card-bg);
         border-radius: 16px;
@@ -155,7 +148,7 @@
         color: var(--text-color);
         outline: none;
         font-size: 14px;
-        transition: all 0.2s ease;
+        
     }
 
     textarea:focus, input[type="text"]:focus {
@@ -168,7 +161,6 @@
         min-height: 110px;
     }
 
-    /* === CAMPO DE UPLOAD DE FOTO === */
     .file-upload-wrapper {
         position: relative;
         display: flex;
@@ -178,9 +170,8 @@
         padding: 24px;
         border: 2px dashed var(--border-color);
         border-radius: 12px;
-        background: var(--bg-color);
+        
         cursor: pointer;
-        transition: all 0.2s ease;
         text-align: center;
     }
 
@@ -201,12 +192,6 @@
         color: var(--text-color);
     }
 
-    .file-upload-info {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-
     .file-upload-wrapper input[type="file"] {
         position: absolute;
         width: 100%;
@@ -217,24 +202,22 @@
         cursor: pointer;
     }
 
-    /* Elemento de Preview da Imagem */
     .img-preview {
         max-width: 150px;
         max-height: 150px;
         margin-top: 12px;
         border-radius: 8px;
-        object-fit: cover;
         display: none;
         border: 2px solid var(--border-color);
+        
     }
 
-    /* === BOTÃO SUBMIT === */
     .btn-primary {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        background: linear-gradient(135deg, var(--primary), var(--primary-accent));
+        
         color: white;
         border: none;
         padding: 16px;
@@ -244,16 +227,13 @@
         cursor: pointer;
         margin-top: 10px;
         width: 100%;
-        transition: all 0.2s ease;
+       
     }
 
     .btn-primary:hover {
         background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(30, 107, 231, 0.3);
     }
 
-    /* === RESPONSIVIDADE === */
     @media (max-width: 900px) {
         .sidebar {
             width: 100%;

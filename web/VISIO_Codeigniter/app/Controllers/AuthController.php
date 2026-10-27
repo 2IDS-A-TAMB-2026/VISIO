@@ -434,7 +434,7 @@ class AuthController extends BaseController
             ]);
         }
 
-        return redirect()->to('/login');
+        return redirect()->to('/login/admin');
     }
 
     public function receberCartao()

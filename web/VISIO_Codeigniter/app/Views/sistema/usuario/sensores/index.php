@@ -46,12 +46,50 @@ body.high-contrast,
     background: transparent !important;
     border-radius: 0 !important;
 }
+.sensores-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.sensores-cabecalho .animated-button1 {
+    flex-shrink: 0;
+    margin-right: 5%;
+}
+
+@media (max-width: 768px) {
+    .sensores-cabecalho {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sensores-cabecalho .animated-button1 {
+        margin-right: 0;
+    }
+}
 </style>
 
 <main class="sensores-page-main">
     <br><br><br>
-    <h1 class="sensores-page-title">Catálogo de Sensores IoT</h1>
-    <p class="sensores-page-lead">Explore os sensores cadastrados na plataforma VISIO.</p>
+
+    <div class="sensores-cabecalho">
+        <div>
+            <h1 class="sensores-page-title">Catálogo de Sensores IoT</h1>
+            <p class="sensores-page-lead">
+                Explore os sensores cadastrados na plataforma VISIO.
+            </p>
+        </div>
+
+        <a href="<?= base_url('/identificador') ?>" class="animated-button1">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Identificar
+        </a>
+    </div>
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

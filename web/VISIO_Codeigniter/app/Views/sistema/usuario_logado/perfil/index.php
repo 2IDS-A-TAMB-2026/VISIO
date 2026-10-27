@@ -303,6 +303,15 @@
         </div>
       </div>
 
+      
+            <a href="<?= base_url('/identificador') ?>" class="animated-button1">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              Identificar
+          </a>
+
     </div> 
     
     <div class="perfil-card">
@@ -425,4 +434,4 @@
 
 <script src="<?= base_url('assets/js/validacaorecuperar.js')?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
-<?= view('sistema/layout/footer') ?>
+<?= view('sistema/layout/footer_logado') ?>

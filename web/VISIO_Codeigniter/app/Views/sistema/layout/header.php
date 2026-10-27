@@ -37,16 +37,33 @@
         <li><a href="<?= base_url('/sobre') ?>"><i class="fa-solid fa-info-circle"></i> Sobre Nós</a></li>
         <li><a href="<?= base_url('/sensor') ?>"><i class="fa-solid fa-microchip"></i> Sensores</a></li>
 
+        
         <?php if (session()->get('usuario_logado')): ?>
-          <li><a href="<?= base_url('/quiz') ?>"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
-          <li><a href="<?= base_url('/perfil') ?>">
-              <i class="fa-solid fa-user"></i> <?= 'Perfil' ?>
-            </a></li>
-          <li><a href="<?= base_url('/logout') ?>"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+            <li>
+                <a href="<?= base_url('/quiz') ?>">
+                    <i class="fa-solid fa-circle-question"></i> Questões
+                </a>
+            </li>
+
+            <li>
+                <a href="<?= base_url('/perfil') ?>">
+                    <i class="fa-solid fa-user"></i> Perfil
+                </a>
+            </li>
+
+            <li>
+                <a href="<?= base_url('/logout') ?>">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </a>
+            </li>
         <?php else: ?>
-          <li><a href="<?= base_url('/quiz') ?>"><i class="fa-solid fa-circle-question"></i> Questões</a></li>
-          <li><a href="<?= base_url('/login') ?>"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+            <li>
+                <a href="<?= base_url('/login') ?>">
+                    <i class="fa-solid fa-right-to-bracket"></i> Login
+                </a>
+            </li>
         <?php endif; ?>
+
 
         <li>
           <button id="accessibility-btn" aria-label="Abrir menu de acessibilidade" aria-expanded="false"
@@ -78,11 +95,18 @@
 
         <!--ALTERAR TEMA-->
         <button id="theme-toggle"
-          style="width:100%;height:45px;box-sizing:border-box;padding:12px;margin-bottom:10px;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
-          <i class="fa-solid fa-moon" id="icon-moon"></i>
-          <i class="fa-solid fa-sun" id="icon-sun" style="display:none; color:#fff"></i>
-          Alterar Tema
+            type="button"
+            style="width:100%;height:45px;min-height:45px;box-sizing:border-box;padding:0 12px;margin:0 0 10px 0;border:none;border-radius:10px;background:#111827;color:white;font-size:14px;font-family:inherit;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;overflow:hidden;">
+
+            <i class="fa-solid fa-moon" id="icon-moon"
+                style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:16px;font-size:14px;"></i>
+
+            <i class="fa-solid fa-sun" id="icon-sun"
+                style="display:none;align-items:center;justify-content:center;flex-shrink:0;width:16px;font-size:14px;color:#fff;"></i>
+
+            Alterar Tema
         </button>
+
 
 
         <!--ALTO CONTRASTE-->

@@ -206,6 +206,17 @@
     <br><br>
     <h1>Identificação de dispositivos via câmera</h1>
 
+    <div class="aviso-teachable">
+    <div class="aviso-icone"></div>
+
+    <p>
+        Esta funcionalidade foi treinada por
+        <a href="https://teachablemachine.withgoogle.com/" target="_blank">
+            Teachable Machine
+        </a>
+    </p>
+</div>
+
     <section id="camera-container">
         <video id="video" autoplay muted playsinline></video>
         <canvas id="canvas" style="display:none;"></canvas>
@@ -214,7 +225,7 @@
     <!-- Grupo de Botões -->
     <div class="identificador-acoes">
         <button id="btn-identificar" class="identificador-btn">
-            <i class="fa-solid fa-camera"></i> Identificar Câmera
+            <i class="fa-solid fa-camera"></i> Identificar Sensor
         </button>
 
         <button id="btn-upload" class="identificador-btn identificador-btn-secondary">

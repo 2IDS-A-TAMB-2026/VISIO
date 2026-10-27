@@ -38,4 +38,4 @@
 
 </html>
 
-<?= view('sistema/layout/footer') ?>
+<?= view('sistema/layout/footer_logado') ?>

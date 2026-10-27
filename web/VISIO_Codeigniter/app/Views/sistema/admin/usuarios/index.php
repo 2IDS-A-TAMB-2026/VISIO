@@ -333,6 +333,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+let nivelFonte = 0;
+
+function aumentarFonte() {
+    // Só aumenta até 3 vezes
+    if (nivelFonte < 3) {
+        nivelFonte++;
+
+        document.body.style.fontSize = 
+            (16 + nivelFonte * 2) + "px";
+    }
+}
+
+function diminuirFonte() {
+    // Só diminui até 3 vezes
+    if (nivelFonte > -3) {
+        nivelFonte--;
+
+        document.body.style.fontSize = 
+            (16 + nivelFonte * 2) + "px";
+    }
+}
 </script>
 
 <?= view('sistema/layout/footer_adm') ?>
